@@ -11,11 +11,13 @@
 #include <arpa/inet.h>
 #include <time.h>
 
+#include "ReceiveDataBuffer.hpp"
+
 
 // do no longer connect to port 80, connect to 8889
 
 static int getSingleParameter(const char* srcIpAddr);
-static void receivePacket(const int sockfd);
+static void receivePacket(const int sockfd, RecDataStorage* pDataBuffer);
 
 int main(int argc, char* argv[])
 {
@@ -30,7 +32,7 @@ int main(int argc, char* argv[])
 
 static int getSingleParameter(const char* srcIpAddr)
 {
-    int sockfd = 0, n = 0;
+    int sockfd = 0;
     char recvBuff[1024];
     struct sockaddr_in serv_addr;
 
@@ -61,7 +63,7 @@ static int getSingleParameter(const char* srcIpAddr)
 
     {
         //Cmd 3003 : 0x00 0x00 0x0b 0xbb  0x00 0x00 0x00 0x00
-        unsigned char sendData[8] = { 0x00, 0x00, 0x0b, 0xba,  0x00, 0x00, 0x00, 0x00};
+        unsigned char sendData[8] = { 0x00, 0x00, 0x0b, 0xbb,  0x00, 0x00, 0x00, 0x00};
 
         printf("sendData size: %lu\n", sizeof(sendData)/sizeof(char));
         if (send(sockfd, sendData, sizeof(sendData), 0) < 0) {
@@ -70,32 +72,13 @@ static int getSingleParameter(const char* srcIpAddr)
         }
     }
 
+    RecDataStorage m_buffer;
     // Receive a reply from the server
-    receivePacket(sockfd);
-    receivePacket(sockfd);
-
-// -     // send ws request
-// -     {
-// -         uint8_t sendData[] = {0x81, 0x87, 0xc3, 0x8b, 0xfe, 0x1f, 0x8f, 0xc4, 0xb9, 0x56, 0x8d, 0xb0, 0xce, 0x4c, 0x4f, 0x47, 0x49, 0x4e, 0x3b, 0x30};
-// -         if( send(sockfd, sendData , sizeof(sendData) , 0) < 0) {
-// -             puts("Send failed");
-// -             return 1;
-// -         }
-// -     }
-
-//-     // wait for ws response
-//-     receivePacket(sockfd);
-
-    //     while ( (n = read(sockfd, recvBuff, sizeof(recvBuff)-1)) > 0) {
-    //         recvBuff[n] = 0;
-    //         if(fputs(recvBuff, stdout) == EOF) {
-    //             printf("\n Error : Fputs error\n");
-    //         }
-    //     }
-
-    if (n < 0) {
-        printf("\n Read error \n");
-    }
+    receivePacket(sockfd, &m_buffer);
+    receivePacket(sockfd, &m_buffer);
+    receivePacket(sockfd, &m_buffer);
+    receivePacket(sockfd, &m_buffer);
+    receivePacket(sockfd, &m_buffer);
 
     close(sockfd);
     return 0;
@@ -114,9 +97,9 @@ static int getSingleParameter(const char* srcIpAddr)
 
 
 
-static void receivePacket(const int sockfd)
+static void receivePacket(const int sockfd,  RecDataStorage* pDataBuffer)
 {
-    const size_t REC_BUFFER_SIZE = 2000;
+    const size_t REC_BUFFER_SIZE = 10000;
     uint8_t recData[REC_BUFFER_SIZE];
 
     uint32_t recDataLen = recv(sockfd, recData, REC_BUFFER_SIZE, 0);
@@ -128,8 +111,16 @@ static void receivePacket(const int sockfd)
         printf("Rec nr bytes: %d\n", recDataLen);
 
         if (recDataLen > 0) {
-            printf("%s", recData);
+            pDataBuffer->addData(recData, recDataLen);
+            for (size_t cnt = 0; cnt < recDataLen; cnt++) {
+                printf("0x%.2x ", recData[cnt]);
+                if (0 == ((cnt + 1) % 16)) {
+                    printf("\n");
+                }
+            }
+            printf("\n");
+        } else {
+            printf("empty\n");
         }
-        printf("---\n");
     }
 }
