@@ -80,22 +80,11 @@ static int getSingleParameter(const char* srcIpAddr)
     receivePacket(sockfd, &m_buffer);
     receivePacket(sockfd, &m_buffer);
 
+    m_buffer.printBuffer();
+
     close(sockfd);
     return 0;
 }
-
-
-
-
-
-
-
-
-/// ------------------ outdated
-
-
-
-
 
 static void receivePacket(const int sockfd,  RecDataStorage* pDataBuffer)
 {
@@ -104,7 +93,7 @@ static void receivePacket(const int sockfd,  RecDataStorage* pDataBuffer)
 
     uint32_t recDataLen = recv(sockfd, recData, REC_BUFFER_SIZE, 0);
 
-    printf("-----------------------------------------------------------------------\n");
+    printf("--- ");
     if (recDataLen < 0) {
         printf("Rec failed");
     } else {
@@ -112,13 +101,6 @@ static void receivePacket(const int sockfd,  RecDataStorage* pDataBuffer)
 
         if (recDataLen > 0) {
             pDataBuffer->addData(recData, recDataLen);
-            for (size_t cnt = 0; cnt < recDataLen; cnt++) {
-                printf("0x%.2x ", recData[cnt]);
-                if (0 == ((cnt + 1) % 16)) {
-                    printf("\n");
-                }
-            }
-            printf("\n");
         } else {
             printf("empty\n");
         }

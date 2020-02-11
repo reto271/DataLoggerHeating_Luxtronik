@@ -1,3 +1,5 @@
+#pragma once
+
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <netinet/in.h>
@@ -18,8 +20,24 @@ public:
 
     void clearBuffer();
     bool addData(uint8_t* pBuffer, size_t nrChar);
+    void printBuffer();
+    uint32_t swap(uint32_t value);
 
 private:
     static const size_t BufferSize = 5000;
-    uint8_t m_buffer[BufferSize];
+    static const uint32_t NrParameter = 1087;
+    size_t m_writePos;
+
+    typedef struct
+    {
+        uint32_t command;
+        uint32_t nrEntries;
+        uint32_t data[NrParameter];
+    } DecodedBuffer;
+
+    union
+    {
+        uint8_t buffer[BufferSize];
+        DecodedBuffer decode;
+    } m_buffer;
 };
