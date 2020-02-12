@@ -35,3 +35,6 @@
 GPATH
 GRTAGS
 GTAGS
+
+# outdir
+bin/
