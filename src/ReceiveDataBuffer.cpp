@@ -50,7 +50,10 @@ void RecDataStorage::printBuffer()
     //        printf("para[%.3d] = %d / 0x%.4x\n", paraNr, swap(m_buffer.decode.data[paraNr]));
     //    }
     for (uint32_t paraCnt = 0; paraCnt < NrParameter; paraCnt++) {
-        printf("para[%.4d] = %d\n", paraCnt, swap(m_buffer.decode.data[paraCnt]));
+        uint32_t value = swap(m_buffer.decode.data[paraCnt]);
+        float*  pFloat = reinterpret_cast<float*>(&value);
+        //printf("para[%.4d] = %12d / 0x%.8x / %f\n", paraCnt, value, value, *pFloat);
+        printf("para[%.4d] = %12d / 0x%.8x / %f\n", paraCnt, value, value, *pFloat);
     }
 }
 
