@@ -13,15 +13,9 @@
 #include <assert.h>
 
 #include "ReceiveDataBuffer.hpp"
-
+#include "Command3004.hpp"
 
 // do no longer connect to port 80, connect to 8889
-typedef enum
-{
-    ReadParam,
-    ReadValue
-} Command;
-
 
 //Cmd 3003 : 0x00 0x00 0x0b 0xbb  0x00 0x00 0x00 0x00 : Read Parameter
 static uint8_t cmdPara[8] = { 0x00, 0x00, 0x0b, 0xbb, 0x00, 0x00, 0x00, 0x00};
@@ -30,12 +24,12 @@ static uint8_t cmdPara[8] = { 0x00, 0x00, 0x0b, 0xbb, 0x00, 0x00, 0x00, 0x00};
 static uint8_t cmdVal[8] = { 0x00, 0x00, 0x0b, 0xbc, 0x00, 0x00, 0x00, 0x00};
 
 
-static int getSingleParameter(const char* srcIpAddr, const Command cmd);
-static void receivePacket(const int sockfd, RecDataStorage* pDataBuffer);
+static int getSingleParameter(const char* srcIpAddr, const HeatControlCommand cmd);
+static void receivePacket(const int sockfd, RecDataStoragePtr pDataBuffer);
 
 int main(int argc, char* argv[])
 {
-    Command cmd;
+    HeatControlCommand cmd;
     cmd = ReadParam;
     cmd = ReadValue;
 
@@ -48,12 +42,12 @@ int main(int argc, char* argv[])
     }
 }
 
-static int getSingleParameter(const char* srcIpAddr, const Command cmd)
+static int getSingleParameter(const char* srcIpAddr, const HeatControlCommand cmd)
 {
     int sockfd = 0;
     char recvBuff[1024];
     struct sockaddr_in serv_addr;
-    RecDataStorage m_buffer;
+    RecDataStoragePtr bufferPtr = std::make_shared<RecDataStorage>();
     uint8_t nrExpectedResp = 0;
     unsigned char sendData[8];
 
@@ -106,16 +100,22 @@ static int getSingleParameter(const char* srcIpAddr, const Command cmd)
 
     // Receive a reply from the server
     for (uint8_t cntReply = 0; cntReply < nrExpectedResp; cntReply++) {
-        receivePacket(sockfd, &m_buffer);
+        receivePacket(sockfd, bufferPtr);
     }
 
-    m_buffer.printBuffer();
+    bufferPtr->printBuffer();
+
+    {
+        DecodeValueResponse decodeValueResp;
+        decodeValueResp.setRecieveBuffer(bufferPtr);
+        decodeValueResp.decode();
+    }
 
     close(sockfd);
     return 0;
 }
 
-static void receivePacket(const int sockfd, RecDataStorage* pDataBuffer)
+static void receivePacket(const int sockfd, RecDataStoragePtr pDataBuffer)
 {
     const size_t REC_BUFFER_SIZE = 10000;
     uint8_t recData[REC_BUFFER_SIZE];

@@ -11,7 +11,7 @@ rm -f GPATH  GRTAGS  GTAGS
 gtags &
 sleep 1
 
-emacs main.cpp &
+emacs src/tcp.cpp &
 
 # Back to the original location
 popd > /dev/null
