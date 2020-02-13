@@ -38,3 +38,7 @@ GTAGS
 
 # outdir
 bin/
+
+# uncrustify
+src/*.unc-backup.md5~
+src/*.unc-backup~

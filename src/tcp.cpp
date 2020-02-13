@@ -24,10 +24,10 @@ typedef enum
 
 
 //Cmd 3003 : 0x00 0x00 0x0b 0xbb  0x00 0x00 0x00 0x00 : Read Parameter
-static uint8_t cmdPara[8] = { 0x00, 0x00, 0x0b, 0xbb,  0x00, 0x00, 0x00, 0x00};
+static uint8_t cmdPara[8] = { 0x00, 0x00, 0x0b, 0xbb, 0x00, 0x00, 0x00, 0x00};
 
 //Cmd 3004 : 0x00 0x00 0x0b 0xbc  0x00 0x00 0x00 0x00 : Read Values
-static uint8_t cmdVal[8] = { 0x00, 0x00, 0x0b, 0xbc,  0x00, 0x00, 0x00, 0x00};
+static uint8_t cmdVal[8] = { 0x00, 0x00, 0x0b, 0xbc, 0x00, 0x00, 0x00, 0x00};
 
 
 static int getSingleParameter(const char* srcIpAddr, const Command cmd);
@@ -82,7 +82,7 @@ static int getSingleParameter(const char* srcIpAddr, const Command cmd)
         printf("connect worked\n");
     }
 
-    switch(cmd) {
+    switch (cmd) {
     case ReadParam:
         memcpy(sendData, cmdPara, 8);
         nrExpectedResp = 5;
@@ -98,7 +98,7 @@ static int getSingleParameter(const char* srcIpAddr, const Command cmd)
         break;
     }
 
-    printf("sendData size: %lu\n", sizeof(sendData)/sizeof(char));
+    printf("sendData size: %lu\n", sizeof(sendData) / sizeof(char));
     if (send(sockfd, sendData, sizeof(sendData), 0) < 0) {
         puts("Send failed");
         return 1;
@@ -115,7 +115,7 @@ static int getSingleParameter(const char* srcIpAddr, const Command cmd)
     return 0;
 }
 
-static void receivePacket(const int sockfd,  RecDataStorage* pDataBuffer)
+static void receivePacket(const int sockfd, RecDataStorage* pDataBuffer)
 {
     const size_t REC_BUFFER_SIZE = 10000;
     uint8_t recData[REC_BUFFER_SIZE];
