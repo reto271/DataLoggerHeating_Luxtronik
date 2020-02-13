@@ -68,7 +68,7 @@ void RecDataStorage::printBuffer()
     }
 }
 
-void  RecDataStorage::printCommand()
+void RecDataStorage::printCommand()
 {
     switch(m_response.heatControlCommand)
     {
