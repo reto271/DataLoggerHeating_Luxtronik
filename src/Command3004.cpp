@@ -2,9 +2,8 @@
 
 // Command Values 3004
 
+// *INDENT-OFF*
 const ValueEntry ValueTableDecode[] = {
-
-
 //- ID | Identifier | Description | Conversion | Unit |
 //- ---|------------|-------------|------------|------|
     {  10, /*ID_WEB_Temperatur_TVL*/        "Vorlauftemperatur Heizkreis",                                         10, "°C" },
@@ -427,11 +426,8 @@ const ValueEntry ValueTableDecode[] = {
 //-  | | | | 74 = MSW2-6S
 //-  | | | | 75 = MSW4-16
 //- 231|ID_WEB_Freq_VD|Verdichterfrequenz|Keine|Hz
-
-
-
 };
-
+// *INDENT-ON*
 
 
 
