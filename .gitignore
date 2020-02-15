@@ -42,3 +42,6 @@ bin/
 # uncrustify
 src/*.unc-backup.md5~
 src/*.unc-backup~
+
+# test output file
+data.dat

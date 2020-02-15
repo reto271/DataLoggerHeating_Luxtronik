@@ -103,12 +103,13 @@ static int getSingleParameter(const char* srcIpAddr, const HeatControlCommand cm
         receivePacket(sockfd, bufferPtr);
     }
 
-    bufferPtr->printBuffer();
+    //bufferPtr->printBuffer();
 
     {
         DecodeValueResponse decodeValueResp;
         decodeValueResp.setRecieveBuffer(bufferPtr);
         decodeValueResp.decode();
+        decodeValueResp.serialize();
     }
 
     close(sockfd);
