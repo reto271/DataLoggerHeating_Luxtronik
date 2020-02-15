@@ -1,5 +1,5 @@
-#include<iostream>
-#include<fstream>
+#include <iostream>
+#include <fstream>
 #include <ctime>
 #include <iostream>
 
@@ -504,9 +504,9 @@ char DecodeValueResponse::serialize()
     }
 
     uint32_t* pData = new uint32_t[getNumberOfEntries()];
-    for (uint32_t cnt = 0 ; cnt < getNumberOfEntries(); cnt++) {
+    for (uint32_t cnt = 0; cnt < getNumberOfEntries(); cnt++) {
         pData[cnt] = m_bufferPtr->getDataField(ValueTableDecode[cnt].cmdId + 1);
-        wf.write((char *) &pData[cnt], sizeof(uint32_t));
+        wf.write((char*) &pData[cnt], sizeof(uint32_t));
     }
     wf.close();
 
