@@ -122,8 +122,6 @@ static int getSingleParameter(const char* srcIpAddr, const HeatControlCommand cm
     // }
 
 
-    SynchronizeTime sync;
-    sync.waitForMinute(true);
 
     int oldMin;
     struct tm* timeInfo;
@@ -131,6 +129,9 @@ static int getSingleParameter(const char* srcIpAddr, const HeatControlCommand cm
     std::time_t result = std::time(nullptr);
     timeInfo = std::localtime(&result);
     oldMin = timeInfo->tm_min;
+
+    SynchronizeTime sync;
+    sync.waitForMinute(true);
 
     while(true)
     {
