@@ -1,3 +1,5 @@
+#include <sstream>
+#include <iomanip>
 #include <iostream>
 #include <fstream>
 #include <ctime>
@@ -459,6 +461,9 @@ bool conversionFunctionBool(const uint32_t value)
 
 DecodeValueResponse::DecodeValueResponse()
 {
+    std::time_t result = std::time(nullptr);
+    std::cout << "Creation Time: " << std::asctime(std::localtime(&result)) << result << " seconds since the Epoch\n";
+    std::cout << "sizeof(std::time_t)" << sizeof(std::time_t) << std::endl;
 }
 
 void DecodeValueResponse::setRecieveBuffer(RecDataStoragePtr bufferPtr)
@@ -490,28 +495,51 @@ void DecodeValueResponse::decode()
     }
 }
 
+// struct tm {
+//    int tm_sec;   // seconds of minutes from 0 to 61
+//    int tm_min;   // minutes of hour from 0 to 59
+//    int tm_hour;  // hours of day from 0 to 24
+//    int tm_mday;  // day of month from 1 to 31
+//    int tm_mon;   // month of year from 0 to 11
+//    int tm_year;  // year since 1900
+//    int tm_wday;  // days since sunday
+//    int tm_yday;  // days since January 1st
+//    int tm_isdst; // hours of daylight savings time
+// }
+
+
 char DecodeValueResponse::serialize()
 {
+    struct tm* timeInfo;
+    std::string dateString;
+
     std::time_t result = std::time(nullptr);
+    timeInfo = std::localtime(&result);
+
     std::cout << "----------------------------------" << std::endl;
     std::cout << "getNumberOfEntries: " << getNumberOfEntries() << std::endl;
     std::cout << "Time: " << std::asctime(std::localtime(&result)) << result << " seconds since the Epoch\n";
+    std::cout << "Hex time: " << std::hex << result << std::dec << " seconds since the Epoch\n";
 
-    std::ofstream wf("data.dat", std::ios::out | std::ios::binary);
+
+    std::cout << "day: " << std::setw(5) << std::setfill('0') << timeInfo->tm_mday << std::endl;
+    std::cout << "month: " << std::setw(5) << std::setfill('0') << 1 + timeInfo->tm_mon << std::endl;
+    std::cout << "year: " << std::setw(5) << std::setfill('0') << 1900 + timeInfo->tm_year << std::endl;
+    //sprintf(dateString, "%.4d_%.2d%.2d", timeInfo->tm_year, timeInfo->tm_mon, timeInfo->tm_mday);
+
+
+    std::ofstream wf("data.dat", std::ios::out | std::ios::binary | std::ios_base::app);
     if(!wf) {
         std::cout << "Cannot open file!" << std::endl;
         return 1;
     }
 
-    uint32_t* pData = new uint32_t[getNumberOfEntries()];
+
+    wf.write(reinterpret_cast<char*>(&result), sizeof(std::time_t));
     for (uint32_t cnt = 0; cnt < getNumberOfEntries(); cnt++) {
-        pData[cnt] = m_bufferPtr->getDataField(ValueTableDecode[cnt].cmdId + 1);
-        wf.write((char*) &pData[cnt], sizeof(uint32_t));
+        uint32_t value = m_bufferPtr->getDataField(ValueTableDecode[cnt].cmdId + 1);
+        wf.write(reinterpret_cast<char*>(&value), sizeof(uint32_t));
     }
     wf.close();
-
-
-
-    delete pData;
-
+    return 0;
 }

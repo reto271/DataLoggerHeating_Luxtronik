@@ -12,5 +12,5 @@ set(CMAKE_CXX_FLAGS "-ggdb -g3 -Wall")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 
 #include_directories(${CMAKE_SOURCE_DIR}/googletest/include)
-add_executable(readDataHeating src/tcp.cpp src/ReceiveDataBuffer.cpp src/Command3004.cpp)
+add_executable(readDataHeating src/tcp.cpp src/ReceiveDataBuffer.cpp src/Command3004.cpp src/SynchronizeTime.cpp)
 target_link_libraries(readDataHeating)

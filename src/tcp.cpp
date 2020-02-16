@@ -1,3 +1,5 @@
+#include <ctime>
+#include <iostream>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <netinet/in.h>
@@ -14,6 +16,8 @@
 
 #include "ReceiveDataBuffer.hpp"
 #include "Command3004.hpp"
+#include "SynchronizeTime.hpp"
+
 
 // do no longer connect to port 80, connect to 8889
 
@@ -105,11 +109,44 @@ static int getSingleParameter(const char* srcIpAddr, const HeatControlCommand cm
 
     //bufferPtr->printBuffer();
 
+    // struct tm {
+    //    int tm_sec;   // seconds of minutes from 0 to 61
+    //    int tm_min;   // minutes of hour from 0 to 59
+    //    int tm_hour;  // hours of day from 0 to 24
+    //    int tm_mday;  // day of month from 1 to 31
+    //    int tm_mon;   // month of year from 0 to 11
+    //    int tm_year;  // year since 1900
+    //    int tm_wday;  // days since sunday
+    //    int tm_yday;  // days since January 1st
+    //    int tm_isdst; // hours of daylight savings time
+    // }
+
+
+    SynchronizeTime sync;
+    sync.waitForMinute(true);
+
+    int oldMin;
+    struct tm* timeInfo;
+
+    std::time_t result = std::time(nullptr);
+    timeInfo = std::localtime(&result);
+    oldMin = timeInfo->tm_min;
+
+    while(true)
     {
-        DecodeValueResponse decodeValueResp;
-        decodeValueResp.setRecieveBuffer(bufferPtr);
-        decodeValueResp.decode();
-        decodeValueResp.serialize();
+        std::time_t result = std::time(nullptr);
+        timeInfo = std::localtime(&result);
+        std::cout << "Sec: " << timeInfo->tm_sec << std::endl;
+
+        if (timeInfo->tm_min != oldMin) {
+            DecodeValueResponse decodeValueResp;
+
+            decodeValueResp.setRecieveBuffer(bufferPtr);
+            decodeValueResp.decode();
+            decodeValueResp.serialize();
+            oldMin = timeInfo->tm_min;
+        }
+        sleep(5);
     }
 
     close(sockfd);
