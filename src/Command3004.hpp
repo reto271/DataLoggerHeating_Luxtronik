@@ -46,5 +46,11 @@ public:
     char serialize();
 
 private:
+    /// Add the current unix time in seconds since January, 1st 1970 to the data file.
+    ///  Use 8 bytes independent on the HW/Compiler.
+    /// \param[in] wf: Reference to the file stream.
+    /// \param[in] unixTime: Unix time to be written to the file.
+    void addUnixTime(std::ofstream& wf, std::time_t unixTime);
+
     RecDataStoragePtr m_bufferPtr;
 };

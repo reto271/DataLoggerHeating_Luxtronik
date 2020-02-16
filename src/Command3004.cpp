@@ -3,6 +3,7 @@
 #include <fstream>
 #include <ctime>
 #include <iostream>
+#include <assert.h>
 
 #include "Command3004.hpp"
 
@@ -542,11 +543,25 @@ char DecodeValueResponse::serialize()
     }
 
 
-    wf.write(reinterpret_cast<char*>(&result), sizeof(std::time_t));
+    addUnixTime(wf, result);
+
     for (uint32_t cnt = 0; cnt < getNumberOfEntries(); cnt++) {
         uint32_t value = m_bufferPtr->getDataField(ValueTableDecode[cnt].cmdId + 1);
         wf.write(reinterpret_cast<char*>(&value), sizeof(uint32_t));
     }
     wf.close();
     return 0;
+}
+
+void DecodeValueResponse::addUnixTime(std::ofstream& wf, std::time_t unixTime)
+{
+    if (8 == sizeof(std::time_t)) {
+        wf.write(reinterpret_cast<char*>(&unixTime), sizeof(std::time_t));
+    } else if (4 == sizeof(std::time_t)) {
+        uint32_t dummy = 0;
+        wf.write(reinterpret_cast<char*>(&unixTime), sizeof(std::time_t));
+        wf.write(reinterpret_cast<char*>(&dummy), 4);
+    } else {
+        assert(0);
+    }
 }
