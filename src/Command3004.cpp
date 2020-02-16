@@ -1,6 +1,5 @@
 #include <sstream>
 #include <iomanip>
-#include <iostream>
 #include <fstream>
 #include <ctime>
 #include <iostream>
@@ -525,10 +524,18 @@ char DecodeValueResponse::serialize()
     std::cout << "day: " << std::setw(5) << std::setfill('0') << timeInfo->tm_mday << std::endl;
     std::cout << "month: " << std::setw(5) << std::setfill('0') << 1 + timeInfo->tm_mon << std::endl;
     std::cout << "year: " << std::setw(5) << std::setfill('0') << 1900 + timeInfo->tm_year << std::endl;
-    //sprintf(dateString, "%.4d_%.2d%.2d", timeInfo->tm_year, timeInfo->tm_mon, timeInfo->tm_mday);
 
 
-    std::ofstream wf("data.dat", std::ios::out | std::ios::binary | std::ios_base::app);
+    std::stringstream fileNameStream;
+    fileNameStream << std::setw(4) << std::setfill('0') << 1900 + timeInfo->tm_year << "_"
+                   << std::setw(2) << std::setfill('0') << timeInfo->tm_mday << "_"
+                   << std::setw(2) << std::setfill('0') << 1 + timeInfo->tm_mon << ".dat";
+
+    std::string fileName = fileNameStream.str();
+
+    std::cout << "FileName: " << fileName << std::endl;
+
+    std::ofstream wf(fileName.c_str(), std::ios::out | std::ios::binary | std::ios_base::app);
     if(!wf) {
         std::cout << "Cannot open file!" << std::endl;
         return 1;
