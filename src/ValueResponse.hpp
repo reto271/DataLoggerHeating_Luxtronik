@@ -54,5 +54,5 @@ private:
 
 
     RecDataStoragePtr m_responsePtr;
-    std::time_t  m_currentUnixTime;
+    std::time_t m_currentUnixTime;
 };

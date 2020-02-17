@@ -45,3 +45,9 @@ src/*.unc-backup~
 
 # test output file
 data.dat
+
+# temp data, uncrustify backup
+tmp/
+
+# output files
+2020_[0-9]*_[0-9]*.dat
