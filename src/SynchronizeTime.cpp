@@ -8,23 +8,19 @@ SynchronizeTime::SynchronizeTime()
 {
 }
 
-bool SynchronizeTime:: waitForMinute(bool blockingWait)
+std::time_t SynchronizeTime::waitForMinute()
 {
     struct tm* currentLocalTime;
 
     std::time_t currentUnixTime = std::time(nullptr);
     currentLocalTime = std::localtime(&currentUnixTime);
 
-    if (true == blockingWait) {
-        while (0 != currentLocalTime->tm_sec) {
-            sleep(1);
-            currentUnixTime = std::time(nullptr);
-            currentLocalTime = std::localtime(&currentUnixTime);
-        }
-        return true;
-    } else {
-        return (0 == currentLocalTime->tm_sec);
+    while (0 != currentLocalTime->tm_sec) {
+        sleep(1);
+        currentUnixTime = std::time(nullptr);
+        currentLocalTime = std::localtime(&currentUnixTime);
     }
+    return currentUnixTime;
 }
 
 bool SynchronizeTime::isFullHour()

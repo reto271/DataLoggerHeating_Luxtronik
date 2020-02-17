@@ -11,7 +11,7 @@ rm -f GPATH  GRTAGS  GTAGS
 gtags &
 sleep 1
 
-emacs src/tcp.cpp &
+emacs src/HeatingData_main.cpp &
 
 # Back to the original location
 popd > /dev/null

@@ -7,6 +7,11 @@ cd ..
 
 uncrustify -c uncr.cfg src/*.cpp src/*.hpp --replace
 
+mkdir -p tmp
+mv -v src/*.unc-backup~ tmp
+mv -v src/*.unc-backup.md5~ tmp
+
+
 # Back to the original location
 popd > /dev/null
 
