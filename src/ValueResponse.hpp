@@ -33,12 +33,10 @@ typedef struct
 } ValueEntry;
 
 
-class DecodeValueResponse
+class ValueResponse
 {
 public:
-    DecodeValueResponse();
-
-    void setRecieveBuffer(RecDataStoragePtr bufferPtr);
+    ValueResponse(RecDataStoragePtr receiveDataPtr, std::time_t currentUnixTime);
 
     uint32_t getNumberOfEntries() const;
 
@@ -50,7 +48,11 @@ private:
     ///  Use 8 bytes independent on the HW/Compiler.
     /// \param[in] wf: Reference to the file stream.
     /// \param[in] unixTime: Unix time to be written to the file.
-    void addUnixTime(std::ofstream& wf, std::time_t unixTime);
+    void addUnixTimeToBuffer(std::ofstream& wf, std::time_t unixTime);
 
-    RecDataStoragePtr m_bufferPtr;
+    std::string fileNameFromDate();
+
+
+    RecDataStoragePtr m_responsePtr;
+    std::time_t  m_currentUnixTime;
 };

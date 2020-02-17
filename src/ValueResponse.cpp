@@ -5,7 +5,7 @@
 #include <iostream>
 #include <assert.h>
 
-#include "Command3004.hpp"
+#include "ValueResponse.hpp"
 
 // Command Values 3004
 
@@ -446,7 +446,6 @@ const ValueEntry ValueTableDecode[] = {
 
 float conversionFunctionDivisor(const uint32_t value, const uint32_t divisor)
 {
-///    printf(" value: %d, divisor: %d\n", value, divisor);
     return (static_cast<float>(value) / static_cast<float>(divisor));
 }
 
@@ -459,38 +458,36 @@ bool conversionFunctionBool(const uint32_t value)
     }
 }
 
-DecodeValueResponse::DecodeValueResponse()
+// ----------------------------------------------------------------------------------
+
+ValueResponse::ValueResponse(RecDataStoragePtr receiveDataPtr, std::time_t currentUnixTime)
+    : m_responsePtr(receiveDataPtr)
+    , m_currentUnixTime(currentUnixTime)
 {
-    std::time_t result = std::time(nullptr);
-    std::cout << "Creation Time: " << std::asctime(std::localtime(&result)) << result << " seconds since the Epoch\n";
-    std::cout << "sizeof(std::time_t)" << sizeof(std::time_t) << std::endl;
+    std::cout << "Creation Time: " << std::asctime(std::localtime(&currentUnixTime)) << currentUnixTime << " seconds since the Epoch\n";
+    std::cout << "Hex time: 0x" << std::hex << m_currentUnixTime << std::dec << " seconds since the Epoch\n";
 }
 
-void DecodeValueResponse::setRecieveBuffer(RecDataStoragePtr bufferPtr)
-{
-    m_bufferPtr = bufferPtr;
-}
-
-uint32_t DecodeValueResponse::getNumberOfEntries() const
+uint32_t ValueResponse::getNumberOfEntries() const
 {
     return sizeof(ValueTableDecode) / sizeof(ValueEntry);
 }
 
-void DecodeValueResponse::decode()
+void ValueResponse::decode()
 {
 //    {  10, /*ID_WEB_Temperatur_TVL*/        "Vorlauftemperatur Heizkreis",                                         10, "°C" },
 
-    std::cout << "------------" << std::endl;
-    uint32_t val = m_bufferPtr->getDataField(11);
+    std::cout << "xxx ------------" << std::endl;
+    uint32_t val = m_responsePtr->getDataField(11);
     printf("%s\n", ValueTableDecode[10].description.c_str());
     printf("10 val: 0x%.8x\n", val);
     printf("10 val: %3.1f\n", static_cast<float>(val) / 10);
-    std::cout << "------------" << std::endl;
+    std::cout << "xxx ------------" << std::endl;
     for (uint32_t cnt = 0; cnt < getNumberOfEntries(); cnt++) {
         printf("%s\n", ValueTableDecode[cnt].description.c_str());
 
 //               printf("%s = %3.2f %s\n", ValueTableDecode[cnt].description.c_str(),
-//               ValueTableDecode[cnt].fn(m_bufferPtr->getDataField(ValueTableDecode[cnt].cmdId + 1), ValueTableDecode[cnt].conversionDivisor),
+//               ValueTableDecode[cnt].fn(m_responsePtr->getDataField(ValueTableDecode[cnt].cmdId + 1), ValueTableDecode[cnt].conversionDivisor),
 //               ValueTableDecode[cnt].unit.c_str());
     }
 }
@@ -508,52 +505,31 @@ void DecodeValueResponse::decode()
 // }
 
 
-char DecodeValueResponse::serialize()
+char ValueResponse::serialize()
 {
-    struct tm* timeInfo;
     std::string dateString;
 
-    std::time_t result = std::time(nullptr);
-    timeInfo = std::localtime(&result);
-
-    std::cout << "----------------------------------" << std::endl;
     std::cout << "getNumberOfEntries: " << getNumberOfEntries() << std::endl;
-    std::cout << "Time: " << std::asctime(std::localtime(&result)) << result << " seconds since the Epoch\n";
-    std::cout << "Hex time: " << std::hex << result << std::dec << " seconds since the Epoch\n";
 
-
-    std::cout << "day: " << std::setw(5) << std::setfill('0') << timeInfo->tm_mday << std::endl;
-    std::cout << "month: " << std::setw(5) << std::setfill('0') << 1 + timeInfo->tm_mon << std::endl;
-    std::cout << "year: " << std::setw(5) << std::setfill('0') << 1900 + timeInfo->tm_year << std::endl;
-
-
-    std::stringstream fileNameStream;
-    fileNameStream << std::setw(4) << std::setfill('0') << 1900 + timeInfo->tm_year << "_"
-                   << std::setw(2) << std::setfill('0') << timeInfo->tm_mday << "_"
-                   << std::setw(2) << std::setfill('0') << 1 + timeInfo->tm_mon << ".dat";
-
-    std::string fileName = fileNameStream.str();
-
-    std::cout << "FileName: " << fileName << std::endl;
-
-    std::ofstream wf(fileName.c_str(), std::ios::out | std::ios::binary | std::ios_base::app);
+    std::ofstream wf(fileNameFromDate().c_str(), std::ios::out | std::ios::binary | std::ios_base::app);
     if(!wf) {
         std::cout << "Cannot open file!" << std::endl;
         return 1;
     }
 
+    // Copy the unix time to the binary file
+    addUnixTimeToBuffer(wf, m_currentUnixTime);
 
-    addUnixTime(wf, result);
-
+    // Copy the heating data to the binary file
     for (uint32_t cnt = 0; cnt < getNumberOfEntries(); cnt++) {
-        uint32_t value = m_bufferPtr->getDataField(ValueTableDecode[cnt].cmdId + 1);
+        uint32_t value = m_responsePtr->getDataField(ValueTableDecode[cnt].cmdId + 1);
         wf.write(reinterpret_cast<char*>(&value), sizeof(uint32_t));
     }
     wf.close();
     return 0;
 }
 
-void DecodeValueResponse::addUnixTime(std::ofstream& wf, std::time_t unixTime)
+void ValueResponse::addUnixTimeToBuffer(std::ofstream& wf, std::time_t unixTime)
 {
     if (8 == sizeof(std::time_t)) {
         wf.write(reinterpret_cast<char*>(&unixTime), sizeof(std::time_t));
@@ -564,4 +540,20 @@ void DecodeValueResponse::addUnixTime(std::ofstream& wf, std::time_t unixTime)
     } else {
         assert(0);
     }
+}
+
+std::string ValueResponse::fileNameFromDate()
+{
+    struct tm* timeInfo;
+    std::stringstream fileNameStream;
+
+    timeInfo = std::localtime(&m_currentUnixTime);
+
+    fileNameStream << std::setw(4) << std::setfill('0') << 1900 + timeInfo->tm_year << "_"
+                   << std::setw(2) << std::setfill('0') << timeInfo->tm_mday << "_"
+                   << std::setw(2) << std::setfill('0') << 1 + timeInfo->tm_mon << ".dat";
+
+    std::string fileName = fileNameStream.str();
+    std::cout << "FileName: " << fileName << std::endl;
+    return fileName;
 }
