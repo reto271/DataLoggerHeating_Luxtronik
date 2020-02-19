@@ -13,9 +13,12 @@ if [ 1 -eq $# ] ; then
     fi
 fi
 
-rm -rf bin GPATH GTAGS GRTAGS *~
+rm -rf bin GPATH GTAGS GRTAGS
+rm -rf *~
+rm -rf docu
+
 if [ 1 -eq ${CLEAN_ALL} ] ; then
-    rm -rf googletest debug
+    rm -rf tmp googletest debug
 fi
 echo "$0 done"
 
