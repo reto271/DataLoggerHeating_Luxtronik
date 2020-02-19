@@ -1,5 +1,7 @@
 #pragma once
 
+#include <ctime>
+
 /// Synchronize the program with the clock of the system.
 class SynchronizeTime
 {

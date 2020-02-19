@@ -1,25 +1,12 @@
 #include <ctime>
 #include <iostream>
-//#include <sys/socket.h>
-//#include <sys/types.h>
-//#include <netinet/in.h>
-//#include <netdb.h>
-//#include <stdio.h>
-//#include <string.h>
-//#include <stdlib.h>
-//#include <unistd.h>
-//#include <stdint.h>
-//#include <errno.h>
-//#include <arpa/inet.h>
-//#include <time.h>
-//#include <assert.h>
-//
-//#include "ReceiveDataBuffer.hpp"
+#include <unistd.h>
+
 #include "ValueResponse.hpp"
 #include "SynchronizeTime.hpp"
 #include "TcpConnection.hpp"
 
-
+/// Main function to setup the connection, restart it periodically, read the data and forwards them to the decoder / serializer.
 int main(int argc, char* argv[])
 {
     SynchronizeTime sync;

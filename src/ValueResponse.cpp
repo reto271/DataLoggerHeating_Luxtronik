@@ -1,15 +1,13 @@
+#include "ValueResponse.hpp"
+
 #include <sstream>
 #include <iomanip>
 #include <fstream>
-#include <ctime>
 #include <iostream>
 #include <assert.h>
 
-#include "ValueResponse.hpp"
 
 // Command Values 3004
-
-
 
 // *INDENT-OFF*
 const ValueEntry ValueTableDecode[] = {

@@ -1,8 +1,7 @@
-#include <iostream>
-#include <ctime>
+#include "SynchronizeTime.hpp"
+
 #include <unistd.h>
 
-#include "SynchronizeTime.hpp"
 
 SynchronizeTime::SynchronizeTime()
 {
