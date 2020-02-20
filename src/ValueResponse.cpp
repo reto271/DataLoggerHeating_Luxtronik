@@ -13,74 +13,74 @@
 const ValueEntry ValueTableDecode[] = {
 //- ID | Identifier | Description | Conversion | Unit |
 //- ---|------------|-------------|------------|------|
-    {  10, /*ID_WEB_Temperatur_TVL*/        "Vorlauftemperatur Heizkreis",                                         10, "°C" },
-    {  11, /*ID_WEB_Temperatur_TRL*/        "Rücklauftemperatur Heizkreis",                                        10, "°C" },
-    {  12, /*ID_WEB_Sollwert_TRL_HZ*/       "Rücklauf-Soll Heizkreis",                                             10, "°C" },
-    {  13, /*ID_WEB_Temperatur_TRL_ext*/    "Rücklauftemperatur im Trennspeicher",                                 10, "°C" },
-    {  14, /*ID_WEB_Temperatur_THG*/        "Heisgastemperatur",                                                   10, "°C" },
-    {  15, /*ID_WEB_Temperatur_TA*/         "Aussentemperatur",                                                    10, "°C" },
-    {  16, /*ID_WEB_Mitteltemperatur*/      "Durchschnittstemperatur Aussen über 24 h (Funktion Heizgrenze)",      10, "°C" },
-    {  17, /*ID_WEB_Temperatur_TBW*/        "Warmwasser Ist-Temperatur",                                           10, "°C" },
-    {  18, /*ID_WEB_Einst_BWS_akt*/         "Warmwasser Soll-Temperatur",                                          10, "°C" },
-    {  19, /*ID_WEB_Temperatur_TWE*/        "Wärmequellen-Eintrittstemperatur",                                    10, "°C" },
-    {  20, /*ID_WEB_Temperatur_TWA*/        "Wärmequellen-Austrittstemperatur",                                    10, "°C" },
-    {  21, /*ID_WEB_Temperatur_TFB1*/       "Mischkreis 1 Vorlauftemperatur",                                      10, "°C" },
-    {  22, /*ID_WEB_Sollwert_TVL_MK1*/      "Mischkreis 1 Vorlauf-Soll-Temperatur",                                10, "°C" },
-    {  23, /*ID_WEB_Temperatur_RFV*/        "Raumtemperatur Raumstation 1",                                        10, "°C" },
-    {  24, /*ID_WEB_Temperatur_TFB2*/       "Mischkreis 2 Vorlauftemperatur",                                      10, "°C" },
-    {  25, /*ID_WEB_Sollwert_TVL_MK2*/      "Mischkreis 2 Vorlauf-Soll-Temperatur",                                10, "°C" },
-    {  26, /*ID_WEB_Temperatur_TSK*/        "Fühler Solarkollektor",                                               10, "°C" },
-    {  27, /*ID_WEB_Temperatur_TSS*/        "Fühler Solarspeicher",                                                10, "°C" },
-    {  28, /*ID_WEB_Temperatur_TEE*/        "Fühler externe Energiequelle",                                        10, "°C" },
-    {  29, /*ID_WEB_ASDin*/                 "Eingang Abtauende, Soledruck, Durchfluss",                             0,  "-" }
-//- 30|ID_WEB_BWTin|Eingang "Brauchwarmwasserthermostat"|Keine|Boolean
-//- 31|ID_WEB_EVUin|Eingang "EVU Sperre"|Keine|Boolean
-//- 32|ID_WEB_HDin|Eingang "Hochdruck Kältekreis"|Keine|Boolean
-//- 33|ID_WEB_MOTin|Eingang "Motorschutz OK"|Keine|Boolean
-//- 34|ID_WEB_NDin|Eingang "Niederdruck"|Keine|Boolean
-//- 35|ID_WEB_PEXin|Eingang "Überwachungskontakt für Potentiostat"|Keine|Boolean
-//- 36|ID_WEB_SWTin|Eingang "Schwimmbadthermostat"|Keine|Boolean
-//- 37|ID_WEB_AVout|Ausgang "Abtauventil"|Keine|Boolean
-//- 38|ID_WEB_BUPout|Ausgang "Brauchwasserpumpe/Umstellventil"|Keine|Boolean
-//- 39|ID_WEB_HUPout|Ausgang "Heizungsumwälzpumpe"|Keine|Boolean
-//- 40|ID_WEB_MA1out|Ausgang "Mischkreis 1 Auf"|Keine|Boolean
-//- 41|ID_WEB_MZ1out|Ausgang "Mischkreis 1 Zu"|Keine|Boolean
-//- 42|ID_WEB_VENout|Ausgang "Ventilation (Lüftung)"|Keine|Boolean
-//- 43|ID_WEB_VBOout|Ausgang "Solepumpe/Ventilator"|Keine|Boolean
-//- 44|ID_WEB_VD1out|Ausgang "Verdichter 1"|Keine|Boolean
-//- 45|ID_WEB_VD2out|Ausgang "Verdichter 2"|Keine|Boolean
-//- 46|ID_WEB_ZIPout|Ausgang "Zirkulationspumpe"|Keine|Boolean
-//- 47|ID_WEB_ZUPout|Ausgang "Zusatzumwälzpumpe"|Keine|Boolean
-//- 48|ID_WEB_ZW1out|Ausgang "Steuersignal Zusatzheizung v. Heizung"|Keine|Boolean
-//- 49|ID_WEB_ZW2SSTout|Ausgang "Steuersignal Zusatzheizung/Störsignal"|Keine|Boolean
-//- 50|ID_WEB_ZW3SSTout|Ausgang "Zusatzheizung 3"|Keine|Boolean
-//- 51|ID_WEB_FP2out|Ausgang "Pumpe Mischkreis 2"|Keine|Boolean
-//- 52|ID_WEB_SLPout|Ausgang "Solarladepumpe"|Keine|Boolean
-//- 53|ID_WEB_SUPout|Ausgang "Schwimmbadpumpe"|Keine|Boolean
-//- 54|ID_WEB_MZ2out|Ausgang "Mischkreis 2 Zu"|Keine|Boolean
-//- 55|ID_WEB_MA2out|Ausgang "Mischkreis 2 Auf"|Keine|Boolean
-//- 56|ID_WEB_Zaehler_BetrZeitVD1|Betriebsstunden Verdichter 1|Keine|Sekunden
-//- 57|ID_WEB_Zaehler_BetrZeitImpVD1|Impulse Verdichter 1|Keine|Impulse
-//- 58|ID_WEB_Zaehler_BetrZeitVD2|Betriebsstunden Verdichter 2|Keine|Sekunden
-//- 59|ID_WEB_Zaehler_BetrZeitImpVD2|Impulse Verdichter 2|Keine|Impulse
-//- 60|ID_WEB_Zaehler_BetrZeitZWE1|Betriebsstunden Zweiter Wärmeerzeuger 1|Keine|Sekunden
-//- 61|ID_WEB_Zaehler_BetrZeitZWE2|Betriebsstunden Zweiter Wärmeerzeuger 2|Keine|Sekunden
-//- 62|ID_WEB_Zaehler_BetrZeitZWE3|Betriebsstunden Zweiter Wärmeerzeuger 3|?? (Wert / 7200 = Stunden)|??
-//- 63|ID_WEB_Zaehler_BetrZeitWP|Betriebsstunden Wärmepumpe|Keine|Sekunden
-//- 64|ID_WEB_Zaehler_BetrZeitHz|Betriebsstunden Heizung|Keine|Sekunden
-//- 65|ID_WEB_Zaehler_BetrZeitBW|Betriebsstunden Warmwasser|Keine|Sekunden
-//- 66|ID_WEB_Zaehler_BetrZeitKue|Betriebsstunden Kühlung|Keine|Sekunden
-//- 67|ID_WEB_Time_WPein_akt|Wärmepumpe läuft seit|Keine|Sekunden
-//- 68|ID_WEB_Time_ZWE1_akt|Zweiter Wärmeerzeuger 1 läuft seit|Keine|Sekunden
-//- 69|ID_WEB_Time_ZWE2_akt|Zweiter Wärmeerzeuger 2 läuft seit|Keine|Sekunden
-//- 70|ID_WEB_Timer_EinschVerz|Netzeinschaltverzögerung|Keine|Sekunden
-//- 71|ID_WEB_Time_SSPAUS_akt|Schaltspielsperre Aus|Keine|Sekunden
-//- 72|ID_WEB_Time_SSPEIN_akt|Schaltspielsperre Ein|Keine|Sekunden
-//- 73|ID_WEB_Time_VDStd_akt|Verdichter-Standzeit|Keine|Sekunden
-//- 74|ID_WEB_Time_HRM_akt|Heizungsregler Mehr-Zeit|Keine|Sekunden
-//- 75|ID_WEB_Time_HRW_akt|Heizungsregler Weniger-Zeit|Keine|Sekunden
-//- 76|ID_WEB_Time_LGS_akt|Thermische Desinfektion läuft seit|Keine|Sekunden
-//- 77|ID_WEB_Time_SBW_akt|Sperre Warmwasser|Keine|Sekunden
+    {  10, /*ID_WEB_Temperatur_TVL*/            "Vorlauftemperatur Heizkreis",                                         10, "°C" },
+    {  11, /*ID_WEB_Temperatur_TRL*/            "Rücklauftemperatur Heizkreis",                                        10, "°C" },
+    {  12, /*ID_WEB_Sollwert_TRL_HZ*/           "Rücklauf-Soll Heizkreis",                                             10, "°C" },
+    {  13, /*ID_WEB_Temperatur_TRL_ext*/        "Rücklauftemperatur im Trennspeicher",                                 10, "°C" },
+    {  14, /*ID_WEB_Temperatur_THG*/            "Heisgastemperatur",                                                   10, "°C" },
+    {  15, /*ID_WEB_Temperatur_TA*/             "Aussentemperatur",                                                    10, "°C" },
+    {  16, /*ID_WEB_Mitteltemperatur*/          "Durchschnittstemperatur Aussen über 24 h (Funktion Heizgrenze)",      10, "°C" },
+    {  17, /*ID_WEB_Temperatur_TBW*/            "Warmwasser Ist-Temperatur",                                           10, "°C" },
+    {  18, /*ID_WEB_Einst_BWS_akt*/             "Warmwasser Soll-Temperatur",                                          10, "°C" },
+    {  19, /*ID_WEB_Temperatur_TWE*/            "Wärmequellen-Eintrittstemperatur",                                    10, "°C" },
+    {  20, /*ID_WEB_Temperatur_TWA*/            "Wärmequellen-Austrittstemperatur",                                    10, "°C" },
+    {  21, /*ID_WEB_Temperatur_TFB1*/           "Mischkreis 1 Vorlauftemperatur",                                      10, "°C" },
+    {  22, /*ID_WEB_Sollwert_TVL_MK1*/          "Mischkreis 1 Vorlauf-Soll-Temperatur",                                10, "°C" },
+    {  23, /*ID_WEB_Temperatur_RFV*/            "Raumtemperatur Raumstation 1",                                        10, "°C" },
+    {  24, /*ID_WEB_Temperatur_TFB2*/           "Mischkreis 2 Vorlauftemperatur",                                      10, "°C" },
+    {  25, /*ID_WEB_Sollwert_TVL_MK2*/          "Mischkreis 2 Vorlauf-Soll-Temperatur",                                10, "°C" },
+    {  26, /*ID_WEB_Temperatur_TSK*/            "Fühler Solarkollektor",                                               10, "°C" },
+    {  27, /*ID_WEB_Temperatur_TSS*/            "Fühler Solarspeicher",                                                10, "°C" },
+    {  28, /*ID_WEB_Temperatur_TEE*/            "Fühler externe Energiequelle",                                        10, "°C" },
+    {  29, /*ID_WEB_ASDin*/                     "Eingang Abtauende, Soledruck, Durchfluss",                             0,  "-" },
+	{  30, /*ID_WEB_BWTin_Eingang*/             "Brauchwarmwasserthermostat",                                           0,  "-" },
+	{  31, /*ID_WEB_EVUin_Eingang*/             "EVU Sperre",                                                           0,  "-" },
+	{  32, /*ID_WEB_HDin_Eingang*/              "Hochdruck Kältekreis",                                                 0,  "-" },
+	{  33, /*ID_WEB_MOTin_Eingang*/             "Motorschutz OK",                                                       0,  "-" },
+	{  34, /*ID_WEB_NDin_Eingang*/              "Niederdruck",                                                          0,  "-" },
+	{  35, /*ID_WEB_PEXin_Eingang*/             "Überwachungskontakt für Potentiostat",                                 0,  "-" },
+	{  36, /*ID_WEB_SWTin_Eingang*/             "Schwimmbadthermostat",                                                 0,  "-" },
+	{  37, /*ID_WEB_AVout_Ausgang*/             "Abtauventil",                                                          0,  "-" },
+	{  38, /*ID_WEB_BUPout_Ausgang*/            "Brauchwasserpumpe/Umstellventil",                                      0,  "-" },
+	{  39, /*ID_WEB_HUPout_Ausgang*/            "Heizungsumwälzpumpe",                                                  0,  "-" },
+	{  40, /*ID_WEB_MA1out_Ausgang*/            "Mischkreis 1 Auf",                                                     0,  "-" },
+	{  41, /*ID_WEB_MZ1out_Ausgang*/            "Mischkreis 1 Zu",                                                      0,  "-" },
+	{  42, /*ID_WEB_VENout_Ausgang*/            "Ventilation (Lüftung)",                                                0,  "-" },
+	{  43, /*ID_WEB_VBOout_Ausgang*/            "Solepumpe/Ventilator",                                                 0,  "-" },
+	{  44, /*ID_WEB_VD1out_Ausgang*/            "Verdichter 1",                                                         0,  "-" },
+	{  45, /*ID_WEB_VD2out_Ausgang*/            "Verdichter 2",                                                         0,  "-" },
+	{  46, /*ID_WEB_ZIPout_Ausgang*/            "Zirkulationspumpe",                                                    0,  "-" },
+	{  47, /*ID_WEB_ZUPout_Ausgang*/            "Zusatzumwälzpumpe",                                                    0,  "-" },
+	{  48, /*ID_WEB_ZW1out_Ausgang*/            "Steuersignal Zusatzheizung v. Heizung",                                0,  "-" },
+	{  49, /*ID_WEB_ZW2SSTout_Ausgang*/         "Steuersignal Zusatzheizung/Störsignal",                                0,  "-" },
+	{  50, /*ID_WEB_ZW3SSTout_Ausgang*/         "Zusatzheizung 3",                                                      0,  "-" },
+	{  51, /*ID_WEB_FP2out_Ausgang*/            "Pumpe Mischkreis 2",                                                   0,  "-" },
+	{  52, /*ID_WEB_SLPout_Ausgang*/            "Solarladepumpe",                                                       0,  "-" },
+	{  53, /*ID_WEB_SUPout_Ausgang*/            "Schwimmbadpumpe",                                                      0,  "-" },
+	{  54, /*ID_WEB_MZ2out_Ausgang*/            "Mischkreis 2 Zu",                                                      0,  "-" },
+	{  55, /*ID_WEB_MA2out_Ausgang*/            "Mischkreis 2 Auf",                                                     0,  "-" },
+	{  56, /*ID_WEB_Zaehler_BetrZeitVD1*/       "Betriebsstunden Verdichter 1",                                         0, "Sekunden" },
+	{  57, /*ID_WEB_Zaehler_BetrZeitImpVD1*/    "Impulse Verdichter 1",                                                 0, "Impulse" },
+	{  58, /*ID_WEB_Zaehler_BetrZeitVD2*/       "Betriebsstunden Verdichter 2",                                         0, "Sekunden" },
+	{  59, /*ID_WEB_Zaehler_BetrZeitImpVD2*/    "Impulse Verdichter 2",                                                 0, "Impulse" },
+	{  60, /*ID_WEB_Zaehler_BetrZeitZWE1*/      "Betriebsstunden Zweiter Wärmeerzeuger 1",                              0, "Sekunden" },
+	{  61, /*ID_WEB_Zaehler_BetrZeitZWE2*/      "Betriebsstunden Zweiter Wärmeerzeuger 2",                              0, "Sekunden" },
+	{  62, /*ID_WEB_Zaehler_BetrZeitZWE3*/      "Betriebsstunden Zweiter Wärmeerzeuger 3",                              0, "Sekunden" },      // |?? (Wert / 7200 = Stunden)|??
+	{  63, /*ID_WEB_Zaehler_BetrZeitWP*/        "Betriebsstunden Wärmepumpe",                                           0, "Sekunden" },
+	{  64, /*ID_WEB_Zaehler_BetrZeitHz*/        "Betriebsstunden Heizung",                                              0, "Sekunden" },
+	{  65, /*ID_WEB_Zaehler_BetrZeitBW*/        "Betriebsstunden Warmwasser",                                           0, "Sekunden" },
+	{  66, /*ID_WEB_Zaehler_BetrZeitKue*/       "Betriebsstunden Kühlung",                                              0, "Sekunden" },
+	{  67, /*ID_WEB_Time_WPein_akt*/            "Wärmepumpe läuft seit",                                                0, "Sekunden" },
+	{  68, /*ID_WEB_Time_ZWE1_akt*/             "Zweiter Wärmeerzeuger 1 läuft seit",                                   0, "Sekunden" },
+	{  69, /*ID_WEB_Time_ZWE2_akt*/             "Zweiter Wärmeerzeuger 2 läuft seit",                                   0, "Sekunden" },
+	{  70, /*ID_WEB_Timer_EinschVerz*/          "Netzeinschaltverzögerung",                                             0, "Sekunden" },
+	{  71, /*ID_WEB_Time_SSPAUS_akt*/           "Schaltspielsperre Aus",                                                0, "Sekunden" },
+	{  72, /*ID_WEB_Time_SSPEIN_akt*/           "Schaltspielsperre Ein",                                                0, "Sekunden" },
+	{  73, /*ID_WEB_Time_VDStd_akt*/            "Verdichter-Standzeit",                                                 0, "Sekunden" },
+	{  74, /*ID_WEB_Time_HRM_akt*/              "Heizungsregler Mehr-Zeit",                                             0, "Sekunden" },
+	{  75, /*ID_WEB_Time_HRW_akt*/              "Heizungsregler Weniger-Zeit",                                          0, "Sekunden" },
+	{  76, /*ID_WEB_Time_LGS_akt*/              "Thermische Desinfektion läuft seit",                                   0, "Sekunden" },
+	{  77, /*ID_WEB_Time_SBW_akt*/              "Sperre Warmwasser",                                                    0, "Sekunden" },
 //- 78|ID_WEB_Code_WP_akt|Wärmepumpentyp|0 = ERC|Typenschlüssel
 //-  | | | | 1 = SW1
 //-  | | | | 2 = SW2
@@ -152,14 +152,15 @@ const ValueEntry ValueTableDecode[] = {
 //- 79|ID_WEB_BIV_Stufe_akt|Bivalenzstufe|1 = ein Verdichter darf laufen|Betriebszustand
 //-  | | | | 2 = zwei Verdichter dürfen laufen
 //-  | | | | 3 = zusätzlicher Wärmeerzeuger darf mitlaufen
-//- 80|ID_WEB_WP_BZ_akt|Betriebszustand|0 = Heizen|Betriebszustand
-//-  | | | | 1 = Warmwasser
-//-  | | | | 2 = Schwimmbad / Photovoltaik
-//-  | | | | 3 = EVU
-//-  | | | | 4 = Abtauen
-//-  | | | | 5 = Keine Anforderung
-//-  | | | | 6 = Heizen ext. Energiequelle
-//-  | | | | 7 = Kühlbetrieb
+	{  80, /*D_WEB_WP_BZ_akt*/              "Betriebszustand",                                                    0, "enum" },
+//-          0 = Heizen
+//-          1 = Warmwasser
+//-          2 = Schwimmbad / Photovoltaik
+//-          3 = EVU Sperre
+//-          4 = Abtauen
+//-          5 = Keine Anforderung
+//-          6 = Heizen ext. Energiequelle
+//-          7 = Kühlbetrieb
 //- 81|ID_WEB_SoftStand1|Softwarestand|ASCII z.B. 86 = V|ASCII
 //- 82|ID_WEB_SoftStand2|Softwarestand|ASCII z.B. 51 = 3|ASCII
 //- 83|ID_WEB_SoftStand3|Softwarestand|ASCII z.B. 46 = .|ASCII
