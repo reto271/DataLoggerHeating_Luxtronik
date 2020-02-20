@@ -1,5 +1,6 @@
 #include "ReceiveDataBuffer.hpp"
 
+#include <iostream>
 #include <string.h>
 
 
@@ -32,9 +33,9 @@ HeatControlCommand RecDataStorage::getHeatControlCommand()
 
 void RecDataStorage::printBuffer()
 {
-    printf("---------------------------------\n");
-    printf(" max size: %ld\n", BufferSize);
-    printf(" act size: %ld\n\n", m_writePos);
+    std::cout << "---------------------------------" << std::endl;
+    std::cout << " max size: " << BufferSize << std::endl;
+    std::cout << " act size: " << m_writePos << std::endl << std::endl;
 
 //-     for (size_t cnt = 0; cnt < m_writePos; cnt++) {
 //-         printf("0x%.2x ", m_response.data.buffer[cnt]);
@@ -42,11 +43,11 @@ void RecDataStorage::printBuffer()
 //-             printf("\n");
 //-         }
 //-     }
-    printf("\n---------------------------------\n");
-    printf(" command:   %d / 0x%.4x\n", swap(m_response.data.decode.commandResponse), swap(m_response.data.decode.commandResponse));
-    printf(" nrEntries: %d\n", swap(m_response.data.decode.nrEntries));
+    std::cout << std::endl << "---------------------------------" << std::endl;
+    std::cout << " command:   " << swap(m_response.data.decode.commandResponse) << ", 0x" << std::hex << swap(m_response.data.decode.commandResponse) << std::dec << std::endl;;
+    std::cout << " nrEntries: " << swap(m_response.data.decode.nrEntries) << std::endl;
     printCommand();
-    printf("---------------------------------\n");
+    std::cout << "---------------------------------" << std::endl;
     //    for (uint32_t paraNr = 0; paraNr < 10 /*NrParameter*/; paraNr++) {
     //        printf("para[%.3d] = %d / 0x%.4x\n", paraNr, swap(m_buffer.decode.data[paraNr]));
     //    }
