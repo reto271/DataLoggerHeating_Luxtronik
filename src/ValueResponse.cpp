@@ -440,9 +440,6 @@ const ValueEntry ValueTableDecode[] = {
 
 
 
-
-
-
 float conversionFunctionDivisor(const uint32_t value, const uint32_t divisor)
 {
     return (static_cast<float>(value) / static_cast<float>(divisor));
@@ -465,6 +462,18 @@ ValueResponse::ValueResponse(RecDataStoragePtr receiveDataPtr, std::time_t curre
 {
     std::cout << "Creation Time: " << std::asctime(std::localtime(&currentUnixTime)) << currentUnixTime << " seconds since the Epoch\n";
     std::cout << "Hex time: 0x" << std::hex << m_currentUnixTime << std::dec << " seconds since the Epoch\n";
+
+    if (false == doesFileExist()) {
+        std::ofstream wf(fileNameFromDate().c_str(), std::ios::out | std::ios::binary | std::ios_base::app);
+        if(!wf) {
+            std::cout << "Cannot open file!" << std::endl;
+        } else {
+            // Add header to the buffer
+            std::cout << "Create header of file" << std::endl;
+            writeHeaderVersion01(wf);
+            wf.close();
+        }
+    }
 }
 
 uint32_t ValueResponse::getNumberOfEntries() const
@@ -555,4 +564,29 @@ std::string ValueResponse::fileNameFromDate()
     std::string fileName = fileNameStream.str();
     std::cout << "FileName: " << fileName << std::endl;
     return fileName;
+}
+
+bool ValueResponse::doesFileExist()
+{
+    std::ifstream infile(fileNameFromDate().c_str());
+    return infile.good();
+}
+
+void ValueResponse::writeHeaderVersion01(std::ofstream& wf)
+{
+    typedef struct {
+        uint32_t Version;
+        uint32_t SizeOfHeader;
+        uint32_t NrDataEntries;
+    }HeaderVersion01;
+
+    HeaderVersion01 header;
+
+    header.Version = 1;
+    header.SizeOfHeader = 3;
+    header.NrDataEntries = 69;
+
+    wf.write(reinterpret_cast<char*>(&header.Version), 4);
+    wf.write(reinterpret_cast<char*>(&header.SizeOfHeader), 4);
+    wf.write(reinterpret_cast<char*>(&header.NrDataEntries), 4);
 }

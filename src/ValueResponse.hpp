@@ -22,7 +22,8 @@ typedef struct
 class ValueResponse
 {
 public:
-    /// Creates Object
+    /// Creates Object and writes a data file if the file does not yet exist. The header is
+    /// written to the data file.
     /// \param[in] receiveDataPtr pointer to the received TCP raw data.
     /// \param[in] currentUnixTime time of the data sample in seconds since January, 1st 1970.
     ValueResponse(RecDataStoragePtr receiveDataPtr, std::time_t currentUnixTime);
@@ -48,6 +49,19 @@ private:
     /// Creates a file name from the given date
     /// \returns the file name from the current date in the format yyyy_mm_dd.dat
     std::string fileNameFromDate();
+
+    /// Check if the file for today already exist
+    /// \return true, if the file already exists
+    bool doesFileExist();
+
+    /// Writes the header version 1 to the file.
+    /// Header:
+    ///   Version (32bit)
+    ///   Size of header (32bit), in 32 bit units, currently 3
+    ///   Number of data entries (32bit), currently 69
+    /// A data entry consists of 64 time in Unix format, followed by the 69 32bit data values
+    /// \param[in] wf: Reference to the file stream, were the header is written to.
+    void writeHeaderVersion01(std::ofstream& wf);
 
     /// Pointer to the response received on the TCP connection to the command 3004
     RecDataStoragePtr m_responsePtr;
