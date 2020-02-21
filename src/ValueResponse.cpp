@@ -469,7 +469,7 @@ ValueResponse::ValueResponse(RecDataStoragePtr receiveDataPtr, std::time_t curre
             std::cout << "Cannot open file!" << std::endl;
         } else {
             // Add header to the buffer
-            std::cout << "Create header of file" << std::endl;
+            std::cout << "Create header of file: '" << fileNameFromDate() << "'" << std::endl;
             writeHeaderVersion01(wf);
             wf.close();
         }
@@ -562,7 +562,6 @@ std::string ValueResponse::fileNameFromDate()
                    << std::setw(2) << std::setfill('0') << 1 + timeInfo->tm_mon << ".dat";
 
     std::string fileName = fileNameStream.str();
-    std::cout << "FileName: " << fileName << std::endl;
     return fileName;
 }
 
