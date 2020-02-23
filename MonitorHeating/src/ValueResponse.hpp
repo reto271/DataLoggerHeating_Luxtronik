@@ -5,17 +5,6 @@
 #include "ReceiveDataBuffer.hpp"
 
 
-typedef struct
-{
-    uint32_t cmdId;
-    // identifier is not used
-    std::string description;
-    uint32_t conversionDivisor;
-    std::string unit;
-} ValueEntry;
-
-
-
 
 /// \brief Class to process the value response (cmd 3004).
 /// It serializes the data and stores it to a binary files named with the current date.
