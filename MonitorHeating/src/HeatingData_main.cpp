@@ -17,7 +17,9 @@ int main(int argc, char* argv[])
     }
 
     TcpConnection tcpConnection(argv[1], 8889);
-    tcpConnection.connectToHeating();
+    if (false == tcpConnection.connectToHeating()) {
+        return 2;
+    }
 
     while(true)
     {
