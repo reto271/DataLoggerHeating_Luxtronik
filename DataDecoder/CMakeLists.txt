@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.6.4)
-project(MonitorHeating)
+project(DataDecoder)
 
 enable_testing()
 #add_subdirectory(googletest)
@@ -12,5 +12,5 @@ set(CMAKE_CXX_FLAGS "-ggdb -g3 -Wall")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 
 include_directories(${CMAKE_SOURCE_DIR}/..)
-add_executable(MonitorHeating src/MonitorHeating_main.cpp src/TcpConnection.cpp src/ReceiveDataBuffer.cpp src/ValueResponse.cpp src/SynchronizeTime.cpp)
-target_link_libraries(MonitorHeating)
+add_executable(DataDecoder src/DataDecoder_main.cpp)
+target_link_libraries(DataDecoder)

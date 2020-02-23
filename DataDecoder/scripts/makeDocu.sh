@@ -5,14 +5,12 @@ SCRIPTDIR=$(readlink -f $(dirname "$0"))
 pushd "${SCRIPTDIR}" > /dev/null
 cd ..
 
-uncrustify -c ../Common/uncr.cfg src/*.cpp src/*.hpp --replace
-
+mkdir -p docu
 mkdir -p tmp
-mv -v src/*.unc-backup~ tmp
-mv -v src/*.unc-backup.md5~ tmp
+doxygen doxyfile
 
+cd docu/latex
+make 2>&1 >> ../../tmp/latex.log
 
 # Back to the original location
 popd > /dev/null
-
-exit ${feedback}
