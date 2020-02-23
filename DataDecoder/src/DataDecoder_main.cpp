@@ -1,22 +1,22 @@
-//#include <ctime>
-//#include <iostream>
-//#include <unistd.h>
-//
-//#include "ValueResponse.hpp"
-//#include "SynchronizeTime.hpp"
-//#include "TcpConnection.hpp"
+#include <iostream>
+
+#include "FileDataReader.hpp"
+
 
 /// Main function to setup the connection, restart it periodically, read the data and forwards them to the decoder / serializer.
 int main(int argc, char* argv[])
 {
-//    SynchronizeTime sync;
-//
-//    if (argc != 2) {
-//        std::cout << std::endl << "Usage: " <<  argv[0] << " <ip of server>" << std::endl;
-//        return 1;
-//    }
-//
-//    TcpConnection tcpConnection(argv[1], 8889);
+    if (argc != 2) {
+        std::cout << std::endl << "Usage: " <<  argv[0] << " <FileName>" << std::endl;
+        return 1;
+    }
+
+    std::string fileName = argv[1];
+
+    FileDataReader fileDataReader(fileName);
+    fileDataReader.readFromFile();
+
+
 //    if (false == tcpConnection.connectToHeating()) {
 //        return 2;
 //    }
