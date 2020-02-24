@@ -88,18 +88,11 @@ bool FileDataReader::decodeBufferV1()
         int32_t data[69];
     } DataRecord;
 
-    DataRecord* pRec = reinterpret_cast<DataRecord*>(m_pBuffer);
-
-
-//    struct tm* currentLocalTime;
-//    std::time_t currentUnixTime = std::time(nullptr);
-//    currentLocalTime = std::localtime(&currentUnixTime);
-
-
-    std::cout << "Creation Time: " << std::asctime(std::localtime(&pRec->sampleTime)) << pRec->sampleTime << " seconds since the Epoch\n";
-    std::cout << "Hex time: 0x" << std::hex << pRec->sampleTime << std::dec << " seconds since the Epoch\n";
-
-
+    for(uint32_t record = 0; record < m_nrRecords; record++) {
+        DataRecord* pRec = reinterpret_cast<DataRecord*>(&m_pBuffer[record * (m_nrDataEntriesPerRecord + 2)]);
+        std::cout << pRec->sampleTime << " seconds since the Epoch, Hex time: 0x" << std::hex << pRec->sampleTime << std::dec
+                  << " seconds since the Epoch, Creation Time: " << std::asctime(std::localtime(&pRec->sampleTime));
+    }
 }
 
 
