@@ -14,7 +14,13 @@ int main(int argc, char* argv[])
     std::string fileName = argv[1];
 
     FileDataReader fileDataReader(fileName);
-    fileDataReader.readFromFile();
+    if (false == fileDataReader.readFromFile()) {
+        return 1;
+    }
+
+    if (false == fileDataReader.decodeBufferV1()) {
+        return 1;
+    }
 
 
 //    if (false == tcpConnection.connectToHeating()) {

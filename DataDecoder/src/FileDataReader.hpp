@@ -6,9 +6,10 @@ class FileDataReader
 {
 public:
     FileDataReader(std::string fileName);
+    virtual ~FileDataReader();
 
-    void readFromFile();
-
+    bool readFromFile();
+    bool decodeBufferV1();
     uint32_t getFileVersion();
 
 private:
@@ -18,5 +19,8 @@ private:
     //Header data
     uint32_t m_fileVersion;
     uint32_t m_sizeFileHeader;
-    uint32_t m_nrDataEntries;
+    uint32_t m_nrDataEntriesPerRecord;
+    uint32_t m_nrRecords;
+
+    uint32_t* m_pBuffer;
 };
