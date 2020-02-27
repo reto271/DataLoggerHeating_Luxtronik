@@ -22,6 +22,10 @@ int main(int argc, char* argv[])
         return 1;
     }
 
+    if (false == fileDataReader.writeToCSV()) {
+        return 1;
+    }
+
 
 //    if (false == tcpConnection.connectToHeating()) {
 //        return 2;

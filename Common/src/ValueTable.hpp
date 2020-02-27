@@ -10,6 +10,28 @@ typedef struct
 } ValueEntry;
 
 
+//typedef struct
+//{
+//    std::time_t sampleTime;
+//    uint32_t WEB_Temperatur_TVL;            // "Vorlauftemperatur Heizkreis",                                         10, "°C" },
+//    uint32_t WEB_Temperatur_TRL;            // "Rücklauftemperatur Heizkreis",                                        10, "°C" },
+//    uint32_t WEB_Sollwert_TRL_HZ;           // "Rücklauf-Soll Heizkreis",                                             10, "°C" },
+//    // ...
+//} TimeValues;
+
+typedef struct
+{
+    std::time_t sampleTime;
+    int32_t data[69];
+} TimeDataArray;
+
+typedef union
+{
+    int32_t rawData[69 + 2];
+    TimeDataArray timeData;
+//    TimeValues timeValues;
+} BufferDataRecord;
+
 
 // Command Values 3004
 

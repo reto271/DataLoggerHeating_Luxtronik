@@ -2,7 +2,10 @@
 
 #include <iostream>
 #include <fstream>
+#include <iomanip>
 #include <ctime>
+
+#include "Common/src/ValueTable.hpp"
 
 FileDataReader::FileDataReader(std::string fileName)
     : m_fileName(fileName)
@@ -25,7 +28,11 @@ bool FileDataReader::readFromFile()
 {
     bool feedback = false;
     std::ifstream is;
+
     is.open (m_fileName, std::ios::binary | std::ios::in);
+//    if (false == is.open (m_fileName, std::ios::binary | std::ios::in)) {
+//        return false;
+//    }
 
     // Get length of file:
     is.seekg (0, std::ios::end);
@@ -40,41 +47,31 @@ bool FileDataReader::readFromFile()
     switch(m_fileVersion)
     {
     case 1:
-    {
-        //wf.write(reinterpret_cast<char*>(&header.Version), 4);
-        //wf.write(reinterpret_cast<char*>(&header.SizeOfHeader), 4);
-        //wf.write(reinterpret_cast<char*>(&header.NrDataEntries), 4);
-        is.read(reinterpret_cast<char*>(&m_sizeFileHeader), 4);
-        is.read(reinterpret_cast<char*>(&m_nrDataEntriesPerRecord), 4);
+        {
+            // Read header data
+            is.read(reinterpret_cast<char*>(&m_sizeFileHeader), 4);
+            is.read(reinterpret_cast<char*>(&m_nrDataEntriesPerRecord), 4);
 
-        std::cout << "Header size: " << m_sizeFileHeader << std::endl;
-        std::cout << "Nr data entris per record: " << m_nrDataEntriesPerRecord << std::endl;
+            std::cout << "Header size: " << m_sizeFileHeader << std::endl;
+            std::cout << "Nr data entris per record: " << m_nrDataEntriesPerRecord << std::endl;
 
-        // File version: 1
-        // File length: 2284
-        // Header size: 3
-        // Size single data record: 69
+            uint32_t dataSizeInDoubleWords = (m_fileLength - (m_sizeFileHeader * 4)) / 4;
+            m_nrRecords = dataSizeInDoubleWords / (m_nrDataEntriesPerRecord + 2); // 2: 8bytes for the time stamp (std::time_t)
+            std::cout << "Nr records : " << m_nrRecords << std::endl;
 
-        uint32_t dataSizeInDoubleWords = (m_fileLength - (m_sizeFileHeader * 4)) / 4;
-        m_nrRecords = dataSizeInDoubleWords / (m_nrDataEntriesPerRecord + 2);   // 2: 8bytes for the time stamp (std::time_t)
-        std::cout << "Nr records : " << m_nrRecords << std::endl;
+            // Allocate buffer and read from file
+            uint32_t bufferSize = m_nrRecords * (m_nrDataEntriesPerRecord + 2);
+            m_pBuffer = new uint32_t[bufferSize];
+            is.read(reinterpret_cast<char*>(m_pBuffer), 4*bufferSize);
 
-        // Allocate buffer
-        uint32_t bufferSize = m_nrRecords * (m_nrDataEntriesPerRecord + 2);
-        m_pBuffer = new uint32_t[bufferSize];
-        is.read(reinterpret_cast<char*>(m_pBuffer), 4*bufferSize);
+            //printRawBuffer();
 
-        for(uint32_t record = 0; record < m_nrRecords; record++) {
-            for(uint32_t cnt = 0; cnt < (m_nrDataEntriesPerRecord + 2); cnt++) {
-                std::cout << "[" << record << ":" <<cnt << "] " << m_pBuffer[cnt + record * (m_nrDataEntriesPerRecord + 2)] << ", ";
-            }
-            std::cout << std::endl << std::endl;
+            feedback = true;
         }
-        feedback = true;
-    }
         break;
     default:
         std::cout << "File version not supported" << std::endl;
+        break;
     }
     is.close();
     return feedback;
@@ -82,21 +79,59 @@ bool FileDataReader::readFromFile()
 
 bool FileDataReader::decodeBufferV1()
 {
-    typedef struct
-    {
-        std::time_t sampleTime;
-        int32_t data[69];
-    } DataRecord;
-
-    for(uint32_t record = 0; record < m_nrRecords; record++) {
-        DataRecord* pRec = reinterpret_cast<DataRecord*>(&m_pBuffer[record * (m_nrDataEntriesPerRecord + 2)]);
-        std::cout << pRec->sampleTime << " seconds since the Epoch, Hex time: 0x" << std::hex << pRec->sampleTime << std::dec
-                  << " seconds since the Epoch, Creation Time: " << std::asctime(std::localtime(&pRec->sampleTime));
+    #if 0
+    //for(uint32_t record = 0; record < m_nrRecords; record++) {
+    for(uint32_t record = 0; record < 1; record++) {
+        BufferDataRecord* pRec = reinterpret_cast<BufferDataRecord*>(&m_pBuffer[record * (m_nrDataEntriesPerRecord + 2)]);
+        std::cout << pRec->timeData.sampleTime << " seconds since the Epoch, Hex time: 0x" << std::hex << pRec->timeData.sampleTime << std::dec
+                  << " seconds since the Epoch, Creation Time: " << std::asctime(std::localtime(&pRec->timeData.sampleTime));
+        for (uint32_t cnt = 0; cnt < m_nrDataEntriesPerRecord; cnt++) {
+            std::cout << cnt << " : " << pRec->timeData.data[cnt] << ", " << ValueTableDecode[cnt].description << std::endl;
+        }
     }
+    #endif
+    return true;
 }
 
 
 uint32_t FileDataReader::getFileVersion()
 {
     return m_fileVersion;
+}
+
+bool FileDataReader::writeToCSV()
+{
+    std::ofstream csvFile;
+
+    csvFile.open("test.csv", std::ios::out);
+
+    // Write the header line
+    csvFile << "Time";
+    for (uint32_t cnt = 0; cnt < m_nrDataEntriesPerRecord; cnt++) {
+        csvFile << ", " << ValueTableDecode[cnt].description;
+    }
+    csvFile << std::endl;
+
+    // Write data
+    for(uint32_t record = 0; record < m_nrRecords; record++) {
+        BufferDataRecord* pRec = reinterpret_cast<BufferDataRecord*>(&m_pBuffer[record * (m_nrDataEntriesPerRecord + 2)]);
+        csvFile << pRec->timeData.sampleTime;
+        for (uint32_t cnt = 0; cnt < m_nrDataEntriesPerRecord; cnt++) {
+            csvFile << ", " << std::right << std::setw(9) << pRec->timeData.data[cnt];
+        }
+        csvFile << std::endl;
+    }
+    csvFile.close();
+    return true;
+}
+
+void FileDataReader::printRawBuffer()
+{
+    //for(uint32_t record = 0; record < m_nrRecords; record++) {
+    for(uint32_t record = 0; record < 1; record++) {
+        for(uint32_t cnt = 0; cnt < (m_nrDataEntriesPerRecord + 2); cnt++) {
+            std::cout << "[" << record << ":" <<cnt << "] " << m_pBuffer[cnt + record * (m_nrDataEntriesPerRecord + 2)] << ", ";
+        }
+        std::cout << std::endl << std::endl;
+    }
 }

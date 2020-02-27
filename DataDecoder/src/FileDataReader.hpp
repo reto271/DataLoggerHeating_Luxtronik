@@ -12,6 +12,12 @@ public:
     bool decodeBufferV1();
     uint32_t getFileVersion();
 
+    bool writeToCSV();
+
+
+    // Debug functions
+    void printRawBuffer();
+
 private:
     std::string m_fileName;
     uint32_t m_fileLength;
