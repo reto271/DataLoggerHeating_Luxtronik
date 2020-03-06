@@ -35,6 +35,10 @@ clc;
 data = csvread ("../test.csv", 1, 0);
 timeInMinutes = (data(:,1)-data(1,1))/60;
 
+fileID = fopen("../test.csv");
+textLine = textscan(fileID,'%s', 72,'Delimiter',',');
+header = textLine{1,1};
+
 figure(1);
 plot(timeInMinutes, data(:,2)/10, timeInMinutes, data(:,3)/10, ...
      timeInMinutes, data(:,8)/10, timeInMinutes, data(:,9)/10);
@@ -42,5 +46,6 @@ grid on;
 title("Manual - first data set");
 xlabel("time in minutes");
 ylabel("Temperature in deg Celcius");
-legend("Vorlauftemperatur Heizkreis", "Rücklauftemperatur Heizkreis", ...
-       "Warmwasser Ist-Temperatur",   "Warmwasser Soll-Temperatur");
+# legend(header{2,1}, header{3,1}, header{8,1}, header{9, 1});
+legend(header{2,1}, header{3,1}, header{8,1}, header{9, 1}, "location", "southoutside");
+

@@ -53,18 +53,14 @@ void ValueResponse::decode()
 {
 //    {  10, /*ID_WEB_Temperatur_TVL*/        "Vorlauftemperatur Heizkreis",                                         10, "°C" },
 
-    std::cout << "xxx ------------" << std::endl;
-    uint32_t val = m_responsePtr->getDataField(11);
-    printf("%s\n", ValueTableDecode[10].description.c_str());
-    printf("10 val: 0x%.8x\n", val);
-    printf("10 val: %3.1f\n", static_cast<float>(val) / 10);
+//    std::cout << "xxx ------------" << std::endl;
+//    uint32_t val = m_responsePtr->getDataField(11);
+//    printf("%s\n", ValueTableDecode[10].description.c_str());
+//    printf("10 val: 0x%.8x\n", val);
+//    printf("10 val: %3.1f\n", static_cast<float>(val) / 10);
     std::cout << "xxx ------------" << std::endl;
     for (uint32_t cnt = 0; cnt < getNumberOfEntries(); cnt++) {
-        printf("%s\n", ValueTableDecode[cnt].description.c_str());
-
-//               printf("%s = %3.2f %s\n", ValueTableDecode[cnt].description.c_str(),
-//               ValueTableDecode[cnt].fn(m_responsePtr->getDataField(ValueTableDecode[cnt].cmdId + 1), ValueTableDecode[cnt].conversionDivisor),
-//               ValueTableDecode[cnt].unit.c_str());
+        std::cout << ValueTableDecode[cnt].description.c_str() << ": " << m_responsePtr->getDataField(ValueTableDecode[cnt].cmdId + 1) << std::endl;
     }
 }
 

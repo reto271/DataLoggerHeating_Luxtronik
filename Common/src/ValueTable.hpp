@@ -7,6 +7,7 @@ typedef struct
     std::string description;
     uint32_t conversionDivisor;
     std::string unit;
+    uint32_t nrBits;
 } ValueEntry;
 
 
@@ -39,18 +40,18 @@ typedef union
 const ValueEntry ValueTableDecode[] = {
 //- ID | Identifier | Description | Conversion | Unit |
 //- ---|------------|-------------|------------|------|
-    {  10, /*ID_WEB_Temperatur_TVL*/            "Vorlauftemperatur Heizkreis",                                         10, "°C" },
-    {  11, /*ID_WEB_Temperatur_TRL*/            "Rücklauftemperatur Heizkreis",                                        10, "°C" },
-    {  12, /*ID_WEB_Sollwert_TRL_HZ*/           "Rücklauf-Soll Heizkreis",                                             10, "°C" },
-    {  13, /*ID_WEB_Temperatur_TRL_ext*/        "Rücklauftemperatur im Trennspeicher",                                 10, "°C" },
-    {  14, /*ID_WEB_Temperatur_THG*/            "Heisgastemperatur",                                                   10, "°C" },
-    {  15, /*ID_WEB_Temperatur_TA*/             "Aussentemperatur",                                                    10, "°C" },
-    {  16, /*ID_WEB_Mitteltemperatur*/          "Durchschnittstemperatur Aussen über 24 h (Funktion Heizgrenze)",      10, "°C" },
-    {  17, /*ID_WEB_Temperatur_TBW*/            "Warmwasser Ist-Temperatur",                                           10, "°C" },
-    {  18, /*ID_WEB_Einst_BWS_akt*/             "Warmwasser Soll-Temperatur",                                          10, "°C" },
-    {  19, /*ID_WEB_Temperatur_TWE*/            "Wärmequellen-Eintrittstemperatur",                                    10, "°C" },
-    {  20, /*ID_WEB_Temperatur_TWA*/            "Wärmequellen-Austrittstemperatur",                                    10, "°C" },
-    {  21, /*ID_WEB_Temperatur_TFB1*/           "Mischkreis 1 Vorlauftemperatur",                                      10, "°C" },
+    {  10, /*ID_WEB_Temperatur_TVL*/            "Vorlauftemperatur Heizkreis",                                         10, "°C", 10 /* 0..102.3 */},
+    {  11, /*ID_WEB_Temperatur_TRL*/            "Rücklauftemperatur Heizkreis",                                        10, "°C", 10 /* 0..102.3 */},
+    {  12, /*ID_WEB_Sollwert_TRL_HZ*/           "Rücklauf-Soll Heizkreis",                                             10, "°C", 10 /* 0..102.3 */},
+    {  13, /*ID_WEB_Temperatur_TRL_ext*/        "Rücklauftemperatur im Trennspeicher",                                 10, "°C", 10 /* ??? War soeben 50 */ },
+    {  14, /*ID_WEB_Temperatur_THG*/            "Heisgastemperatur",                                                   10, "°C", 10 /* 0..102.3 */},
+    {  15, /*ID_WEB_Temperatur_TA*/             "Aussentemperatur",                                                    10, "°C", 10 /* 0..102.3 */},   // was ist mit negativen Werten
+    {  16, /*ID_WEB_Mitteltemperatur*/          "Durchschnittstemperatur Aussen über 24 h (Funktion Heizgrenze)",      10, "°C", 10 /* 0..102.3 */},   // was ist mit negativen Werten
+    {  17, /*ID_WEB_Temperatur_TBW*/            "Warmwasser Ist-Temperatur",                                           10, "°C", 10 /* 0..102.3 */},
+    {  18, /*ID_WEB_Einst_BWS_akt*/             "Warmwasser Soll-Temperatur",                                          10, "°C", 10 /* 0..102.3 */},
+    {  19, /*ID_WEB_Temperatur_TWE*/            "Wärmequellen-Eintrittstemperatur",                                    10, "°C",  8 /* 0.. 25.5 */},
+    {  20, /*ID_WEB_Temperatur_TWA*/            "Wärmequellen-Austrittstemperatur",                                    10, "°C",  8 /* 0.. 25.5 */},
+    {  21, /*ID_WEB_Temperatur_TFB1*/           "Mischkreis 1 Vorlauftemperatur",                                      10, "°C", 10 /* 0..102.3 */},   // Was ist das für ein Wert?
     {  22, /*ID_WEB_Sollwert_TVL_MK1*/          "Mischkreis 1 Vorlauf-Soll-Temperatur",                                10, "°C" },
     {  23, /*ID_WEB_Temperatur_RFV*/            "Raumtemperatur Raumstation 1",                                        10, "°C" },
     {  24, /*ID_WEB_Temperatur_TFB2*/           "Mischkreis 2 Vorlauftemperatur",                                      10, "°C" },

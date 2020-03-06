@@ -26,7 +26,16 @@ int main(int argc, char* argv[])
         std::time_t currentUnixTime = sync.waitForMinute();
 
         std::cout << "------------------------------------------------------" << std::endl;
-        RecDataStoragePtr receiveDataPtr = tcpConnection.requestValues();
+        if (nullptr == RecDataStoragePtr receiveDataPtr = tcpConnection.requestValues()) {
+            std::cout << "Reconnecting ..." << std::endl;
+            // Reconnect, it seems there is connection error
+            tcpConnection.disconnectFromHeating();
+            if (false == tcpConnection.connectToHeating()) {
+                // Reconnect failed
+                std::cout << "Reconnecting FAILED!!!" << std::endl;
+                return 3;
+            }
+        }
 
         ValueResponse decodeValueResp(receiveDataPtr, currentUnixTime);
         //decodeValueResp.decode();
