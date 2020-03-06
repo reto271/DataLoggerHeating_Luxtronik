@@ -96,6 +96,20 @@ char ValueResponse::serialize()
     for (uint32_t cnt = 0; cnt < getNumberOfEntries(); cnt++) {
         uint32_t value = m_responsePtr->getDataField(ValueTableDecode[cnt].cmdId + 1);
         wf.write(reinterpret_cast<char*>(&value), sizeof(uint32_t));
+
+
+        // Debug code:
+        // ------------------------------------------
+        // Ruecklauf-Soll Heizkreis = 50
+        if (cnt == 2) {
+            if (value != 50) {
+                std::cout << "There is an issue in the raw data." << std::endl;
+                decode();
+                m_responsePtr->printBuffer();
+            }
+        }
+        // ------------------------------------------
+
     }
     wf.close();
     return 0;
