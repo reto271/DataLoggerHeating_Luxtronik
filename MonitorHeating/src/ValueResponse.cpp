@@ -28,8 +28,7 @@ ValueResponse::ValueResponse(RecDataStoragePtr receiveDataPtr, std::time_t curre
     : m_responsePtr(receiveDataPtr)
     , m_currentUnixTime(currentUnixTime)
 {
-    std::cout << "Creation Time: " << std::asctime(std::localtime(&currentUnixTime)) << currentUnixTime << " seconds since the Epoch\n";
-    std::cout << "Hex time: 0x" << std::hex << m_currentUnixTime << std::dec << " seconds since the Epoch\n";
+    std::cout << "Current time: " << currentUnixTime << " / 0x" << std::hex << m_currentUnixTime << std::dec << " --- " << std::asctime(std::localtime(&currentUnixTime));
 
     if (false == doesFileExist()) {
         std::ofstream wf(fileNameFromDate().c_str(), std::ios::out | std::ios::binary | std::ios_base::app);
