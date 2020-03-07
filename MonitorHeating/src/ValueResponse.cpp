@@ -101,9 +101,9 @@ char ValueResponse::serialize()
         // Debug code:
         // ------------------------------------------
         // Ruecklauf-Soll Heizkreis = 50
-        if (cnt == 2) {
-            if (value != 50) {
-                std::cout << "There is an issue in the raw data." << std::endl;
+        if (ValueTableDecode[cnt].cmdId + 1 == 19) {
+            if (value != 500) {
+                std::cout << "There is an issue in the raw data, value is: " << value << std::endl;
                 decode();
                 m_responsePtr->printBuffer();
             }
