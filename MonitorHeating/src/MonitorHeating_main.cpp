@@ -43,16 +43,21 @@ int main(int argc, char* argv[])
                 std::cout << "Reconnecting FAILED!!!" << std::endl;
                 return 3;
             }
-        } else {
+            // Try a second time...
+            receiveDataPtr = tcpConnection.requestValues();
+        }
+
+        if (nullptr != receiveDataPtr) {
             ValueResponse decodeValueResp(receiveDataPtr, currentUnixTime);
             //decodeValueResp.decode();
             decodeValueResp.serialize();
+        } else {
+            std::cout << "Second consecutive failure" << std::endl;
+            return 5;
         }
-
         if (false == resetConnectionAt0300(&tcpConnection, &sync)) {
             return 4;
         }
-
         sleep(45);
     }
 

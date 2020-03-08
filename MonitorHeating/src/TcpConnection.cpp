@@ -5,6 +5,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <string.h>
+#include <assert.h>
 
 #include "ReceiveDataBuffer.hpp"
 
@@ -86,11 +87,14 @@ bool TcpConnection::waitResponse(RecDataStoragePtr pReceiveDataBuffer, const uin
     const size_t REC_BUFFER_SIZE = 10000;
     uint8_t recData[REC_BUFFER_SIZE];
     uint32_t recDataLen;
+    uint32_t nrRecBytesPerFrame[10];
+
+    assert(10 >= expectedNrResponseFrames);
 
     for (uint32_t cnt = 0; cnt < expectedNrResponseFrames; cnt++) {
         memset(recData, 0x00, REC_BUFFER_SIZE);
         recDataLen = recv(m_fileDeviceId, recData, REC_BUFFER_SIZE, 0);
-
+        nrRecBytesPerFrame[cnt] = recDataLen;
         if (recDataLen < 0) {
             std::cout << "Error: No data received" << std::endl;
             return false;
@@ -99,5 +103,10 @@ bool TcpConnection::waitResponse(RecDataStoragePtr pReceiveDataBuffer, const uin
             pReceiveDataBuffer->addData(recData, recDataLen);
         }
     }
-    return true;
+
+    // Validate received buffer, expect 4 followed by 1004 bytes
+    if ((4 == nrRecBytesPerFrame[0]) && (1004 == nrRecBytesPerFrame[1])) {
+        return true;
+    }
+    return false;
 }
