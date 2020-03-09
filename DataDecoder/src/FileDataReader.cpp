@@ -20,7 +20,6 @@ FileDataReader::FileDataReader(std::string fileName)
 
 FileDataReader::~FileDataReader()
 {
-    std::cout << "Delete buffer" << std::endl;
     delete[] m_pBuffer;
 };
 
@@ -53,11 +52,11 @@ bool FileDataReader::readFromFile()
             is.read(reinterpret_cast<char*>(&m_nrDataEntriesPerRecord), 4);
 
             std::cout << "Header size: " << m_sizeFileHeader << std::endl;
-            std::cout << "Nr data entris per record: " << m_nrDataEntriesPerRecord << std::endl;
+            std::cout << "No data entries per record: " << m_nrDataEntriesPerRecord << std::endl;
 
             uint32_t dataSizeInDoubleWords = (m_fileLength - (m_sizeFileHeader * 4)) / 4;
             m_nrRecords = dataSizeInDoubleWords / (m_nrDataEntriesPerRecord + 2); // 2: 8bytes for the time stamp (std::time_t)
-            std::cout << "Nr records : " << m_nrRecords << std::endl;
+            std::cout << "No records : " << m_nrRecords << std::endl;
 
             // Allocate buffer and read from file
             uint32_t bufferSize = m_nrRecords * (m_nrDataEntriesPerRecord + 2);
@@ -80,8 +79,7 @@ bool FileDataReader::readFromFile()
 bool FileDataReader::decodeBufferV1()
 {
     #if 0
-    //for(uint32_t record = 0; record < m_nrRecords; record++) {
-    for(uint32_t record = 0; record < 1; record++) {
+    for(uint32_t record = 0; record < m_nrRecords; record++) {
         BufferDataRecord* pRec = reinterpret_cast<BufferDataRecord*>(&m_pBuffer[record * (m_nrDataEntriesPerRecord + 2)]);
         std::cout << pRec->timeData.sampleTime << " seconds since the Epoch, Hex time: 0x" << std::hex << pRec->timeData.sampleTime << std::dec
                   << " seconds since the Epoch, Creation Time: " << std::asctime(std::localtime(&pRec->timeData.sampleTime));
@@ -102,8 +100,9 @@ uint32_t FileDataReader::getFileVersion()
 bool FileDataReader::writeToCSV()
 {
     std::ofstream csvFile;
+    std::string outputFileName = m_fileName + ".csv";
 
-    csvFile.open("test.csv", std::ios::out);
+    csvFile.open(outputFileName, std::ios::out);
 
     // Write the header line
     csvFile << "Time";
@@ -122,13 +121,13 @@ bool FileDataReader::writeToCSV()
         csvFile << std::endl;
     }
     csvFile.close();
+    std::cout << "File '" << outputFileName << "' successfully written" << std::endl;
     return true;
 }
 
 void FileDataReader::printRawBuffer()
 {
-    //for(uint32_t record = 0; record < m_nrRecords; record++) {
-    for(uint32_t record = 0; record < 1; record++) {
+    for(uint32_t record = 0; record < m_nrRecords; record++) {
         for(uint32_t cnt = 0; cnt < (m_nrDataEntriesPerRecord + 2); cnt++) {
             std::cout << "[" << record << ":" <<cnt << "] " << m_pBuffer[cnt + record * (m_nrDataEntriesPerRecord + 2)] << ", ";
         }

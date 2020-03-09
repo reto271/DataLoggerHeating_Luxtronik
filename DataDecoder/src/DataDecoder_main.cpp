@@ -25,25 +25,5 @@ int main(int argc, char* argv[])
     if (false == fileDataReader.writeToCSV()) {
         return 1;
     }
-
-
-//    if (false == tcpConnection.connectToHeating()) {
-//        return 2;
-//    }
-//
-//    while(true)
-//    {
-//        std::time_t currentUnixTime = sync.waitForMinute();
-//
-//        std::cout << "------------------------------------------------------" << std::endl;
-//        RecDataStoragePtr receiveDataPtr = tcpConnection.requestValues();
-//
-//        ValueResponse decodeValueResp(receiveDataPtr, currentUnixTime);
-//        //decodeValueResp.decode();
-//        decodeValueResp.serialize();
-//        sleep(5);
-//    }
-//
-//    tcpConnection.disconnectFromHeating();
     return 0;
 }
