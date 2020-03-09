@@ -15,6 +15,12 @@ if [ 0 -eq ${feedback} ] ; then
     feedback=$?
 fi
 
+echo "Uncrustify Common"
+if [ 0 -eq ${feedback} ] ; then
+    ../Common/scripts/uncr.sh
+    feedback=$?
+fi
+
 
 # Back to the original location
 popd > /dev/null
