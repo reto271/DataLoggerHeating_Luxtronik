@@ -50,8 +50,10 @@ data.dat
 tmp/
 
 # output files
-2020_[0-9]*_[0-9]*.dat
-test.csv
+HeatingData/
 
 # documentation files
 docu/
+
+# Testframework
+googletest/
