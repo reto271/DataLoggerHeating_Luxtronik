@@ -1,8 +1,9 @@
 #include "BitBuffer.hpp"
-
+#include <iostream>
 
 BitBuffer::BitBuffer()
     : m_nrBitsInBuffer(0)
+    , m_writePos(0)
     , m_readBitPos(0)
 {
 }
@@ -33,6 +34,12 @@ void BitBuffer::restartReading()
 
 uint32_t BitBuffer::getBits(uint8_t nrBits)
 {
+    uint32_t response = 0;
+    for (uint32_t cnt = 0; cnt < nrBits; cnt++) {
+        uint32_t bit = getBit() << (nrBits - cnt);
+        response += bit;
+    }
+    return response;
 }
 
 uint8_t* BitBuffer::getReferenceToBuffer(uint32_t& nrBitsInBuffer)
@@ -43,10 +50,60 @@ uint8_t* BitBuffer::getReferenceToBuffer(uint32_t& nrBitsInBuffer)
 
 void BitBuffer::appendBit(uint32_t value)
 {
-    m_buffer[2] = 0x11;
+    if (0 != value) {
+        uint32_t bytePos = m_writePos >> 3;
+        uint8_t bitNr = m_writePos & 0x07;
+        uint8_t bitPos = 0x1 << bitNr;
+
+        std::cout << "appendBit: bytePos: " << bytePos <<
+            ", bitNr: " << static_cast<uint16_t>(bitNr) <<
+            ", bitPos: " << static_cast<uint16_t>(bitPos) << std::endl;
+
+        m_buffer[bytePos] += bitPos;
+    } else {
+        uint32_t bytePos = m_writePos >> 3;
+        uint8_t bitNr = m_writePos & 0x07;
+        uint8_t bitPos = 0x1 << bitNr;
+
+        std::cout << "appendBit: bytePos: " << bytePos <<
+            ", bitNr: " << static_cast<uint16_t>(bitNr) <<
+            ", bitPos: " << static_cast<uint16_t>(bitPos) <<
+            " - don't set it" << std::endl;
+    }
+    m_writePos++;
+    m_nrBitsInBuffer++;
 }
 
 uint32_t BitBuffer::getBit()
 {
-    return 0;
+    uint32_t bytePos = m_readBitPos >> 3;
+    uint8_t bitNr = m_readBitPos & 0x07;
+    uint8_t bitPos = 0x1 << bitNr;
+
+    std::cout << "getBit: bytePos: " << bytePos <<
+        ", bitNr: " << static_cast<uint16_t>(bitNr) <<
+        ", bitPos: " << static_cast<uint16_t>(bitPos);
+
+    m_readBitPos++;
+    if (0 == (m_buffer[bytePos] & bitPos)) {
+        std::cout << "    : 0" << std::endl;
+        return 0;
+    } else {
+        std::cout << "    : 1" << std::endl;
+        return 1;
+    }
+}
+
+void BitBuffer::printContent()
+{
+    std::cout << "  m_nrBitsInBuffer  : " << m_nrBitsInBuffer << std::endl;
+    std::cout << "  m_writePos        : " << m_writePos << std::endl;
+    std::cout << "  m_readBitPos      : " << m_readBitPos << std::endl;
+
+    uint32_t nrBytes = m_nrBitsInBuffer >> 3;
+
+    for(uint32_t cnt = 0; cnt < nrBytes; cnt++) {
+        std::cout << std::hex << ", 0x" << static_cast<uint16_t>(m_buffer[cnt]);
+    }
+    std::cout << std::endl;
 }
