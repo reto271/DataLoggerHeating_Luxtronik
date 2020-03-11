@@ -36,7 +36,7 @@ uint32_t BitBuffer::getBits(uint8_t nrBits)
 {
     uint32_t response = 0;
     for (uint32_t cnt = 0; cnt < nrBits; cnt++) {
-        uint32_t bit = getBit() << (nrBits - cnt);
+        uint32_t bit = getBit() << cnt;
         response += bit;
     }
     return response;
