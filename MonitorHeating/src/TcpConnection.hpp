@@ -19,7 +19,7 @@ public:
 
 private:
     bool sendRequest(uint8_t* pRequest, uint32_t length);
-    bool waitResponse(RecDataStoragePtr pReceiveDataBuffer, const uint32_t expectedNrResponseFrames);
+    bool waitResponse(RecDataStoragePtr pReceiveDataBuffer, const uint32_t expectedNrBytes);
 
     std::string m_ipAddress;
     uint16_t m_tcpPort;

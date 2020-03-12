@@ -66,7 +66,7 @@ RecDataStoragePtr TcpConnection::requestValues()
     RecDataStoragePtr receiveBufferPtr = std::make_shared<RecDataStorage>();
 
     if (true == sendRequest(cmdVal, 8)) {
-        if (true == waitResponse(receiveBufferPtr, 2)) {
+        if (true == waitResponse(receiveBufferPtr, 1008)) {
             return receiveBufferPtr;
         }
     }
@@ -82,31 +82,24 @@ bool TcpConnection::sendRequest(uint8_t* pRequest, uint32_t length)
     return true;
 }
 
-bool TcpConnection::waitResponse(RecDataStoragePtr pReceiveDataBuffer, const uint32_t expectedNrResponseFrames)
+bool TcpConnection::waitResponse(RecDataStoragePtr pReceiveDataBuffer, const uint32_t expectedNrBytes)
 {
     const size_t REC_BUFFER_SIZE = 10000;
     uint8_t recData[REC_BUFFER_SIZE];
     uint32_t recDataLen;
-    uint32_t nrRecBytesPerFrame[10];
+    uint32_t totalRecDataLen = 0;
 
-    assert(10 >= expectedNrResponseFrames);
-
-    for (uint32_t cnt = 0; cnt < expectedNrResponseFrames; cnt++) {
+    while(totalRecDataLen < expectedNrBytes) {
         memset(recData, 0x00, REC_BUFFER_SIZE);
         recDataLen = recv(m_fileDeviceId, recData, REC_BUFFER_SIZE, 0);
-        nrRecBytesPerFrame[cnt] = recDataLen;
         if (recDataLen < 0) {
             std::cout << "Error: No data received" << std::endl;
             return false;
         } else {
-            std::cout << "Rec nr bytes: " << recDataLen << std::endl;
             pReceiveDataBuffer->addData(recData, recDataLen);
+            totalRecDataLen += recDataLen;
+            std::cout << "Rec nr bytes: " << recDataLen << ", total received: " << totalRecDataLen << std::endl;
         }
     }
-
-    // Validate received buffer, expect 4 followed by 1004 bytes
-    if ((4 == nrRecBytesPerFrame[0]) && (1004 == nrRecBytesPerFrame[1])) {
-        return true;
-    }
-    return false;
+    return true;
 }
