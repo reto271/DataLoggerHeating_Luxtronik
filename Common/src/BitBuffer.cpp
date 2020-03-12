@@ -50,25 +50,22 @@ uint8_t* BitBuffer::getReferenceToBuffer(uint32_t& nrBitsInBuffer)
 
 void BitBuffer::appendBit(uint32_t value)
 {
-    if (0 != value) {
-        uint32_t bytePos = m_writePos >> 3;
-        uint8_t bitNr = m_writePos & 0x07;
-        uint8_t bitPos = 0x1 << bitNr;
+    uint32_t bytePos = m_writePos >> 3;
+    uint8_t bitNr = m_writePos & 0x07;
+    uint8_t bitPos = 0x1 << bitNr;
 
+    if (0 != value) {
+        m_buffer[bytePos] += bitPos;
+#if defined(DEBUG_OUTPUT_BIT_BUFFER)
         std::cout << "appendBit: bytePos: " << bytePos <<
             ", bitNr: " << static_cast<uint16_t>(bitNr) <<
             ", bitPos: " << static_cast<uint16_t>(bitPos) << std::endl;
-
-        m_buffer[bytePos] += bitPos;
     } else {
-        uint32_t bytePos = m_writePos >> 3;
-        uint8_t bitNr = m_writePos & 0x07;
-        uint8_t bitPos = 0x1 << bitNr;
-
         std::cout << "appendBit: bytePos: " << bytePos <<
             ", bitNr: " << static_cast<uint16_t>(bitNr) <<
             ", bitPos: " << static_cast<uint16_t>(bitPos) <<
             " - don't set it" << std::endl;
+#endif // DEBUG_OUTPUT_BIT_BUFFER
     }
     m_writePos++;
     m_nrBitsInBuffer++;
@@ -80,16 +77,22 @@ uint32_t BitBuffer::getBit()
     uint8_t bitNr = m_readBitPos & 0x07;
     uint8_t bitPos = 0x1 << bitNr;
 
+#if defined(DEBUG_OUTPUT_BIT_BUFFER)
     std::cout << "getBit: bytePos: " << bytePos <<
         ", bitNr: " << static_cast<uint16_t>(bitNr) <<
         ", bitPos: " << static_cast<uint16_t>(bitPos);
+#endif // DEBUG_OUTPUT_BIT_BUFFER
 
     m_readBitPos++;
     if (0 == (m_buffer[bytePos] & bitPos)) {
+#if defined(DEBUG_OUTPUT_BIT_BUFFER)
         std::cout << "    : 0" << std::endl;
+#endif // DEBUG_OUTPUT_BIT_BUFFER
         return 0;
     } else {
+#if defined(DEBUG_OUTPUT_BIT_BUFFER)
         std::cout << "    : 1" << std::endl;
+#endif // DEBUG_OUTPUT_BIT_BUFFER
         return 1;
     }
 }
