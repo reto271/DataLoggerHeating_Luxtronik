@@ -1,5 +1,6 @@
 #include "BitBuffer.hpp"
 #include <iostream>
+#include <assert.h>
 
 BitBuffer::BitBuffer()
     : m_nrBitsInBuffer(0)
@@ -27,19 +28,41 @@ void BitBuffer::appendBits(uint32_t value, uint8_t nrBits)
     }
 }
 
+void BitBuffer::appendBits(int32_t value, uint8_t nrBits)
+{
+    uint32_t u32value = *reinterpret_cast<uint32_t*>(&value);
+    appendBits(u32value, nrBits);
+}
+
 void BitBuffer::restartReading()
 {
     m_readBitPos = 0;
 }
 
-uint32_t BitBuffer::getBits(uint8_t nrBits)
+void BitBuffer::getBits(uint32_t& value, uint8_t nrBits)
 {
-    uint32_t response = 0;
+    value = 0;
     for (uint32_t cnt = 0; cnt < nrBits; cnt++) {
         uint32_t bit = getBit() << cnt;
-        response += bit;
+        value += bit;
     }
-    return response;
+}
+
+
+void BitBuffer::getBits(int32_t& value, uint8_t nrBits)
+{
+    uint32_t currentBit;
+    value = 0;
+
+    for (uint32_t cnt = 0; cnt < 32; cnt++) {
+        if (cnt < nrBits) {
+            currentBit = getBit() << cnt;
+            value += currentBit;
+        } else {
+            currentBit = currentBit < 1;
+            value += currentBit;
+        }
+    }
 }
 
 uint8_t* BitBuffer::getReferenceToBuffer(uint32_t& nrBitsInBuffer)
@@ -83,6 +106,12 @@ uint32_t BitBuffer::getBit()
         ", bitPos: " << static_cast<uint16_t>(bitPos);
 #endif // DEBUG_OUTPUT_BIT_BUFFER
 
+
+    assert(m_readBitPos < m_nrBitsInBuffer);
+    if (m_readBitPos >= m_nrBitsInBuffer) {
+        std::cout << "m_readBitPos: " << m_readBitPos << ", m_nrBitsInBuffer: " << m_nrBitsInBuffer << std::endl;
+        assert(m_readBitPos < m_nrBitsInBuffer);
+    }
     m_readBitPos++;
     if (0 == (m_buffer[bytePos] & bitPos)) {
 #if defined(DEBUG_OUTPUT_BIT_BUFFER)

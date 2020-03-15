@@ -14,6 +14,12 @@ if [ 0 -eq ${feedback} ] ; then
     feedback=$?
 fi
 
+echo "Build DataDecoder"
+if [ 0 -eq ${feedback} ] ; then
+    ../Test/scripts/build.sh "$0"
+    feedback=$?
+fi
+
 # Back to the original location
 popd > /dev/null
 
