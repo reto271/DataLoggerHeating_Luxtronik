@@ -74,17 +74,14 @@ protected:
     BitBuffer m_testBuffer;
 };
 
-
-#if 0
-
 TEST_F(BitBufferTest, clearAll32bits)
 {
     uint32_t value;
 
-    m_testBuffer.appendBits(static_cast<uint32_t>(0), 32);
+    m_testBuffer.appendValue(static_cast<uint32_t>(0), 32);
 
     m_testBuffer.restartReading();
-    m_testBuffer.getBits(value, 32);
+    m_testBuffer.getValue(value, 32);
 
     EXPECT_EQ(0, value);
 }
@@ -92,10 +89,10 @@ TEST_F(BitBufferTest, clearAll32bits)
 TEST_F(BitBufferTest, setAll32bits)
 {
     uint32_t value;
-    m_testBuffer.appendBits(static_cast<uint32_t>(0xffffffff), 32);
+    m_testBuffer.appendValue(static_cast<uint32_t>(0xffffffff), 32);
 
     m_testBuffer.restartReading();
-    m_testBuffer.getBits(value, 32);
+    m_testBuffer.getValue(value, 32);
 
     EXPECT_EQ(0xffffffff, value);
 }
@@ -105,14 +102,14 @@ TEST_F(BitBufferTest, setGet32BitsAtOnce)
     uint32_t value;
     uint32_t value4bits;
 
-    m_testBuffer.appendBits(static_cast<uint32_t>(0x12345678), 32);
+    m_testBuffer.appendValue(static_cast<uint32_t>(0x12345678), 32);
 
     m_testBuffer.restartReading();
-    m_testBuffer.getBits(value, 32);
+    m_testBuffer.getValue(value, 32);
     EXPECT_EQ(0x12345678, value);
 
     m_testBuffer.restartReading();
-    m_testBuffer.getBits(value4bits, 4);
+    m_testBuffer.getValue(value4bits, 4);
     EXPECT_EQ(value4bits, value & 0xf);
 
 //    m_testBuffer.printContent();
@@ -120,7 +117,7 @@ TEST_F(BitBufferTest, setGet32BitsAtOnce)
 
 TEST_F(BitBufferTest, set32BitsAndCheckBuffer)
 {
-    m_testBuffer.appendBits(static_cast<uint32_t>(0x12345678), 32);
+    m_testBuffer.appendValue(static_cast<uint32_t>(0x12345678), 32);
 
     uint32_t nrBits;
     uint8_t* pBuffer = m_testBuffer.getReferenceToBuffer(nrBits);
@@ -135,7 +132,7 @@ TEST_F(BitBufferTest, set32BitsAndCheckBuffer)
 TEST_F(BitBufferTest, set5ByteValues)
 {
     for (uint32_t cnt = 0; cnt < 5; cnt++) {
-        m_testBuffer.appendBits(10 + cnt, 8);
+        m_testBuffer.appendValue(10 + cnt, 8);
     }
 
     uint32_t nrBits;
@@ -154,7 +151,7 @@ TEST_F(BitBufferTest, set34bitValues)
 {
     uint32_t value;
     for (uint32_t cnt = 0; cnt < 34; cnt++) {
-        m_testBuffer.appendBits(cnt & 0x1, 1);
+        m_testBuffer.appendValue(cnt & 0x1, 1);
     }
 
     uint32_t nrBits;
@@ -169,7 +166,7 @@ TEST_F(BitBufferTest, set34bitValues)
 
     m_testBuffer.restartReading();
     for (uint32_t cnt = 0; cnt < 34; cnt++) {
-        m_testBuffer.getBits(value, 1);
+        m_testBuffer.getValue(value, 1);
         EXPECT_EQ(value , (cnt & 0x1));
     }
 }
@@ -189,7 +186,7 @@ TEST_F(BitBufferTest, randomBufferReadWriteUnsignedValues)
         uint16_t width;
         getRandomValue(value, width);
 //        std::cout << "Write rand value: " << value << " /  0x" << std::hex << value << std::dec << ", bitWidth: " << width << std::endl;
-        m_testBuffer.appendBits(value, width);
+        m_testBuffer.appendValue(value, width);
         randomNumberValues[cnt].randVal = value;
         randomNumberValues[cnt].bitWidth = width;
     }
@@ -199,7 +196,7 @@ TEST_F(BitBufferTest, randomBufferReadWriteUnsignedValues)
     for (uint16_t cnt = 0; cnt < NrValuesInBuffer; cnt++) {
         uint16_t bitWidth = randomNumberValues[cnt].bitWidth;
 //        std::cout << std::endl << "Read nr Bits: " << bitWidth << std::endl;
-        m_testBuffer.getBits(value, bitWidth);
+        m_testBuffer.getValue(value, bitWidth);
 
         uint32_t bitMask = (0x1 << bitWidth) - 1;
         if (32 == bitWidth) {
@@ -212,11 +209,6 @@ TEST_F(BitBufferTest, randomBufferReadWriteUnsignedValues)
 
     }
 }
-
-
-
-
-#endif
 
 TEST_F(BitBufferTest, randomBufferReadWriteSignedValues)
 {
@@ -234,7 +226,7 @@ TEST_F(BitBufferTest, randomBufferReadWriteSignedValues)
         getRandomValue(value, width);
 
         std::cout << "Write rand value: " << value << " /  0x" << std::hex << value << std::dec << ", bitWidth: " << width << std::endl;
-        m_testBuffer.appendBits(value, width);
+        m_testBuffer.appendValue(value, width);
         randomNumberValues[cnt].randVal = value;
         randomNumberValues[cnt].bitWidth = width;
     }
@@ -249,7 +241,7 @@ TEST_F(BitBufferTest, randomBufferReadWriteSignedValues)
     for (uint16_t cnt = 0; cnt < NrValuesInBuffer; cnt++) {
         uint16_t bitWidth = randomNumberValues[cnt].bitWidth;
         std::cout << std::endl << "Read nr Bits: " << bitWidth << std::endl;
-        m_testBuffer.getBits(value, bitWidth);
+        m_testBuffer.getValue(value, bitWidth);
 
         int32_t expectedValue = limitValue(randomNumberValues[cnt].randVal, randomNumberValues[cnt].bitWidth);
 
@@ -259,7 +251,7 @@ TEST_F(BitBufferTest, randomBufferReadWriteSignedValues)
     }
 }
 
-TEST_F(BitBufferTest, DISABLED_testTheTest)
+TEST_F(BitBufferTest, testTheTest)
 {
     int32_t limitedVal;
     // Test of the tests ;-). It tests the convert function used here in the test.

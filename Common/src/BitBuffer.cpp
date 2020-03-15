@@ -13,7 +13,7 @@ BitBuffer::~BitBuffer()
 {
 }
 
-void BitBuffer::appendBits(uint32_t value, uint8_t nrBits)
+void BitBuffer::appendValue(uint32_t value, uint8_t nrBits)
 {
     uint32_t nrBitsInVector = 8 * m_buffer.size();
     int32_t nrAdditionalReqBits = (m_nrBitsInBuffer + nrBits) - nrBitsInVector;
@@ -28,10 +28,10 @@ void BitBuffer::appendBits(uint32_t value, uint8_t nrBits)
     }
 }
 
-void BitBuffer::appendBits(int32_t value, uint8_t nrBits)
+void BitBuffer::appendValue(int32_t value, uint8_t nrBits)
 {
     uint32_t u32value = *reinterpret_cast<uint32_t*>(&value);
-    appendBits(u32value, nrBits);
+    appendValue(u32value, nrBits);
 }
 
 void BitBuffer::restartReading()
@@ -39,7 +39,7 @@ void BitBuffer::restartReading()
     m_readBitPos = 0;
 }
 
-void BitBuffer::getBits(uint32_t& value, uint8_t nrBits)
+void BitBuffer::getValue(uint32_t& value, uint8_t nrBits)
 {
     value = 0;
     for (uint32_t cnt = 0; cnt < nrBits; cnt++) {
@@ -49,7 +49,7 @@ void BitBuffer::getBits(uint32_t& value, uint8_t nrBits)
 }
 
 
-void BitBuffer::getBits(int32_t& value, uint8_t nrBits)
+void BitBuffer::getValue(int32_t& value, uint8_t nrBits)
 {
     uint32_t currentBit;
     value = 0;

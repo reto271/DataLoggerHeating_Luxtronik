@@ -9,12 +9,12 @@ public:
     BitBuffer();
     ~BitBuffer();
 
-    void appendBits(uint32_t value, uint8_t nrBits);
-    void appendBits(int32_t value, uint8_t nrBits);
+    void appendValue(uint32_t value, uint8_t nrBits);
+    void appendValue(int32_t value, uint8_t nrBits);
 
     void restartReading();
-    void getBits(uint32_t& value, uint8_t nrBits);
-    void getBits(int32_t& value, uint8_t nrBits);
+    void getValue(uint32_t& value, uint8_t nrBits);
+    void getValue(int32_t& value, uint8_t nrBits);
 
     uint8_t* getReferenceToBuffer(uint32_t& nrBitsInBuffer);
 
