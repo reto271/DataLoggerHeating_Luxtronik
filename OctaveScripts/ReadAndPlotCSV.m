@@ -32,20 +32,42 @@ clear all;
 close all;
 clc;
 
-data = csvread ("../test.csv", 1, 0);
+fileName = "../HeatingData/2020_03_20.dat.csv";
+
+data = csvread (fileName, 1, 0);
 timeInMinutes = (data(:,1)-data(1,1))/60;
 
-fileID = fopen("../test.csv");
-textLine = textscan(fileID,'%s', 72,'Delimiter',',');
-header = textLine{1,1};
+fileID = fopen(fileName);
+textLine = textscan(fileID,'%s', 72,'Delimiter',';');
+header = textLine{1,1}(1,:);
+[headerText, nrHeaderTexts] = strsplit(header{1}, ",");
+clear header;
+clear textLine;
 
 figure(1);
 plot(timeInMinutes, data(:,2)/10, timeInMinutes, data(:,3)/10, ...
-     timeInMinutes, data(:,8)/10, timeInMinutes, data(:,9)/10);
+     timeInMinutes, data(:,9)/10, timeInMinutes, data(:,10)/10);
 grid on;
 title("Manual - first data set");
 xlabel("time in minutes");
 ylabel("Temperature in deg Celcius");
-# legend(header{2,1}, header{3,1}, header{8,1}, header{9, 1});
-legend(header{2,1}, header{3,1}, header{8,1}, header{9, 1}, "location", "southoutside");
+legend([headerText(2), headerText(3), headerText(9), headerText(10)], "location", "southoutside");
 
+figure(2);
+hdl2(1) = subplot(2,1,1);
+plot(timeInMinutes, data(:,2)/10, timeInMinutes, data(:,3)/10, timeInMinutes, data(:,9)/10);
+grid on;
+title("Manual - first data set");
+xlabel("time in minutes");
+ylabel("Temperature in deg Celcius");
+legend([headerText(2), headerText(3), headerText(9)], "location", "eastoutside");
+
+hdl2(2) = subplot(2,1,2);
+plot(timeInMinutes, data(:,70));
+grid on;
+title("Manual - first data set");
+xlabel("time in minutes");
+ylabel("State");
+legend([strcat(headerText(70))], "location", "eastoutside");
+
+linkaxes(hdl2, 'x');
