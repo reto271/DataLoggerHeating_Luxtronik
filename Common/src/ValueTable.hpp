@@ -38,8 +38,8 @@ typedef union
 
 // *INDENT-OFF*
 const ValueEntry ValueTableDecode[] = {
-//- ID | Identifier | Description | Conversion | Unit |
-//- ---|------------|-------------|------------|------|
+//  | ID | Identifier                          | Description                                                | Conversion | Unit |
+//  |----|-------------------------------------|------------------------------------------------------------|------------|------|
     {  10, /*ID_WEB_Temperatur_TVL*/            "Vorlauftemperatur Heizkreis",                                         10, "°C"},        //, 10 /* 0..102.3 */},
     {  11, /*ID_WEB_Temperatur_TRL*/            "Rücklauftemperatur Heizkreis",                                        10, "°C"},        //, 10 /* 0..102.3 */},
     {  12, /*ID_WEB_Sollwert_TRL_HZ*/           "Rücklauf-Soll Heizkreis",                                             10, "°C"},        //, 10 /* 0..102.3 */},
@@ -59,7 +59,7 @@ const ValueEntry ValueTableDecode[] = {
     {  26, /*ID_WEB_Temperatur_TSK*/            "Fühler Solarkollektor",                                               10, "°C"},        //, 10 /* 0..102.3 */},   // Was ist das für ein Wert?
     {  27, /*ID_WEB_Temperatur_TSS*/            "Fühler Solarspeicher",                                                10, "°C"},        //, 10 /* 0..102.3 */},   // Was ist das für ein Wert?
     {  28, /*ID_WEB_Temperatur_TEE*/            "Fühler externe Energiequelle",                                        10, "°C"},        //, 10 /* 0..102.3 */},   // Was ist das für ein Wert?
-    {  29, /*ID_WEB_ASDin*/                     "Eingang Abtauende, Soledruck, Durchfluss",                             0,  "-"},        //, 1 /* Binary value */ },
+    {  29, /*ID_WEB_ASDin*/                     "Eingang Abtauende / Soledruck / Durchfluss",                           0,  "-"},        //, 1 /* Binary value */ },
 	{  30, /*ID_WEB_BWTin_Eingang*/             "Brauchwarmwasserthermostat",                                           0,  "-"},        //, 1 /* Binary value */ },
 	{  31, /*ID_WEB_EVUin_Eingang*/             "EVU Sperre",                                                           0,  "-"},        //, 1 /* Binary value */ },
 	{  32, /*ID_WEB_HDin_Eingang*/              "Hochdruck Kältekreis",                                                 0,  "-"},        //, 1 /* Binary value */ },
