@@ -49,7 +49,7 @@ int main(int argc, char* argv[])
 
         if (nullptr != receiveDataPtr) {
             ValueResponse decodeValueResp(receiveDataPtr, currentUnixTime);
-            decodeValueResp.decode();
+            //decodeValueResp.decode();
             decodeValueResp.serialize();
         } else {
             std::cout << "Second consecutive failure" << std::endl;
