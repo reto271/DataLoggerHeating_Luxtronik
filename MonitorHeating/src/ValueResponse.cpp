@@ -150,19 +150,7 @@ bool ValueResponse::doesFileExist()
 
 void ValueResponse::writeHeaderVersion01(std::ofstream& wf)
 {
-    typedef struct {
-        uint32_t Version;
-        uint32_t SizeOfHeader;
-        uint32_t NrDataEntries;
-    }HeaderVersion01;
-
-    HeaderVersion01 header;
-
-    header.Version = 1;
-    header.SizeOfHeader = 3;
-    header.NrDataEntries = 69;
-
-    wf.write(reinterpret_cast<char*>(&header.Version), 4);
-    wf.write(reinterpret_cast<char*>(&header.SizeOfHeader), 4);
-    wf.write(reinterpret_cast<char*>(&header.NrDataEntries), 4);
+    wf.write(reinterpret_cast<const char*>(&HEADER_Version), 4);
+    wf.write(reinterpret_cast<const char*>(&HEADER_SizeOfHeader), 4);
+    wf.write(reinterpret_cast<const char*>(&HEADER_NrDataEntries), 4);
 }
