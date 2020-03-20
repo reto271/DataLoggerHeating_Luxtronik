@@ -22,7 +22,7 @@ fi
 
 echo "Clean Utils"
 if [ 0 -eq ${feedback} ] ; then
-    ../utils/scripts/clean.sh "$0"
+    ../Utils/scripts/clean.sh "$0"
     feedback=$?
 fi
 

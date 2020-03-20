@@ -22,7 +22,7 @@ fi
 
 echo "Build Utils"
 if [ 0 -eq ${feedback} ] ; then
-    ../utils/scripts/build.sh "$0"
+    ../Utils/scripts/build.sh "$0"
     feedback=$?
 fi
 
