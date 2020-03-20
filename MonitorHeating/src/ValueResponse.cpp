@@ -60,7 +60,7 @@ void ValueResponse::decode()
     std::cout << "xxx ------------" << std::endl;
     for (uint32_t cnt = 0; cnt < getNumberOfEntries(); cnt++) {
         uint32_t value = m_responsePtr->getDataField(ValueTableDecode[cnt].cmdId + 1);
-        std::cout << ValueTableDecode[cnt].description.c_str() << ": " << value << " / 0x" << std::hex << value << std::dec << std::endl;
+        std::cout << ValueTableDecode[cnt].cmdId << ": " <<ValueTableDecode[cnt].description.c_str() << ": " << value << " / 0x" << std::hex << value << std::dec << std::endl;
     }
 }
 
