@@ -14,6 +14,21 @@ if [ 0 -eq ${feedback} ] ; then
     feedback=$?
 fi
 
+echo "Clean Tests"
+if [ 0 -eq ${feedback} ] ; then
+    ../Test/scripts/clean.sh "$0"
+    feedback=$?
+fi
+
+echo "Clean Utils"
+if [ 0 -eq ${feedback} ] ; then
+    ../utils/scripts/clean.sh "$0"
+    feedback=$?
+fi
+
+cd ..
+rm -vrf GPATH GTAGS GRTAGS
+
 # Back to the original location
 popd > /dev/null
 

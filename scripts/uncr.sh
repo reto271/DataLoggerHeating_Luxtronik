@@ -27,6 +27,12 @@ if [ 0 -eq ${feedback} ] ; then
     feedback=$?
 fi
 
+echo "Uncrustify Utils"
+if [ 0 -eq ${feedback} ] ; then
+    ../Utils/scripts/uncr.sh
+    feedback=$?
+fi
+
 # Back to the original location
 popd > /dev/null
 

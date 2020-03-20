@@ -14,9 +14,15 @@ if [ 0 -eq ${feedback} ] ; then
     feedback=$?
 fi
 
-echo "Build DataDecoder"
+echo "Build Test"
 if [ 0 -eq ${feedback} ] ; then
     ../Test/scripts/build.sh "$0"
+    feedback=$?
+fi
+
+echo "Build Utils"
+if [ 0 -eq ${feedback} ] ; then
+    ../utils/scripts/build.sh "$0"
     feedback=$?
 fi
 
