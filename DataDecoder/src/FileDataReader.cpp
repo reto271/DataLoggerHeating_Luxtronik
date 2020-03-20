@@ -29,9 +29,10 @@ bool FileDataReader::readFromFile()
     std::ifstream is;
 
     is.open (m_fileName, std::ios::binary | std::ios::in);
-//    if (false == is.open (m_fileName, std::ios::binary | std::ios::in)) {
-//        return false;
-//    }
+    if (false == is.is_open ()) {
+        std::cout << "Could not find file: '" << m_fileName << "'" << std::endl;
+        return false;
+    }
 
     // Get length of file:
     is.seekg (0, std::ios::end);
