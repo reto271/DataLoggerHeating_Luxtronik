@@ -15,23 +15,39 @@ BitBuffer::~BitBuffer()
 
 void BitBuffer::appendValue(uint32_t value, uint8_t nrBits)
 {
-    uint32_t nrBitsInVector = 8 * m_buffer.size();
-    int32_t nrAdditionalReqBits = (m_nrBitsInBuffer + nrBits) - nrBitsInVector;
-    if (0 < nrAdditionalReqBits) {
-        // need more buffer space
-        uint8_t nrReqBytes = (nrAdditionalReqBits-1 / 8) + 1;
-        m_buffer.resize(m_buffer.size() + nrReqBytes);
+    // Make sure the value fits
+    uint32_t bitMask = getUnsignedBitMask(nrBits);
+    if (value != (value & bitMask)) {
+        std::cout << "value: " << value << " / 0x" << std::hex << value << std::dec << ", nrBits: " << static_cast<uint32_t>(nrBits) << std::endl;
+        assert(value == (value & bitMask));
     }
-    for (uint8_t cnt = 0; cnt < nrBits; cnt++) {
-        appendBit(0x1 & value);
-        value = value >> 1;
-    }
+
+    // Finally write values to buffer
+    appendValuesToBuffer(value, nrBits);
 }
 
 void BitBuffer::appendValue(int32_t value, uint8_t nrBits)
 {
     uint32_t u32value = *reinterpret_cast<uint32_t*>(&value);
-    appendValue(u32value, nrBits);
+    uint32_t bitMask = getSignedBitMask(nrBits);
+
+    // Range check for signed values, make sure there is enough space for value and sign (still stored in two's complement)
+    if (0 == (0x80000000 & value)) {
+        if (0 != (~bitMask & value)) {
+            // Positive values, all bits outside the mask must be 0
+            std::cout << "value: 0x" << std::hex << value << ", bitMaskForValue: 0x" << bitMask << std::dec << ", nrBits: " << static_cast<uint32_t>(nrBits) << std::endl;
+            assert(0 == (~bitMask & value));
+        }
+    } else {
+        // Negative value, all bits outside the mask must be 1
+        if(~bitMask != (~bitMask & value)) {
+            std::cout << "value: 0x" << std::hex << value << ", bitMaskForValue: 0x" << bitMask << std::dec << ", nrBits: " << static_cast<uint32_t>(nrBits) << std::endl;
+            assert(~bitMask == (~bitMask & value));
+        }
+    }
+
+    // Finally write values to buffer
+    appendValuesToBuffer(u32value, nrBits);
 }
 
 void BitBuffer::restartReading()
@@ -54,12 +70,12 @@ void BitBuffer::getValue(int32_t& value, uint8_t nrBits)
     uint32_t currentBit;
     value = 0;
 
-    for (uint32_t cnt = 0; cnt < 32; cnt++) {
+    for (int32_t cnt = 0; cnt < 32; cnt++) {
         if (cnt < nrBits) {
             currentBit = getBit() << cnt;
             value += currentBit;
         } else {
-            currentBit = currentBit < 1;
+            currentBit <<= 1;
             value += currentBit;
         }
     }
@@ -69,6 +85,49 @@ uint8_t* BitBuffer::getReferenceToBuffer(uint32_t& nrBitsInBuffer)
 {
     nrBitsInBuffer = m_nrBitsInBuffer;
     return m_buffer.data();
+}
+
+void BitBuffer::printContent()
+{
+    std::cout << "--- printContent ---------" << std::endl;
+    std::cout << "  m_nrBitsInBuffer  : " << m_nrBitsInBuffer << std::endl;
+    std::cout << "  m_writePos        : " << m_writePos << std::endl;
+    std::cout << "  m_readBitPos      : " << m_readBitPos << std::endl;
+
+    uint32_t nrBytes = (m_nrBitsInBuffer >> 3) + 1;
+
+    for(uint32_t cnt = 0; cnt < nrBytes; cnt++) {
+        std::cout << std::hex << ", 0x" << static_cast<uint16_t>(m_buffer[cnt]);
+    }
+    std::cout << std::dec << std::endl;
+    std::cout << "--- printContent ---------" << std::endl;
+}
+
+uint32_t BitBuffer::getUnsignedBitMask(uint8_t nrBits)
+{
+    assert(0 < nrBits);
+    return static_cast<uint32_t>(((static_cast<uint64_t>(0x1) << nrBits) - 1));
+}
+
+uint32_t BitBuffer::getSignedBitMask(uint8_t nrBits)
+{
+    assert(1 < nrBits);  // one bit sign, one bit value
+    return ((0x1 << (nrBits -1)) - 1);
+}
+
+void BitBuffer::appendValuesToBuffer(uint32_t value, uint8_t nrBits)
+{
+    uint32_t nrBitsInVector = 8 * m_buffer.size();
+    int32_t nrAdditionalReqBits = (m_nrBitsInBuffer + nrBits) - nrBitsInVector;
+    if (0 < nrAdditionalReqBits) {
+        // need more buffer space
+        uint8_t nrReqBytes = (nrAdditionalReqBits-1 / 8) + 1;
+        m_buffer.resize(m_buffer.size() + nrReqBytes);
+    }
+    for (uint8_t cnt = 0; cnt < nrBits; cnt++) {
+        appendBit(0x1 & value);
+        value = value >> 1;
+    }
 }
 
 void BitBuffer::appendBit(uint32_t value)
@@ -124,18 +183,4 @@ uint32_t BitBuffer::getBit()
 #endif // DEBUG_OUTPUT_BIT_BUFFER
         return 1;
     }
-}
-
-void BitBuffer::printContent()
-{
-    std::cout << "  m_nrBitsInBuffer  : " << m_nrBitsInBuffer << std::endl;
-    std::cout << "  m_writePos        : " << m_writePos << std::endl;
-    std::cout << "  m_readBitPos      : " << m_readBitPos << std::endl;
-
-    uint32_t nrBytes = m_nrBitsInBuffer >> 3;
-
-    for(uint32_t cnt = 0; cnt < nrBytes; cnt++) {
-        std::cout << std::hex << ", 0x" << static_cast<uint16_t>(m_buffer[cnt]);
-    }
-    std::cout << std::endl;
 }

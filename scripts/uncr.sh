@@ -21,6 +21,11 @@ if [ 0 -eq ${feedback} ] ; then
     feedback=$?
 fi
 
+echo "Uncrustify Test"
+if [ 0 -eq ${feedback} ] ; then
+    ../Test/scripts/uncr.sh
+    feedback=$?
+fi
 
 # Back to the original location
 popd > /dev/null

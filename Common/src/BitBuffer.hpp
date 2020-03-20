@@ -19,8 +19,20 @@ public:
     uint8_t* getReferenceToBuffer(uint32_t& nrBitsInBuffer);
 
     void printContent();
-private:
 
+protected:
+    /// Returns the bit mask for the unsigned integers.
+    /// \param[in] nrBits: Number of bits used in buffer
+    /// \return bit mask for the value
+    uint32_t getUnsignedBitMask(uint8_t nrBits);
+
+    /// Returns the bit mask for the signed integers, WITHOUT the sign.
+    /// \param[in] nrBits: Number of bits used in buffer INCLUSIVE sign.
+    /// \return bit mask for the value, excluding the sign
+    uint32_t getSignedBitMask(uint8_t nrBits);
+
+private:
+    void appendValuesToBuffer(uint32_t value, uint8_t nrBits);
     void appendBit(uint32_t value);
     uint32_t getBit();
 
