@@ -45,7 +45,7 @@ ValueResponse::ValueResponse(RecDataStoragePtr receiveDataPtr, std::time_t curre
 
 uint32_t ValueResponse::getNumberOfEntries() const
 {
-    return sizeof(ValueTableDecode) / sizeof(ValueEntry);
+    return FILE_NrDataEntries;
 }
 
 void ValueResponse::decode()
@@ -60,7 +60,7 @@ void ValueResponse::decode()
     std::cout << "xxx ------------" << std::endl;
     for (uint32_t cnt = 0; cnt < getNumberOfEntries(); cnt++) {
         uint32_t value = m_responsePtr->getDataField(ValueTableDecode[cnt].cmdId + 1);
-        std::cout << ValueTableDecode[cnt].cmdId << ": " <<ValueTableDecode[cnt].description.c_str() << ": " << value << " / 0x" << std::hex << value << std::dec << std::endl;
+        std::cout << ValueTableDecode[cnt].cmdId << ": " << ValueTableDecode[cnt].description.c_str() << ": " << value << " / 0x" << std::hex << value << std::dec << std::endl;
     }
 }
 
@@ -150,7 +150,7 @@ bool ValueResponse::doesFileExist()
 
 void ValueResponse::writeHeaderVersion01(std::ofstream& wf)
 {
-    wf.write(reinterpret_cast<const char*>(&HEADER_Version), 4);
-    wf.write(reinterpret_cast<const char*>(&HEADER_SizeOfHeader), 4);
-    wf.write(reinterpret_cast<const char*>(&HEADER_NrDataEntries), 4);
+    wf.write(reinterpret_cast<const char*>(&FILE_Version), 4);
+    wf.write(reinterpret_cast<const char*>(&FILE_SizeOfHeader), 4);
+    wf.write(reinterpret_cast<const char*>(&FILE_NrDataEntries), 4);
 }

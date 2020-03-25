@@ -1,5 +1,10 @@
 #pragma once
 
+
+// Include old versions
+#include "Common/src/ValueTable_v1.hpp"
+
+
 typedef struct
 {
     uint32_t cmdId;
@@ -10,28 +15,6 @@ typedef struct
 //    uint32_t nrBits;
 } ValueEntry;
 
-
-//typedef struct
-//{
-//    std::time_t sampleTime;
-//    uint32_t WEB_Temperatur_TVL;            // "Vorlauftemperatur Heizkreis",                                         10, "°C" },
-//    uint32_t WEB_Temperatur_TRL;            // "Rücklauftemperatur Heizkreis",                                        10, "°C" },
-//    uint32_t WEB_Sollwert_TRL_HZ;           // "Rücklauf-Soll Heizkreis",                                             10, "°C" },
-//    // ...
-//} TimeValues;
-
-typedef struct
-{
-    std::time_t sampleTime;
-    int32_t data[69];
-} TimeDataArray;
-
-typedef union
-{
-    int32_t rawData[69 + 2];
-    TimeDataArray timeData;
-//    TimeValues timeValues;
-} BufferDataRecord;
 
 
 // Command Values 3004
@@ -478,14 +461,8 @@ const ValueEntry ValueTableDecode[] = {
 // *INDENT-ON*
 
 
-//typedef struct {
-//    uint32_t Version;
-//    uint32_t SizeOfHeader;
-//    uint32_t NrDataEntries;
-//}HeaderVersion01;
-//
-//HeaderVersion01 header;
 
-const uint32_t HEADER_Version = 2;
-const uint32_t HEADER_SizeOfHeader = 3;
-const uint32_t HEADER_NrDataEntries = sizeof(ValueTableDecode) / sizeof(ValueEntry);
+
+const uint32_t FILE_Version = 2;
+const uint32_t FILE_SizeOfHeader = 3;
+const uint32_t FILE_NrDataEntries = sizeof(ValueTableDecode) / sizeof(ValueEntry);

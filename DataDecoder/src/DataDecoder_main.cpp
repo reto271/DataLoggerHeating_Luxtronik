@@ -14,16 +14,12 @@ int main(int argc, char* argv[])
     std::string fileName = argv[1];
 
     FileDataReader fileDataReader(fileName);
-    if (false == fileDataReader.readFromFile()) {
-        return 1;
+    if (false == fileDataReader.readHeaderData()) {
+        return 2;
     }
 
-    if (false == fileDataReader.decodeBufferV1()) {
-        return 1;
-    }
-
-    if (false == fileDataReader.writeToCSV()) {
-        return 1;
+    if (false == fileDataReader.decodeData()) {
+        return 3;
     }
     return 0;
 }

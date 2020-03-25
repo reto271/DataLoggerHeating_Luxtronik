@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <fstream>
 
 class FileDataReader
 {
@@ -8,11 +9,14 @@ public:
     FileDataReader(std::string fileName);
     virtual ~FileDataReader();
 
-    bool readFromFile();
-    bool decodeBufferV1();
-    uint32_t getFileVersion();
+    bool readHeaderData();
 
-    bool writeToCSV();
+    bool decodeData();
+
+protected:
+    bool decodeDataCurrent();
+    bool decodeDataV1();
+    bool writeToCSV(std::string headerLine);
 
 
     // Debug functions
@@ -29,4 +33,7 @@ private:
     uint32_t m_nrRecords;
 
     uint32_t* m_pBuffer;
+
+    std::ifstream m_inputFileStream;
+
 };
