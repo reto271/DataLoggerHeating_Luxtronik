@@ -13,5 +13,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 
 include_directories(${CMAKE_SOURCE_DIR}/googletest/include)
 include_directories(${CMAKE_SOURCE_DIR}/..)
-add_executable(Test_HeatingDataMonitorAndConverter src/main.cpp src/Test_BitBuffer.cpp ../Common/src/BitBuffer.cpp)
+add_executable(Test_HeatingDataMonitorAndConverter src/main.cpp
+               src/Test_BitBuffer.cpp ../Common/src/BitBuffer.cpp
+               src/Test_FeedbackCollector.cpp  ../Common/src/FeedbackCollector.cpp)
 target_link_libraries(Test_HeatingDataMonitorAndConverter gtest_main gtest gmock)

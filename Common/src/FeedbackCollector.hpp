@@ -8,7 +8,7 @@ public:
     virtual ~FeedbackCollector();
 
     void addAndFeedback(const bool condition);
-    void addOrFeeback(const bool condition);
+    void addOrFeedback(const bool condition);
 
     bool getFeedback();
 

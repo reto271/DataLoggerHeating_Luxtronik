@@ -15,7 +15,7 @@ void FeedbackCollector::addAndFeedback(const bool condition)
     m_currentState = m_currentState && condition;
 }
 
-void FeedbackCollector::addOrFeeback(const bool condition)
+void FeedbackCollector::addOrFeedback(const bool condition)
 {
     m_currentState = m_currentState || condition;
 }
