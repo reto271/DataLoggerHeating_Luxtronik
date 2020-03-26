@@ -57,7 +57,7 @@ int main(int argc, char* argv[])
         if(false == resetConnectionAt0300(&tcpConnection, &sync)) {
             return 4;
         }
-        sleep(45);
+        sleep(1);
     }
 
     tcpConnection.disconnectFromHeating();

@@ -15,7 +15,13 @@ std::time_t SynchronizeTime::waitForMinute()
     currentLocalTime = std::localtime(&m_currentUnixTime);
 
     while(0 != currentLocalTime->tm_sec) {
-        sleep(1);
+        if(3 > currentLocalTime->tm_sec) {
+            sleep(55);
+        } else if(50 > currentLocalTime->tm_sec) {
+            sleep(8);
+        } else {
+            sleep(1);
+        }
         m_currentUnixTime = std::time(nullptr);
         currentLocalTime = std::localtime(&m_currentUnixTime);
     }
