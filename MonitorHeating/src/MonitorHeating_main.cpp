@@ -18,27 +18,26 @@ int main(int argc, char* argv[])
 {
     SynchronizeTime sync;
 
-    if (argc != 2) {
-        std::cout << std::endl << "Usage: " <<  argv[0] << " <ip of server>" << std::endl;
+    if(argc != 2) {
+        std::cout << std::endl << "Usage: " << argv[0] << " <ip of server>" << std::endl;
         return 1;
     }
 
     TcpConnection tcpConnection(argv[1], 8889);
-    if (false == tcpConnection.connectToHeating()) {
+    if(false == tcpConnection.connectToHeating()) {
         return 2;
     }
 
-    while(true)
-    {
+    while(true) {
         std::time_t currentUnixTime = sync.waitForMinute();
 
         std::cout << "------------------------------------------------------" << std::endl;
         RecDataStoragePtr receiveDataPtr = tcpConnection.requestValues();
-        if (nullptr == receiveDataPtr) {
+        if(nullptr == receiveDataPtr) {
             std::cout << "Reconnecting ..." << std::endl;
             // Reconnect, it seems there is connection error
             tcpConnection.disconnectFromHeating();
-            if (false == tcpConnection.connectToHeating()) {
+            if(false == tcpConnection.connectToHeating()) {
                 // Reconnect failed
                 std::cout << "Reconnecting FAILED!!!" << std::endl;
                 return 3;
@@ -47,15 +46,15 @@ int main(int argc, char* argv[])
             receiveDataPtr = tcpConnection.requestValues();
         }
 
-        if (nullptr != receiveDataPtr) {
+        if(nullptr != receiveDataPtr) {
             ValueResponse decodeValueResp(receiveDataPtr, currentUnixTime);
-            //decodeValueResp.decode();
+            // decodeValueResp.decode();
             decodeValueResp.serialize();
         } else {
             std::cout << "Second consecutive failure" << std::endl;
             return 5;
         }
-        if (false == resetConnectionAt0300(&tcpConnection, &sync)) {
+        if(false == resetConnectionAt0300(&tcpConnection, &sync)) {
             return 4;
         }
         sleep(45);
@@ -65,14 +64,13 @@ int main(int argc, char* argv[])
     return 0;
 }
 
-
 bool resetConnectionAt0300(TcpConnection* pConnection, SynchronizeTime* pTime)
 {
-    if (true == pTime->isFullHour(false)) {
-        if (3 == pTime->getHour(false)) {
+    if(true == pTime->isFullHour(false)) {
+        if(3 == pTime->getHour(false)) {
             // Periodically reconnect
             pConnection->disconnectFromHeating();
-            if (false == pConnection->connectToHeating()) {
+            if(false == pConnection->connectToHeating()) {
                 // Reconnect failed
                 std::cout << "Periodic reconnecting FAILED!!!" << std::endl;
                 return false;

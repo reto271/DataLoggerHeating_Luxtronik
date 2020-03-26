@@ -37,48 +37,46 @@ void RecDataStorage::printBuffer()
     std::cout << " max size: " << BufferSize << std::endl;
     std::cout << " act size: " << m_writePos << std::endl << std::endl;
 
-//-     for (size_t cnt = 0; cnt < m_writePos; cnt++) {
-//-         printf("0x%.2x ", m_response.data.buffer[cnt]);
-//-         if (0 == ((cnt + 1) % 16)) {
-//-             printf("\n");
-//-         }
-//-     }
+// -     for (size_t cnt = 0; cnt < m_writePos; cnt++) {
+// -         printf("0x%.2x ", m_response.data.buffer[cnt]);
+// -         if (0 == ((cnt + 1) % 16)) {
+// -             printf("\n");
+// -         }
+// -     }
     std::cout << std::endl << "---------------------------------" << std::endl;
-    std::cout << " command:   " << swap(m_response.data.decode.commandResponse) << ", 0x" << std::hex << swap(m_response.data.decode.commandResponse) << std::dec << std::endl;;
+    std::cout << " command:   " << swap(m_response.data.decode.commandResponse) << ", 0x" << std::hex << swap(m_response.data.decode.commandResponse) << std::dec << std::endl;
     std::cout << " nrEntries: " << swap(m_response.data.decode.nrEntries) << std::endl;
     printCommand();
     std::cout << "---------------------------------" << std::endl;
     //    for (uint32_t paraNr = 0; paraNr < 10 /*NrParameter*/; paraNr++) {
     //        printf("para[%.3d] = %d / 0x%.4x\n", paraNr, swap(m_buffer.decode.data[paraNr]));
     //    }
-    for (uint32_t paraCnt = 0; paraCnt < NrParameter; paraCnt++) {
+    for(uint32_t paraCnt = 0; paraCnt < NrParameter; paraCnt++) {
         uint32_t value = swap(m_response.data.decode.data[paraCnt]);
         float* pFloat = reinterpret_cast<float*>(&value);
-        //printf("para[%.4d] = %12d / 0x%.8x / %f\n", paraCnt, value, value, *pFloat);
+        // printf("para[%.4d] = %12d / 0x%.8x / %f\n", paraCnt, value, value, *pFloat);
         printf("para[%.4d] = %12d / %3.1f / 0x%.8x / %f\n", paraCnt, value, static_cast<float>(value) / 10, value, *pFloat);
     }
 }
 
 void RecDataStorage::printCommand()
 {
-    switch(m_response.heatControlCommand)
-    {
-    case ReadParam:
-        printf(" request: ReadParam\n");
-        break;
-    case ReadValue:
-        printf(" request: ReadValue\n");
-        break;
-    default:
-        printf(" request: UNKNOWN\n");
-        break;
+    switch(m_response.heatControlCommand) {
+        case ReadParam:
+            printf(" request: ReadParam\n");
+            break;
+        case ReadValue:
+            printf(" request: ReadValue\n");
+            break;
+        default:
+            printf(" request: UNKNOWN\n");
+            break;
     }
 }
 
 uint32_t RecDataStorage::swap(uint32_t value)
 {
-    typedef union
-    {
+    typedef union {
         uint32_t value;
         uint8_t byte[4];
     }  ConvertValue;

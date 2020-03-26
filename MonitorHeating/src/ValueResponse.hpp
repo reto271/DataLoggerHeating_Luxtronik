@@ -30,7 +30,7 @@ public:
 
 private:
     /// Add the current Unix time in seconds since January, 1st 1970 to the data file.
-    ///  Use 8 bytes independent on the HW/Compiler.
+    /// Use 8 bytes independent on the HW/Compiler.
     /// \param[in] wf: Reference to the file stream.
     /// \param[in] unixTime: Unix time to be written to the file.
     void addUnixTimeToBuffer(std::ofstream& wf, std::time_t unixTime);
@@ -63,19 +63,19 @@ private:
 #if 0
 // Command Values 3004
 
-//typedef float (* ConversionFunctionDivisor)(const uint32_t value, const uint32_t divisor);
-//typedef bool (* ConversionFunctionBool)(const uint32_t value);
+// typedef float (* ConversionFunctionDivisor)(const uint32_t value, const uint32_t divisor);
+// typedef bool (* ConversionFunctionBool)(const uint32_t value);
 
 
-//float conversionFunctionDivisor(const uint32_t value, const uint32_t divisor);
-//bool conversionFunctionBool(const uint32_t value);
+// float conversionFunctionDivisor(const uint32_t value, const uint32_t divisor);
+// bool conversionFunctionBool(const uint32_t value);
 
 
 
-//typedef union
-//{
+// typedef union
+// {
 //    ConversionFunctionDivisor convFuncDivisor;
 //    ConversionFunctionBool convFuncBool;
-//} ConversionFunctions;
+// } ConversionFunctions;
 
 #endif

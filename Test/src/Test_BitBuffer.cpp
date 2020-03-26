@@ -22,7 +22,7 @@ protected:
 
     void TearDown() override
     {
-        //Dump Trace buffer
+        // Dump Trace buffer
     }
 
     void getRandomValueUnilimted(uint32_t& value, uint16_t& bitWidth)
@@ -49,16 +49,16 @@ protected:
         uint32_t bitMask = 0;
 
         getRandomValue(u32value, bitWidth);
-        if (bitWidth == 1) {
+        if(bitWidth == 1) {
             bitWidth++;
         }
 
         // Expand sign - prepare range check for signed values, not the smartest implementation
         //  but it shall be different from the active code.
-        for (uint32_t cnt = 0; cnt < static_cast<uint32_t>(bitWidth-1); cnt++) {
-            bitMask |= (0x1 << cnt);;
+        for(uint32_t cnt = 0; cnt < static_cast<uint32_t>(bitWidth - 1); cnt++) {
+            bitMask |= (0x1 << cnt);
         }
-        if (0 == (0x80000000 & u32value)) {
+        if(0 == (0x80000000 & u32value)) {
             // Positive values
             u32value &= bitMask;
         } else {
@@ -83,6 +83,7 @@ protected:
         this->getValue(testValue, nrBits);
         EXPECT_EQ(oriValue, testValue);
     }
+
 };
 
 
@@ -141,7 +142,7 @@ TEST_F(Test_BitBuffer, set32BitsAndCheckBuffer)
 
 TEST_F(Test_BitBuffer, set5ByteValues)
 {
-    for (uint32_t cnt = 0; cnt < 5; cnt++) {
+    for(uint32_t cnt = 0; cnt < 5; cnt++) {
         this->appendValue(10 + cnt, 8);
     }
 
@@ -160,7 +161,7 @@ TEST_F(Test_BitBuffer, set5ByteValues)
 TEST_F(Test_BitBuffer, set34bitValues)
 {
     uint32_t value;
-    for (uint32_t cnt = 0; cnt < 34; cnt++) {
+    for(uint32_t cnt = 0; cnt < 34; cnt++) {
         this->appendValue(cnt & 0x1, 1);
     }
 
@@ -175,7 +176,7 @@ TEST_F(Test_BitBuffer, set34bitValues)
     EXPECT_EQ(0x02, pBuffer[4]);
 
     this->restartReading();
-    for (uint32_t cnt = 0; cnt < 34; cnt++) {
+    for(uint32_t cnt = 0; cnt < 34; cnt++) {
         this->getValue(value, 1);
         EXPECT_EQ(value, (cnt & 0x1));
     }
@@ -185,31 +186,31 @@ TEST_F(Test_BitBuffer, readWriteSpecificUnsignedValues)
 {
     testSingleUnsignedValue(0, 1);
     testSingleUnsignedValue(1, 1);
-    //testSingleUnsignedValue(2, 1); -> would assert
+    // testSingleUnsignedValue(2, 1); -> would assert
 
     testSingleUnsignedValue(10, 4);
     testSingleUnsignedValue(10, 5);
     testSingleUnsignedValue(10, 32);
 
     testSingleUnsignedValue(0, 32);
-    //testSingleUnsignedValue(0xaffeaffe, 31); -> would assert
+    // testSingleUnsignedValue(0xaffeaffe, 31); -> would assert
     testSingleUnsignedValue(0xaffeaffe, 32);
     testSingleUnsignedValue(0xffffffff, 32);
 }
 
 TEST_F(Test_BitBuffer, readWriteSpecificSignedValues)
 {
-    //testSingleSignedValue(1, 1); -> would assert
+    // testSingleSignedValue(1, 1); -> would assert
 
     testSingleSignedValue(-1, 2);
     testSingleSignedValue( 0, 2);
     testSingleSignedValue( 1, 2);
 
-    //testSingleSignedValue(10, 4); -> would assert
+    // testSingleSignedValue(10, 4); -> would assert
     testSingleSignedValue(10, 5);
     testSingleSignedValue(10, 10);
     testSingleSignedValue(10, 32);
-    //testSingleSignedValue(-10, 4); -> would assert
+    // testSingleSignedValue(-10, 4); -> would assert
     testSingleSignedValue(-10, 5);
     testSingleSignedValue(-10, 10);
     testSingleSignedValue(-10, 32);
@@ -234,7 +235,7 @@ TEST_F(Test_BitBuffer, randomBufferReadWriteUnsignedValues)
         uint32_t value;
 
         // Write random numbers to buffer and store them in an array
-        for (uint16_t cnt = 0; cnt < NrValuesInBuffer; cnt++) {
+        for(uint16_t cnt = 0; cnt < NrValuesInBuffer; cnt++) {
             uint16_t width;
             getRandomValue(value, width);
             this->appendValue(value, width);
@@ -248,13 +249,13 @@ TEST_F(Test_BitBuffer, randomBufferReadWriteUnsignedValues)
         uint32_t testValue;
         // Read back values and compare with the values in buffer
         this->restartReading();
-        for (uint16_t cnt = 0; cnt < NrValuesInBuffer; cnt++) {
+        for(uint16_t cnt = 0; cnt < NrValuesInBuffer; cnt++) {
             uint16_t bitWidth = randomNumberValues[cnt].bitWidth;
             this->getValue(testValue, bitWidth);
 
             // Do not use the function from the buffer on purpose, calculate the bit mask independent
             uint32_t bitMask = (0x1 << bitWidth) - 1;
-            if (32 == bitWidth) {
+            if(32 == bitWidth) {
                 bitMask = 0xffffffff;
             }
             EXPECT_EQ((randomNumberValues[cnt].randVal & bitMask), testValue );
@@ -276,7 +277,7 @@ TEST_F(Test_BitBuffer, randomBufferReadWriteSignedValues)
         int32_t value;
 
         // Write random numbers to buffer and store them in an array
-        for (uint16_t cnt = 0; cnt < NrValuesInBuffer; cnt++) {
+        for(uint16_t cnt = 0; cnt < NrValuesInBuffer; cnt++) {
             uint16_t width;
             getRandomValue(value, width);
 
@@ -293,7 +294,7 @@ TEST_F(Test_BitBuffer, randomBufferReadWriteSignedValues)
 
         // Read back values and compare with the values in buffer
         this->restartReading();
-        for (uint16_t cnt = 0; cnt < NrValuesInBuffer; cnt++) {
+        for(uint16_t cnt = 0; cnt < NrValuesInBuffer; cnt++) {
             uint16_t bitWidth = randomNumberValues[cnt].bitWidth;
             this->getValue(testValue, bitWidth);
             EXPECT_EQ(randomNumberValues[cnt].randVal, testValue);

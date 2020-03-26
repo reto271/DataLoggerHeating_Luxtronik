@@ -1,7 +1,6 @@
 #pragma once
 
-typedef struct
-{
+typedef struct {
     uint32_t cmdId;
     // identifier is not used
     std::string description;
@@ -9,14 +8,12 @@ typedef struct
     std::string unit;
 } ValueEntry_v1;
 
-typedef struct
-{
+typedef struct {
     std::time_t sampleTime;
     int32_t data[69];
 } TimeDataArray_v1;
 
-typedef union
-{
+typedef union {
     int32_t rawData[69 + 2];
     TimeDataArray_v1 timeData;
 } BufferDataRecord_v1;

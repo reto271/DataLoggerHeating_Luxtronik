@@ -5,14 +5,13 @@
 #include "Common/src/ValueTable_v1.hpp"
 
 
-typedef struct
-{
+typedef struct {
     uint32_t cmdId;
     // identifier is not used
     std::string description;
     uint32_t conversionDivisor;
     std::string unit;
-//    uint32_t nrBits;
+// uint32_t nrBits;
 } ValueEntry;
 
 

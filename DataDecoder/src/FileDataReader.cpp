@@ -23,14 +23,14 @@ FileDataReader::~FileDataReader()
 {
     delete[] m_pBuffer;
     m_inputFileStream.close();
-};
+}
 
 bool FileDataReader::readHeaderData()
 {
     bool feedback = true;
 
 
-    if (false == m_inputFileStream.is_open ()) {
+    if(false == m_inputFileStream.is_open ()) {
         std::cout << "Could not find file: '" << m_fileName << "'" << std::endl;
         return false;
     }
@@ -51,32 +51,31 @@ bool FileDataReader::readHeaderData()
     std::cout << "File length:        " << m_fileLength << std::endl;
 
     // Conistency check for the detected file version
-    switch(m_fileVersion)
-    {
-    //current file version
-    case FILE_Version:
-        {
-            FeedbackCollector collectFeedback(feedback);
-            collectFeedback.addAndFeedback(m_sizeFileHeader == FILE_SizeOfHeader);
-            collectFeedback.addAndFeedback(m_nrDataEntriesPerRecord == FILE_NrDataEntries);
-            feedback = collectFeedback.getFeedback();
-        }
-        break;
+    switch(m_fileVersion) {
+        // current file version
+        case FILE_Version:
+            {
+                FeedbackCollector collectFeedback(feedback);
+                collectFeedback.addAndFeedback(m_sizeFileHeader == FILE_SizeOfHeader);
+                collectFeedback.addAndFeedback(m_nrDataEntriesPerRecord == FILE_NrDataEntries);
+                feedback = collectFeedback.getFeedback();
+            }
+            break;
 
-    case FILE_Version_v1:
-        {
-            FeedbackCollector collectFeedback(feedback);
-            collectFeedback.addAndFeedback(m_sizeFileHeader == FILE_SizeOfHeader_v1);
-            collectFeedback.addAndFeedback(m_nrDataEntriesPerRecord == FILE_NrDataEntries_v1);
-            feedback = collectFeedback.getFeedback();
-        }
-        break;
+        case FILE_Version_v1:
+            {
+                FeedbackCollector collectFeedback(feedback);
+                collectFeedback.addAndFeedback(m_sizeFileHeader == FILE_SizeOfHeader_v1);
+                collectFeedback.addAndFeedback(m_nrDataEntriesPerRecord == FILE_NrDataEntries_v1);
+                feedback = collectFeedback.getFeedback();
+            }
+            break;
 
 
-    default:
-        std::cout << "File version not supported" << std::endl;
-        feedback = false;
-        break;
+        default:
+            std::cout << "File version not supported" << std::endl;
+            feedback = false;
+            break;
     }
 
     return feedback;
@@ -85,19 +84,18 @@ bool FileDataReader::readHeaderData()
 bool FileDataReader::decodeData()
 {
     bool feedback = false;
-    switch(m_fileVersion)
-    {
-    //current file version
-    case FILE_Version:
-        feedback = decodeDataCurrent();
-        break;
+    switch(m_fileVersion) {
+        // current file version
+        case FILE_Version:
+            feedback = decodeDataCurrent();
+            break;
 
-    case FILE_Version_v1:
-        feedback = decodeDataV1();
-        break;
+        case FILE_Version_v1:
+            feedback = decodeDataV1();
+            break;
 
-    default:
-        break;
+        default:
+            break;
     }
     return feedback;
 }
@@ -120,11 +118,11 @@ bool FileDataReader::decodeDataV1()
     m_pBuffer = new uint32_t[bufferSize];
     m_inputFileStream.read(reinterpret_cast<char*>(m_pBuffer), 4 * bufferSize);
 
-    //printRawBuffer();
+    // printRawBuffer();
 
     // Prepare the header line
     std::string headerLine = "Time";
-    for (uint32_t cnt = 0; cnt < m_nrDataEntriesPerRecord; cnt++) {
+    for(uint32_t cnt = 0; cnt < m_nrDataEntriesPerRecord; cnt++) {
         headerLine += ", ";
         headerLine += ValueTableDecode_v1[cnt].description;
     }
@@ -151,7 +149,7 @@ bool FileDataReader::writeToCSV(std::string headerLine)
         time += static_cast<std::time_t>(m_pBuffer[arrayPos]) << 32;
         arrayPos++;
         csvFile << time;
-        for (uint32_t cnt = 0; cnt < m_nrDataEntriesPerRecord; cnt++) {
+        for(uint32_t cnt = 0; cnt < m_nrDataEntriesPerRecord; cnt++) {
             csvFile << ", " << std::right << std::setw(9) << *(reinterpret_cast<int32_t*>(&m_pBuffer[arrayPos]));
             arrayPos++;
         }

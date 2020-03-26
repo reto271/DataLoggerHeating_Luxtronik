@@ -15,7 +15,7 @@ float conversionFunctionDivisor(const uint32_t value, const uint32_t divisor)
 
 bool conversionFunctionBool(const uint32_t value)
 {
-    if (0 == value) {
+    if(0 == value) {
         return false;
     } else {
         return true;
@@ -30,7 +30,7 @@ ValueResponse::ValueResponse(RecDataStoragePtr receiveDataPtr, std::time_t curre
 {
     std::cout << "Current time: " << currentUnixTime << " / 0x" << std::hex << m_currentUnixTime << std::dec << " --- " << std::asctime(std::localtime(&currentUnixTime));
 
-    if (false == doesFileExist()) {
+    if(false == doesFileExist()) {
         std::ofstream wf(fileNameFromDate().c_str(), std::ios::out | std::ios::binary | std::ios_base::app);
         if(!wf) {
             std::cout << "Cannot open file!" << std::endl;
@@ -58,7 +58,7 @@ void ValueResponse::decode()
 //    printf("10 val: 0x%.8x\n", val);
 //    printf("10 val: %3.1f\n", static_cast<float>(val) / 10);
     std::cout << "xxx ------------" << std::endl;
-    for (uint32_t cnt = 0; cnt < getNumberOfEntries(); cnt++) {
+    for(uint32_t cnt = 0; cnt < getNumberOfEntries(); cnt++) {
         uint32_t value = m_responsePtr->getDataField(ValueTableDecode[cnt].cmdId + 1);
         std::cout << ValueTableDecode[cnt].cmdId << ": " << ValueTableDecode[cnt].description.c_str() << ": " << value << " / 0x" << std::hex << value << std::dec << std::endl;
     }
@@ -93,7 +93,7 @@ char ValueResponse::serialize()
     addUnixTimeToBuffer(wf, m_currentUnixTime);
 
     // Copy the heating data to the binary file
-    for (uint32_t cnt = 0; cnt < getNumberOfEntries(); cnt++) {
+    for(uint32_t cnt = 0; cnt < getNumberOfEntries(); cnt++) {
         uint32_t value = m_responsePtr->getDataField(ValueTableDecode[cnt].cmdId + 1);
         wf.write(reinterpret_cast<char*>(&value), sizeof(uint32_t));
 
@@ -101,8 +101,8 @@ char ValueResponse::serialize()
         // Debug code:
         // ------------------------------------------
         // Ruecklauf-Soll Heizkreis = 50
-        if (ValueTableDecode[cnt].cmdId + 1 == 19) {
-            if (value != 500) {
+        if(ValueTableDecode[cnt].cmdId + 1 == 19) {
+            if(value != 500) {
                 std::cout << "There is an issue in the raw data, value is: " << value << std::endl;
                 decode();
                 m_responsePtr->printBuffer();
@@ -117,9 +117,9 @@ char ValueResponse::serialize()
 
 void ValueResponse::addUnixTimeToBuffer(std::ofstream& wf, std::time_t unixTime)
 {
-    if (8 == sizeof(std::time_t)) {
+    if(8 == sizeof(std::time_t)) {
         wf.write(reinterpret_cast<char*>(&unixTime), sizeof(std::time_t));
-    } else if (4 == sizeof(std::time_t)) {
+    } else if(4 == sizeof(std::time_t)) {
         uint32_t dummy = 0;
         wf.write(reinterpret_cast<char*>(&unixTime), sizeof(std::time_t));
         wf.write(reinterpret_cast<char*>(&dummy), 4);

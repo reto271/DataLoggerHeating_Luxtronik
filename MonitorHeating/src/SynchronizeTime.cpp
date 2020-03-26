@@ -14,7 +14,7 @@ std::time_t SynchronizeTime::waitForMinute()
     m_currentUnixTime = std::time(nullptr);
     currentLocalTime = std::localtime(&m_currentUnixTime);
 
-    while (0 != currentLocalTime->tm_sec) {
+    while(0 != currentLocalTime->tm_sec) {
         sleep(1);
         m_currentUnixTime = std::time(nullptr);
         currentLocalTime = std::localtime(&m_currentUnixTime);
@@ -26,7 +26,7 @@ bool SynchronizeTime::isFullHour(bool updateTime)
 {
     struct tm* currentLocalTime;
 
-    if (true == updateTime) {
+    if(true == updateTime) {
         m_currentUnixTime = std::time(nullptr);
     }
     currentLocalTime = std::localtime(&m_currentUnixTime);
@@ -38,7 +38,7 @@ uint32_t SynchronizeTime::getHour(bool updateTime)
 {
     struct tm* currentLocalTime;
 
-    if (true == updateTime) {
+    if(true == updateTime) {
         m_currentUnixTime = std::time(nullptr);
     }
     currentLocalTime = std::localtime(&m_currentUnixTime);

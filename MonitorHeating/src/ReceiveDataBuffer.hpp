@@ -2,8 +2,7 @@
 
 #include <memory>
 
-typedef enum
-{
+typedef enum {
     ReadParam,
     ReadValue
 } HeatControlCommand;
@@ -33,21 +32,18 @@ private:
     static const uint32_t NrParameter = 1087;
     size_t m_writePos;
 
-    typedef struct
-    {
+    typedef struct {
         uint32_t commandResponse;
         uint32_t nrEntries;
         uint32_t data[NrParameter];
     } DecodedBuffer;
 
-    typedef union
-    {
+    typedef union {
         uint8_t buffer[BufferSize];
         DecodedBuffer decode;
     } DataBuffer;
 
-    typedef struct
-    {
+    typedef struct {
         HeatControlCommand heatControlCommand;
         DataBuffer data;
     } ResponseBuffer;
