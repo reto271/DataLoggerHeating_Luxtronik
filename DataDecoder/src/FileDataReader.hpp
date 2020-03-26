@@ -16,6 +16,7 @@ public:
 protected:
     bool decodeDataCurrent();
     bool decodeDataV1();
+    void readRawDataFromFile();
     bool writeToCSV(std::string headerLine);
 
 

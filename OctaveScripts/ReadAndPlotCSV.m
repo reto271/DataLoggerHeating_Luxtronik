@@ -29,10 +29,10 @@
 
 
 clear all;
-close all;
+##close all;
 clc;
 
-fileName = "../HeatingData/total.csv";
+fileName = "../HeatingData/2020_03_26.dat.csv";
 
 data = csvread (fileName, 1, 0);
 timeInMinutes = (data(:,1)-data(1,1))/60;
@@ -65,22 +65,11 @@ ylabel("Temperature in deg Celcius");
 legend([headerText(2), headerText(3), headerText(9)], "location", "eastoutside");
 
 hdl2(2) = subplot(2,1,2);
-plot(timeInMinutes, data(:,70));
+plot(timeInMinutes, data(:,6)/10);
 grid on;
 title("Manual - first data set");
 xlabel("time in minutes");
 ylabel("State");
-legend([strcat(headerText(70))], "location", "eastoutside");
+legend([headerText(6)], "location", "eastoutside");
 
 linkaxes(hdl2, 'x');
-
-
-##------------------------------------------------------------
-figure(3);
-plot(timeInMinutes, data(:,2)/10, timeInMinutes, data(:,3)/10, timeInMinutes, data(:,13)/10);
-grid on;
-title("Manual - first data set");
-xlabel("time in minutes");
-ylabel("Temperature in deg Celcius");
-legend([headerText(2), headerText(3), headerText(13)], "location", "eastoutside");
-

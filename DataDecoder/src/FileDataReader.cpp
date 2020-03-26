@@ -102,11 +102,32 @@ bool FileDataReader::decodeData()
 
 bool FileDataReader::decodeDataCurrent()
 {
-    // There is no structural change, therefore the v1 may be used.
-    return decodeDataV1();
+    readRawDataFromFile();
+
+    // Prepare the header line
+    std::string headerLine = "Time";
+    for(uint32_t cnt = 0; cnt < m_nrDataEntriesPerRecord; cnt++) {
+        headerLine += ", ";
+        headerLine += ValueTableDecode[cnt].description;
+    }
+    return writeToCSV(headerLine);
 }
 
 bool FileDataReader::decodeDataV1()
+{
+    readRawDataFromFile();
+    // printRawBuffer();
+
+    // Prepare the header line
+    std::string headerLine = "Time";
+    for(uint32_t cnt = 0; cnt < m_nrDataEntriesPerRecord; cnt++) {
+        headerLine += ", ";
+        headerLine += ValueTableDecode_v1[cnt].description;
+    }
+    return writeToCSV(headerLine);
+}
+
+void FileDataReader::readRawDataFromFile()
 {
     uint32_t dataSizeInDoubleWords = (m_fileLength - (m_sizeFileHeader * 4)) / 4;
     m_nrRecords = dataSizeInDoubleWords / (m_nrDataEntriesPerRecord + 2);         // 2: 8bytes for the time stamp (std::time_t)
@@ -117,17 +138,6 @@ bool FileDataReader::decodeDataV1()
     assert(nullptr == m_pBuffer);
     m_pBuffer = new uint32_t[bufferSize];
     m_inputFileStream.read(reinterpret_cast<char*>(m_pBuffer), 4 * bufferSize);
-
-    // printRawBuffer();
-
-    // Prepare the header line
-    std::string headerLine = "Time";
-    for(uint32_t cnt = 0; cnt < m_nrDataEntriesPerRecord; cnt++) {
-        headerLine += ", ";
-        headerLine += ValueTableDecode_v1[cnt].description;
-    }
-
-    return writeToCSV(headerLine);
 }
 
 bool FileDataReader::writeToCSV(std::string headerLine)
