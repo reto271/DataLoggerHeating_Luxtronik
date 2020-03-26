@@ -39,7 +39,7 @@ ValueResponse::ValueResponse(RecDataStoragePtr receiveDataPtr, std::time_t curre
         totalNrBits += nrBits;
     }
     m_bytesPerDataSetInclTimeStamp = (((totalNrBits - 1) / 8) + 1) + 8; // 8 is the time stamp
-    std::cout << "m_bytesPerDataSetInclTimeStamp: " << m_bytesPerDataSetInclTimeStamp << ", totalNrBits: " << totalNrBits << std::endl;
+    std::cout << "Nr bits per data set: " << totalNrBits << ", bytes per data set: " << m_bytesPerDataSetInclTimeStamp << ", number of values per data set: " << getNumberOfEntries() << std::endl;
 
     if(false == doesFileExist()) {
         std::ofstream wf(fileNameFromDate().c_str(), std::ios::out | std::ios::binary | std::ios_base::app);
@@ -79,8 +79,6 @@ char ValueResponse::serialize()
     std::string dateString;
     BitBuffer bitBuffer;
 
-    std::cout << "getNumberOfEntries: " << getNumberOfEntries() << std::endl;
-
     std::ofstream wf(fileNameFromDate().c_str(), std::ios::out | std::ios::binary | std::ios_base::app);
     if(!wf) {
         std::cout << "Cannot open file!" << std::endl;
@@ -117,7 +115,6 @@ char ValueResponse::serialize()
     uint32_t nrBytesInBuffer;
     pBitBufferData = bitBuffer.getReferenceToBuffer(nrBytesInBuffer);
     wf.write(reinterpret_cast<const char*>(pBitBufferData), nrBytesInBuffer );
-    std::cout << nrBytesInBuffer + 8 << " written to file" << std::endl;
     wf.close();
     return 0;
 }
