@@ -118,7 +118,7 @@ bool FileDataReader::decodeDataV1()
     uint32_t bufferSize = m_nrRecords * (m_nrDataEntriesPerRecord + 2);
     assert(nullptr == m_pBuffer);
     m_pBuffer = new uint32_t[bufferSize];
-    m_inputFileStream.read(reinterpret_cast<char*>(m_pBuffer), 4*bufferSize);
+    m_inputFileStream.read(reinterpret_cast<char*>(m_pBuffer), 4 * bufferSize);
 
     //printRawBuffer();
 
@@ -141,7 +141,7 @@ bool FileDataReader::writeToCSV(std::string headerLine)
     csvFile.open(outputFileName, std::ios::out);
 
     // Write the header line
-    csvFile << headerLine <<std::endl;
+    csvFile << headerLine << std::endl;
 
     // Write data
     uint32_t arrayPos = 0;
@@ -152,7 +152,7 @@ bool FileDataReader::writeToCSV(std::string headerLine)
         arrayPos++;
         csvFile << time;
         for (uint32_t cnt = 0; cnt < m_nrDataEntriesPerRecord; cnt++) {
-            csvFile << ", " << std::right << std::setw(9) << m_pBuffer[arrayPos];
+            csvFile << ", " << std::right << std::setw(9) << *(reinterpret_cast<int32_t*>(&m_pBuffer[arrayPos]));
             arrayPos++;
         }
         csvFile << std::endl;
@@ -166,7 +166,8 @@ void FileDataReader::printRawBuffer()
 {
     for(uint32_t record = 0; record < m_nrRecords; record++) {
         for(uint32_t cnt = 0; cnt < (m_nrDataEntriesPerRecord + 2); cnt++) {
-            std::cout << "[" << record << ":" <<cnt << "] " << m_pBuffer[cnt + record * (m_nrDataEntriesPerRecord + 2)] << ", ";
+            std::cout << "[" << record << ":" << cnt << "] "
+                      << *(reinterpret_cast<int32_t*>(m_pBuffer[cnt + record * (m_nrDataEntriesPerRecord + 2)])) << ", ";
         }
         std::cout << std::endl << std::endl;
     }
