@@ -50,7 +50,9 @@ data.dat
 tmp/
 
 # output files
-HeatingData/
+HeatingData/*.dat
+HeatingData/*.csv
+HeatingData/*.log
 
 # documentation files
 docu/

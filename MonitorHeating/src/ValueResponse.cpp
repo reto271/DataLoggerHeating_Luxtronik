@@ -135,7 +135,8 @@ std::string ValueResponse::fileNameFromDate()
 
     timeInfo = std::localtime(&m_currentUnixTime);
 
-    fileNameStream << std::setw(4) << std::setfill('0') << 1900 + timeInfo->tm_year << "_"
+    fileNameStream << "HeatingData/"
+                   << std::setw(4) << std::setfill('0') << 1900 + timeInfo->tm_year << "_"
                    << std::setw(2) << std::setfill('0') << 1 + timeInfo->tm_mon << "_"
                    << std::setw(2) << std::setfill('0') << timeInfo->tm_mday << ".dat";
     std::string fileName = fileNameStream.str();

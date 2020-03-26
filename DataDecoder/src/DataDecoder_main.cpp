@@ -12,6 +12,7 @@ int main(int argc, char* argv[])
     }
 
     std::string fileName = argv[1];
+    std::cout << "Processing: " << fileName << std::endl;
 
     FileDataReader fileDataReader(fileName);
     if (false == fileDataReader.readHeaderData()) {
