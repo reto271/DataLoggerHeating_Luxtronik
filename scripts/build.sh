@@ -16,6 +16,10 @@ fi
 
 echo "Build Test"
 if [ 0 -eq ${feedback} ] ; then
+    if [ ! -d "../Test/googletest" ] ; then
+        echo "Get google test framework"
+        ../Test/scripts/getGoogleTest.sh
+    fi
     ../Test/scripts/build.sh "$0"
     feedback=$?
 fi
