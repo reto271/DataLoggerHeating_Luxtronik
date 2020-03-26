@@ -8,16 +8,6 @@ typedef struct {
     std::string unit;
 } ValueEntry_v1;
 
-typedef struct {
-    std::time_t sampleTime;
-    int32_t data[69];
-} TimeDataArray_v1;
-
-typedef union {
-    int32_t rawData[69 + 2];
-    TimeDataArray_v1 timeData;
-} BufferDataRecord_v1;
-
 
 // Command Values 3004
 

@@ -80,10 +80,16 @@ void BitBuffer::getValue(int32_t& value, uint8_t nrBits)
     }
 }
 
-uint8_t* BitBuffer::getReferenceToBuffer(uint32_t& nrBitsInBuffer)
+uint8_t* BitBuffer::getReferenceToBuffer(uint32_t& nrBytesInBuffer)
 {
-    nrBitsInBuffer = m_nrBitsInBuffer;
+    nrBytesInBuffer = m_buffer.size();
+    // std::cout << "nrBytesInBuffer: " << nrBytesInBuffer << std::endl;
     return m_buffer.data();
+}
+
+uint32_t BitBuffer::getNumberBitsInBuffer()
+{
+    return m_nrBitsInBuffer;
 }
 
 void BitBuffer::printContent()
@@ -96,7 +102,7 @@ void BitBuffer::printContent()
     uint32_t nrBytes = (m_nrBitsInBuffer >> 3) + 1;
 
     for(uint32_t cnt = 0; cnt < nrBytes; cnt++) {
-        std::cout << std::hex << ", 0x" << static_cast<uint16_t>(m_buffer[cnt]);
+        std::cout << std::hex << ", 0x" << static_cast<uint32_t>(m_buffer[cnt]);
     }
     std::cout << std::dec << std::endl;
     std::cout << "--- printContent ---------" << std::endl;
@@ -120,7 +126,7 @@ void BitBuffer::appendValuesToBuffer(uint32_t value, uint8_t nrBits)
     int32_t nrAdditionalReqBits = (m_nrBitsInBuffer + nrBits) - nrBitsInVector;
     if(0 < nrAdditionalReqBits) {
         // need more buffer space
-        uint8_t nrReqBytes = (nrAdditionalReqBits - 1 / 8) + 1;
+        uint32_t nrReqBytes = ((nrAdditionalReqBits - 1) / 8) + 1;
         m_buffer.resize(m_buffer.size() + nrReqBytes);
     }
     for(uint8_t cnt = 0; cnt < nrBits; cnt++) {

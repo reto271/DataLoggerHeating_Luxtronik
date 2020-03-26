@@ -131,9 +131,14 @@ TEST_F(Test_BitBuffer, set32BitsAndCheckBuffer)
     this->appendValue(static_cast<uint32_t>(0x12345678), 32);
 
     uint32_t nrBits;
-    uint8_t* pBuffer = this->getReferenceToBuffer(nrBits);
+    uint32_t nrBytes;
+    uint8_t* pBuffer = this->getReferenceToBuffer(nrBytes);
+    nrBits = this->getNumberBitsInBuffer();
+
+    // this->printContent();
 
     EXPECT_EQ(32, nrBits);
+    EXPECT_EQ(4, nrBytes);
     EXPECT_EQ(0x78, pBuffer[0]);
     EXPECT_EQ(0x56, pBuffer[1]);
     EXPECT_EQ(0x34, pBuffer[2]);
@@ -147,9 +152,12 @@ TEST_F(Test_BitBuffer, set5ByteValues)
     }
 
     uint32_t nrBits;
-    uint8_t* pBuffer = this->getReferenceToBuffer(nrBits);
+    uint32_t nrBytes;
+    uint8_t* pBuffer = this->getReferenceToBuffer(nrBytes);
+    nrBits = this->getNumberBitsInBuffer();
 
     EXPECT_EQ(40, nrBits);
+    EXPECT_EQ(5, nrBytes);
     EXPECT_EQ(10, pBuffer[0]);
     EXPECT_EQ(11, pBuffer[1]);
     EXPECT_EQ(12, pBuffer[2]);
@@ -166,9 +174,12 @@ TEST_F(Test_BitBuffer, set34bitValues)
     }
 
     uint32_t nrBits;
-    uint8_t* pBuffer = this->getReferenceToBuffer(nrBits);
+    uint32_t nrBytes;
+    uint8_t* pBuffer = this->getReferenceToBuffer(nrBytes);
+    nrBits = this->getNumberBitsInBuffer();
 
     EXPECT_EQ(34, nrBits);
+    EXPECT_EQ(5, nrBytes);
     EXPECT_EQ(0xaa, pBuffer[0]);
     EXPECT_EQ(0xaa, pBuffer[1]);
     EXPECT_EQ(0xaa, pBuffer[2]);
@@ -223,11 +234,13 @@ TEST_F(Test_BitBuffer, readWriteSpecificSignedValues)
 
 TEST_F(Test_BitBuffer, randomBufferReadWriteUnsignedValues)
 {
+    const uint32_t NrValuesInBuffer = 44;
+
     typedef struct {
         uint32_t randVal;
         uint16_t bitWidth;
     } RandomNumber;
-    const uint32_t NrValuesInBuffer = 44;
+
     RandomNumber randomNumberValues[NrValuesInBuffer];
 
     // Write values to buffer
@@ -247,10 +260,14 @@ TEST_F(Test_BitBuffer, randomBufferReadWriteUnsignedValues)
     // Read values back from buffer and expected result array
     {
         uint32_t testValue;
+        uint32_t totalBitWidth = 0;
+        uint32_t bytesInBuffer;
+        this->getReferenceToBuffer(bytesInBuffer);
         // Read back values and compare with the values in buffer
         this->restartReading();
         for(uint16_t cnt = 0; cnt < NrValuesInBuffer; cnt++) {
             uint16_t bitWidth = randomNumberValues[cnt].bitWidth;
+            totalBitWidth += bitWidth;
             this->getValue(testValue, bitWidth);
 
             // Do not use the function from the buffer on purpose, calculate the bit mask independent
@@ -260,6 +277,8 @@ TEST_F(Test_BitBuffer, randomBufferReadWriteUnsignedValues)
             }
             EXPECT_EQ((randomNumberValues[cnt].randVal & bitMask), testValue );
         }
+        EXPECT_EQ(totalBitWidth, this->getNumberBitsInBuffer());
+        EXPECT_EQ(((totalBitWidth - 1) / 8) + 1, bytesInBuffer);
     }
 }
 
@@ -291,14 +310,20 @@ TEST_F(Test_BitBuffer, randomBufferReadWriteSignedValues)
 
     {
         int32_t testValue;
+        uint32_t totalBitWidth = 0;
+        uint32_t bytesInBuffer;
+        this->getReferenceToBuffer(bytesInBuffer);
 
         // Read back values and compare with the values in buffer
         this->restartReading();
         for(uint16_t cnt = 0; cnt < NrValuesInBuffer; cnt++) {
             uint16_t bitWidth = randomNumberValues[cnt].bitWidth;
+            totalBitWidth += bitWidth;
             this->getValue(testValue, bitWidth);
             EXPECT_EQ(randomNumberValues[cnt].randVal, testValue);
         }
+        EXPECT_EQ(totalBitWidth, this->getNumberBitsInBuffer());
+        EXPECT_EQ(((totalBitWidth - 1) / 8) + 1, bytesInBuffer);
     }
 }
 

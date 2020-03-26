@@ -7,6 +7,7 @@
 #include <assert.h>
 
 #include "Common/src/ValueTable.hpp"
+#include "Common/src/BitBuffer.hpp"
 
 float conversionFunctionDivisor(const uint32_t value, const uint32_t divisor)
 {
@@ -27,8 +28,18 @@ bool conversionFunctionBool(const uint32_t value)
 ValueResponse::ValueResponse(RecDataStoragePtr receiveDataPtr, std::time_t currentUnixTime)
     : m_responsePtr(receiveDataPtr)
     , m_currentUnixTime(currentUnixTime)
+    , m_bytesPerDataSetInclTimeStamp(0)
 {
     std::cout << "Current time: " << currentUnixTime << " / 0x" << std::hex << m_currentUnixTime << std::dec << " --- " << std::asctime(std::localtime(&currentUnixTime));
+
+    // Calculate total number of bits and required bytes per data set, including the time stamp.
+    uint32_t totalNrBits = 0;
+    for(uint32_t cnt = 0; cnt < getNumberOfEntries(); cnt++) {
+        uint32_t nrBits = ValueTableDecode[cnt].nrBits;
+        totalNrBits += nrBits;
+    }
+    m_bytesPerDataSetInclTimeStamp = (((totalNrBits - 1) / 8) + 1) + 8; // 8 is the time stamp
+    std::cout << "m_bytesPerDataSetInclTimeStamp: " << m_bytesPerDataSetInclTimeStamp << ", totalNrBits: " << totalNrBits << std::endl;
 
     if(false == doesFileExist()) {
         std::ofstream wf(fileNameFromDate().c_str(), std::ios::out | std::ios::binary | std::ios_base::app);
@@ -48,38 +59,25 @@ uint32_t ValueResponse::getNumberOfEntries() const
     return FILE_NrDataEntries;
 }
 
-void ValueResponse::decode()
+uint32_t ValueResponse::getNumberBytesPerSampleIncTimeStamp() const
 {
-//    {  10, /*ID_WEB_Temperatur_TVL*/        "Vorlauftemperatur Heizkreis",                                         10, "°C" },
+    return m_bytesPerDataSetInclTimeStamp;
+}
 
-//    std::cout << "xxx ------------" << std::endl;
-//    uint32_t val = m_responsePtr->getDataField(11);
-//    printf("%s\n", ValueTableDecode[10].description.c_str());
-//    printf("10 val: 0x%.8x\n", val);
-//    printf("10 val: %3.1f\n", static_cast<float>(val) / 10);
-    std::cout << "xxx ------------" << std::endl;
+void ValueResponse::printRawBuffer()
+{
+    std::cout << "--- ValueResponse::printRawBuffer ------------" << std::endl;
     for(uint32_t cnt = 0; cnt < getNumberOfEntries(); cnt++) {
         uint32_t value = m_responsePtr->getDataField(ValueTableDecode[cnt].cmdId + 1);
         std::cout << ValueTableDecode[cnt].cmdId << ": " << ValueTableDecode[cnt].description.c_str() << ": " << value << " / 0x" << std::hex << value << std::dec << std::endl;
     }
+    std::cout << "--- ValueResponse::printRawBuffer ------------" << std::endl;
 }
-
-// struct tm {
-//    int tm_sec;   // seconds of minutes from 0 to 61
-//    int tm_min;   // minutes of hour from 0 to 59
-//    int tm_hour;  // hours of day from 0 to 24
-//    int tm_mday;  // day of month from 1 to 31
-//    int tm_mon;   // month of year from 0 to 11
-//    int tm_year;  // year since 1900
-//    int tm_wday;  // days since sunday
-//    int tm_yday;  // days since January 1st
-//    int tm_isdst; // hours of daylight savings time
-// }
-
 
 char ValueResponse::serialize()
 {
     std::string dateString;
+    BitBuffer bitBuffer;
 
     std::cout << "getNumberOfEntries: " << getNumberOfEntries() << std::endl;
 
@@ -92,25 +90,34 @@ char ValueResponse::serialize()
     // Copy the unix time to the binary file
     addUnixTimeToBuffer(wf, m_currentUnixTime);
 
-    // Copy the heating data to the binary file
+    validateBuffer();
+
+    // Copy the heating data to the bitBuffer
     for(uint32_t cnt = 0; cnt < getNumberOfEntries(); cnt++) {
         uint32_t value = m_responsePtr->getDataField(ValueTableDecode[cnt].cmdId + 1);
-        wf.write(reinterpret_cast<char*>(&value), sizeof(uint32_t));
+        uint32_t nrBits = ValueTableDecode[cnt].nrBits;
+        DataTypeInfo dataTypeInfo = ValueTableDecode[cnt].dataTypeInfo;
 
-
-        // Debug code:
-        // ------------------------------------------
-        // Ruecklauf-Soll Heizkreis = 50
-        if(ValueTableDecode[cnt].cmdId + 1 == 19) {
-            if(value != 500) {
-                std::cout << "There is an issue in the raw data, value is: " << value << std::endl;
-                decode();
-                m_responsePtr->printBuffer();
-            }
+        switch(dataTypeInfo) {
+            case DataTypeInfo::UNSIGNED:
+            case DataTypeInfo::BOOL:
+                bitBuffer.appendValue(value, nrBits);
+                break;
+            case DataTypeInfo::SIGNED:
+                bitBuffer.appendValue(*(reinterpret_cast<int32_t*>(&value)), nrBits);
+                break;
+            default:
+                assert(0); // Data type not supported
+                break;
         }
-        // ------------------------------------------
-
     }
+
+    // write bitBuffer to file
+    uint8_t* pBitBufferData;
+    uint32_t nrBytesInBuffer;
+    pBitBufferData = bitBuffer.getReferenceToBuffer(nrBytesInBuffer);
+    wf.write(reinterpret_cast<const char*>(pBitBufferData), nrBytesInBuffer );
+    std::cout << nrBytesInBuffer + 8 << " written to file" << std::endl;
     wf.close();
     return 0;
 }
@@ -153,5 +160,23 @@ void ValueResponse::writeHeaderVersion01(std::ofstream& wf)
 {
     wf.write(reinterpret_cast<const char*>(&FILE_Version), 4);
     wf.write(reinterpret_cast<const char*>(&FILE_SizeOfHeader), 4);
-    wf.write(reinterpret_cast<const char*>(&FILE_NrDataEntries), 4);
+    uint32_t bytesPerSample = getNumberBytesPerSampleIncTimeStamp();
+    wf.write(reinterpret_cast<const char*>(&bytesPerSample), 4);
+}
+
+void ValueResponse::validateBuffer()
+{
+    for(uint32_t cnt = 0; cnt < getNumberOfEntries(); cnt++) {
+        uint32_t value = m_responsePtr->getDataField(ValueTableDecode[cnt].cmdId + 1);
+
+        // It is known that: Ruecklauf-Soll Heizkreis = 50 deg
+        if(ValueTableDecode[cnt].cmdId + 1 == 19) {
+            if(value != 500) {
+                std::cout << "There is an issue in the raw data, value is: " << value << std::endl;
+                printRawBuffer();
+                m_responsePtr->printBuffer();
+                assert(0);
+            }
+        }
+    }
 }

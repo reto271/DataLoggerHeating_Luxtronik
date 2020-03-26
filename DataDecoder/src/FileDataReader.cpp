@@ -29,7 +29,6 @@ bool FileDataReader::readHeaderData()
 {
     bool feedback = true;
 
-
     if(false == m_inputFileStream.is_open ()) {
         std::cout << "Could not find file: '" << m_fileName << "'" << std::endl;
         return false;
@@ -54,10 +53,14 @@ bool FileDataReader::readHeaderData()
     switch(m_fileVersion) {
         // current file version
         case FILE_Version:
+            feedback = false; // not yet implemented
+            break;
+
+        case FILE_Version_v2:
             {
                 FeedbackCollector collectFeedback(feedback);
-                collectFeedback.addAndFeedback(m_sizeFileHeader == FILE_SizeOfHeader);
-                collectFeedback.addAndFeedback(m_nrDataEntriesPerRecord == FILE_NrDataEntries);
+                collectFeedback.addAndFeedback(m_sizeFileHeader == FILE_SizeOfHeader_v2);
+                collectFeedback.addAndFeedback(m_nrDataEntriesPerRecord == FILE_NrDataEntries_v2);
                 feedback = collectFeedback.getFeedback();
             }
             break;
@@ -87,6 +90,10 @@ bool FileDataReader::decodeData()
     switch(m_fileVersion) {
         // current file version
         case FILE_Version:
+            feedback = false; // not yet implemented
+            break;
+
+        case FILE_Version_v2:
             feedback = decodeDataCurrent();
             break;
 
@@ -102,13 +109,19 @@ bool FileDataReader::decodeData()
 
 bool FileDataReader::decodeDataCurrent()
 {
+    // not yet implemented
+    return false;
+}
+
+bool FileDataReader::decodeDataV2()
+{
     readRawDataFromFile();
 
     // Prepare the header line
     std::string headerLine = "Time";
     for(uint32_t cnt = 0; cnt < m_nrDataEntriesPerRecord; cnt++) {
         headerLine += ", ";
-        headerLine += ValueTableDecode[cnt].description;
+        headerLine += ValueTableDecode_v2[cnt].description;
     }
     return writeToCSV(headerLine);
 }

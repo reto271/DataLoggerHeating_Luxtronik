@@ -16,7 +16,8 @@ public:
     void getValue(uint32_t& value, uint8_t nrBits);
     void getValue(int32_t& value, uint8_t nrBits);
 
-    uint8_t* getReferenceToBuffer(uint32_t& nrBitsInBuffer);
+    uint8_t* getReferenceToBuffer(uint32_t& nrBytesInBuffer);
+    uint32_t getNumberBitsInBuffer();
 
     void printContent();
 

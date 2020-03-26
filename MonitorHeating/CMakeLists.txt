@@ -12,5 +12,11 @@ set(CMAKE_CXX_FLAGS "-ggdb -g3 -Wall")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 
 include_directories(${CMAKE_SOURCE_DIR}/..)
-add_executable(MonitorHeating src/MonitorHeating_main.cpp src/TcpConnection.cpp src/ReceiveDataBuffer.cpp src/ValueResponse.cpp src/SynchronizeTime.cpp)
+add_executable(MonitorHeating
+                src/MonitorHeating_main.cpp
+                src/TcpConnection.cpp
+                src/ReceiveDataBuffer.cpp
+                src/ValueResponse.cpp
+                src/SynchronizeTime.cpp
+                ../Common/src/BitBuffer.cpp)
 target_link_libraries(MonitorHeating)
