@@ -12,8 +12,10 @@ int main(int argc, char* argv[])
 
     std::time_t cmdLineTimeValue;
     std::time_t currentUnixTime = std::time(nullptr);
+    std::time_t maxTimeWith32bits = 0xffffffff;
 
     printTime(currentUnixTime, "Current Time");
+    printTime(maxTimeWith32bits, "Max time using 32bit");
 
     if(argc == 2) {
         std::string cmdLineArg = argv[1];
