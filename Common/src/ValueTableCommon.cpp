@@ -7,12 +7,31 @@
 ValueTableCommon::ValueTableCommon()
     : m_isInitialized(false)
 {
-    std::cout << "ValueTableCommon::" << __FUNCTION__ << std::endl;
 }
 
 ValueTableCommon::~ValueTableCommon()
 {
-    std::cout << "ValueTableCommon::" << __FUNCTION__ << std::endl;
+}
+
+void ValueTableCommon::initialize()
+{
+    initValueTable();
+
+    // Must be set first, otherweise the function calls 'getNrDataEntriesPerSet' and the like
+    // further down will assert.
+    m_isInitialized = true;
+
+    // Make sure there is at lease a single data set in the table
+    assert(0 < getNrDataEntriesPerSet());
+
+    m_nrBitsInBufferPerSet = 0;
+    for(uint32_t cnt = 0; cnt < getNrDataEntriesPerSet(); cnt++) {
+        m_nrBitsInBufferPerSet += getNrBitsInBuffer(cnt);
+    }
+    m_bytesPerSetInclTimeStamp = (((m_nrBitsInBufferPerSet - 1) / 8) + 1) + 8; // 8 is the time stamp
+    std::cout << "Nr bits per data set: " << m_nrBitsInBufferPerSet
+              << ", bytes per data set: " << m_bytesPerSetInclTimeStamp
+              << ", number of values per data set: " << getNrDataEntriesPerSet() << std::endl;
 }
 
 uint32_t ValueTableCommon::getCommandId(uint32_t entryNr) const
@@ -74,31 +93,4 @@ uint32_t ValueTableCommon::getNrBytesInBufferPerSet() const
 {
     assert(true == m_isInitialized);
     return m_bytesPerSetInclTimeStamp;
-}
-
-void ValueTableCommon::initValueTable()
-{
-    std::cout << "ValueTableCommon::" << __FUNCTION__ << std::endl;
-    assert(0);
-}
-
-void ValueTableCommon::initSizes()
-{
-    std::cout << "ValueTableCommon::" << __FUNCTION__ << std::endl;
-
-    // Must be set first, otherweise the function calls 'getNrDataEntriesPerSet' and the like
-    // further down will assert.
-    m_isInitialized = true;
-
-    m_nrBitsInBufferPerSet = 0;
-
-    std::cout << "getNrDataEntriesPerSet: " << getNrDataEntriesPerSet() << std::endl;
-
-    for(uint32_t cnt = 0; cnt < getNrDataEntriesPerSet(); cnt++) {
-        m_nrBitsInBufferPerSet += getNrBitsInBuffer(cnt);
-    }
-    m_bytesPerSetInclTimeStamp = (((m_nrBitsInBufferPerSet - 1) / 8) + 1) + 8; // 8 is the time stamp
-    std::cout << "Nr bits per data set: " << m_nrBitsInBufferPerSet
-              << ", bytes per data set: " << m_bytesPerSetInclTimeStamp
-              << ", number of values per data set: " << getNrDataEntriesPerSet() << std::endl;
 }

@@ -9,7 +9,6 @@ public:
     ValueTable();
 
     virtual ~ValueTable();
-    void init() override;
 
     uint32_t getFileVersion() const override;
     uint32_t getSizeOfHeader() const override;

@@ -14,6 +14,8 @@ public:
 
     virtual ~ValueTableCommon();
 
+    void initialize() override;
+
     uint32_t getCommandId(uint32_t entryNr) const override;
     std::string getDescription(uint32_t entryNr) const override;
     uint32_t getConversionDivisor(uint32_t entryNr) const override;
@@ -29,8 +31,7 @@ public:
 
 
 protected:
-    virtual void initValueTable();
-    virtual void initSizes();
+    virtual void initValueTable() = 0;
 
     std::vector<ValueEntry> m_entries;
 

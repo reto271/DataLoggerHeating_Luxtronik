@@ -6,19 +6,10 @@
 
 ValueTable::ValueTable()
 {
-    std::cout << "ValueTable::" << __FUNCTION__ << std::endl;
 }
 
 ValueTable::~ValueTable()
 {
-    std::cout << "ValueTable::" << __FUNCTION__ << std::endl;
-}
-
-void ValueTable::init()
-{
-    std::cout << "ValueTable::" << __FUNCTION__ << std::endl;
-    initValueTable();
-    initSizes();
 }
 
 uint32_t ValueTable::getFileVersion() const
@@ -33,7 +24,6 @@ uint32_t ValueTable::getSizeOfHeader() const
 
 void ValueTable::initValueTable()
 {
-    std::cout << "ValueTable::" << __FUNCTION__ << std::endl;
 // *INDENT-OFF*
 
     m_entries = {

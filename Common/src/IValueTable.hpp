@@ -19,7 +19,7 @@ public:
     {
     }
 
-    virtual void init() = 0;
+    virtual void initialize() = 0;
 
     virtual uint32_t getCommandId(uint32_t entryNr) const = 0;
     virtual std::string getDescription(uint32_t entryNr) const = 0;
