@@ -18,5 +18,8 @@ add_executable(MonitorHeating
                 src/ReceiveDataBuffer.cpp
                 src/ValueResponse.cpp
                 src/SynchronizeTime.cpp
-                ../Common/src/BitBuffer.cpp)
+                ../Common/src/BitBuffer.cpp
+                ../Common/src/IP_AddressValidator.cpp)
+#                ../Common/src/ValueTable.cpp)
+
 target_link_libraries(MonitorHeating)

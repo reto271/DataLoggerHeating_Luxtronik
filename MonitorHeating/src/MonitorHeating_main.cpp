@@ -5,6 +5,7 @@
 #include "ValueResponse.hpp"
 #include "SynchronizeTime.hpp"
 #include "TcpConnection.hpp"
+#include "Common/src/IP_AddressValidator.hpp"
 
 /// Reset the connection at 3 in the morning
 /// \param pConnection, reference to the TCP connection
@@ -12,25 +13,61 @@
 /// \return false if reconnection was not possible, true otherwise
 bool resetConnectionAt0300(TcpConnection* pConnection, SynchronizeTime* pTime);
 
+/// Application state, to enable some debug functions
+enum class ApplicationState {
+    NORMAL,
+    DEBUG
+};
+
 
 /// Main function to setup the connection, restart it periodically, read the data and forwards them to the decoder / serializer.
 int main(int argc, char* argv[])
 {
     SynchronizeTime sync;
+    std::time_t currentUnixTime;
+    ApplicationState applState = ApplicationState::NORMAL;
+    std::string ipAddr;
 
-    if(argc != 2) {
-        std::cout << std::endl << "Usage: " << argv[0] << " <ip of server>" << std::endl;
-        return 1;
+    std::cout << std::endl;
+
+    switch(argc) {
+        case 2:
+            ipAddr = argv[1];
+            break;
+
+        case 3:
+            {
+                ipAddr = argv[1];
+                std::string dbgSwitch = argv[2];
+                if("--debug" == dbgSwitch) {
+                    std::cout << "ApplicationState::DEBUG" << std::endl;
+                    applState = ApplicationState::DEBUG;
+                }
+            }
+            break;
+
+        default:
+            std::cout << std::endl << "Usage: " << argv[0] << " <ip of server>" << std::endl;
+            return 1;
+    }
+
+    IP_AddressValidator validateIp(ipAddr);
+    if(false == validateIp.validate()) {
+        std::cout << "'" << ipAddr << "' is not a valid IP address" << std::endl;
+        return 2;
     }
 
     TcpConnection tcpConnection(argv[1], 8889);
     if(false == tcpConnection.connectToHeating()) {
-        return 2;
+        return 3;
     }
 
     while(true) {
-        std::time_t currentUnixTime = sync.waitForMinute();
-
+        if(ApplicationState::NORMAL == applState) {
+            currentUnixTime = sync.waitForMinute();
+        } else {
+            currentUnixTime = std::time(nullptr);
+        }
         std::cout << "------------------------------------------------------" << std::endl;
         RecDataStoragePtr receiveDataPtr = tcpConnection.requestValues();
         if(nullptr == receiveDataPtr) {
@@ -40,7 +77,7 @@ int main(int argc, char* argv[])
             if(false == tcpConnection.connectToHeating()) {
                 // Reconnect failed
                 std::cout << "Reconnecting FAILED!!!" << std::endl;
-                return 3;
+                return 4;
             }
             // Try a second time...
             receiveDataPtr = tcpConnection.requestValues();
@@ -55,9 +92,13 @@ int main(int argc, char* argv[])
             return 5;
         }
         if(false == resetConnectionAt0300(&tcpConnection, &sync)) {
-            return 4;
+            return 6;
         }
-        sleep(1);
+        if(ApplicationState::NORMAL == applState) {
+            sleep(1);
+        }else{
+            sleep(5);
+        }
     }
 
     tcpConnection.disconnectFromHeating();
