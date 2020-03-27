@@ -4,18 +4,18 @@
 SCRIPTDIR=$(readlink -f $(dirname "$0"))
 pushd "${SCRIPTDIR}" > /dev/null
 
-echo "Build MonitorHeating"
+echo "::: Build MonitorHeating"
 ../MonitorHeating/scripts/build.sh "$0"
 feedback=$?
 
-echo "Build DataDecoder"
 if [ 0 -eq ${feedback} ] ; then
+    echo "::: Build DataDecoder"
     ../DataDecoder/scripts/build.sh "$0"
     feedback=$?
 fi
 
-echo "Build Test"
 if [ 0 -eq ${feedback} ] ; then
+    echo "::: Build Test"
     if [ ! -d "../Test/googletest" ] ; then
         echo "Get google test framework"
         ../Test/scripts/getGoogleTest.sh
@@ -24,8 +24,8 @@ if [ 0 -eq ${feedback} ] ; then
     feedback=$?
 fi
 
-echo "Build Utils"
 if [ 0 -eq ${feedback} ] ; then
+    echo "::: Build Utils"
     ../Utils/scripts/build.sh "$0"
     feedback=$?
 fi

@@ -3,7 +3,7 @@
 #include <ctime>
 
 #include "ReceiveDataBuffer.hpp"
-
+#include "Common/src/ValueTable.hpp"
 
 
 /// \brief Class to process the value response (cmd 3004).
@@ -66,6 +66,6 @@ private:
     /// Time of the current sample in Unix time.
     std::time_t m_currentUnixTime;
 
-    /// Number of bytes used to store a data set including the time stamp.
-    uint32_t m_bytesPerDataSetInclTimeStamp;
+    /// Value table, containting the whole data table for the Read Request.
+    ValueTable m_valueTable;
 };

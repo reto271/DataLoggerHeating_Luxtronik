@@ -6,40 +6,32 @@
 #include <iostream>
 #include <assert.h>
 
-#include "Common/src/ValueTable.hpp"
 #include "Common/src/BitBuffer.hpp"
 
-float conversionFunctionDivisor(const uint32_t value, const uint32_t divisor)
-{
-    return (static_cast<float>(value) / static_cast<float>(divisor));
-}
-
-bool conversionFunctionBool(const uint32_t value)
-{
-    if(0 == value) {
-        return false;
-    } else {
-        return true;
-    }
-}
+// float conversionFunctionDivisor(const uint32_t value, const uint32_t divisor)
+// {
+//    return (static_cast<float>(value) / static_cast<float>(divisor));
+// }
+//
+// bool conversionFunctionBool(const uint32_t value)
+// {
+//    if(0 == value) {
+//        return false;
+//    } else {
+//        return true;
+//    }
+// }
 
 // ----------------------------------------------------------------------------------
 
 ValueResponse::ValueResponse(RecDataStoragePtr receiveDataPtr, std::time_t currentUnixTime)
     : m_responsePtr(receiveDataPtr)
     , m_currentUnixTime(currentUnixTime)
-    , m_bytesPerDataSetInclTimeStamp(0)
 {
-    std::cout << "Current time: " << currentUnixTime << " / 0x" << std::hex << m_currentUnixTime << std::dec << " --- " << std::asctime(std::localtime(&currentUnixTime));
+    std::cout << "Current time: " << currentUnixTime << " / 0x" << std::hex << m_currentUnixTime << std::dec
+              << " --- " << std::asctime(std::localtime(&currentUnixTime));
 
-    // Calculate total number of bits and required bytes per data set, including the time stamp.
-    uint32_t totalNrBits = 0;
-    for(uint32_t cnt = 0; cnt < getNumberOfEntries(); cnt++) {
-        uint32_t nrBits = ValueTableDecode[cnt].nrBits;
-        totalNrBits += nrBits;
-    }
-    m_bytesPerDataSetInclTimeStamp = (((totalNrBits - 1) / 8) + 1) + 8; // 8 is the time stamp
-    std::cout << "Nr bits per data set: " << totalNrBits << ", bytes per data set: " << m_bytesPerDataSetInclTimeStamp << ", number of values per data set: " << getNumberOfEntries() << std::endl;
+    m_valueTable.init();
 
     if(false == doesFileExist()) {
         std::ofstream wf(fileNameFromDate().c_str(), std::ios::out | std::ios::binary | std::ios_base::app);
@@ -56,20 +48,21 @@ ValueResponse::ValueResponse(RecDataStoragePtr receiveDataPtr, std::time_t curre
 
 uint32_t ValueResponse::getNumberOfEntries() const
 {
-    return FILE_NrDataEntries;
+    return m_valueTable.getNrDataEntriesPerSet();
 }
 
 uint32_t ValueResponse::getNumberBytesPerSampleIncTimeStamp() const
 {
-    return m_bytesPerDataSetInclTimeStamp;
+    return m_valueTable.getNrBytesInBufferPerSet();
 }
 
 void ValueResponse::printRawBuffer()
 {
     std::cout << "--- ValueResponse::printRawBuffer ------------" << std::endl;
     for(uint32_t cnt = 0; cnt < getNumberOfEntries(); cnt++) {
-        uint32_t value = m_responsePtr->getDataField(ValueTableDecode[cnt].cmdId + 1);
-        std::cout << ValueTableDecode[cnt].cmdId << ": " << ValueTableDecode[cnt].description.c_str() << ": " << value << " / 0x" << std::hex << value << std::dec << std::endl;
+        uint32_t value = m_responsePtr->getDataField(m_valueTable.getCommandId(cnt));
+        std::cout << m_valueTable.getCommandId(cnt) << ": " << m_valueTable.getDescription(cnt).c_str() << ": " << value << " / 0x"
+                  << std::hex << value << std::dec << std::endl;
     }
     std::cout << "--- ValueResponse::printRawBuffer ------------" << std::endl;
 }
@@ -92,9 +85,9 @@ char ValueResponse::serialize()
 
     // Copy the heating data to the bitBuffer
     for(uint32_t cnt = 0; cnt < getNumberOfEntries(); cnt++) {
-        uint32_t value = m_responsePtr->getDataField(ValueTableDecode[cnt].cmdId + 1);
-        uint32_t nrBits = ValueTableDecode[cnt].nrBits;
-        DataTypeInfo dataTypeInfo = ValueTableDecode[cnt].dataTypeInfo;
+        uint32_t value = m_responsePtr->getDataField(m_valueTable.getCommandId(cnt));
+        uint32_t nrBits = m_valueTable.getNrBitsInBuffer(cnt);
+        DataTypeInfo dataTypeInfo = m_valueTable.getDataTypeInfo(cnt);
 
         switch(dataTypeInfo) {
             case DataTypeInfo::UNSIGNED:
@@ -155,8 +148,12 @@ bool ValueResponse::doesFileExist()
 
 void ValueResponse::writeHeaderVersion01(std::ofstream& wf)
 {
-    wf.write(reinterpret_cast<const char*>(&FILE_Version), 4);
-    wf.write(reinterpret_cast<const char*>(&FILE_SizeOfHeader), 4);
+    uint32_t fileVersion = m_valueTable.getFileVersion();
+    wf.write(reinterpret_cast<const char*>(&fileVersion), 4);
+
+    uint32_t headerVersion = m_valueTable.getSizeOfHeader();
+    wf.write(reinterpret_cast<const char*>(&headerVersion), 4);
+
     uint32_t bytesPerSample = getNumberBytesPerSampleIncTimeStamp();
     wf.write(reinterpret_cast<const char*>(&bytesPerSample), 4);
 }
@@ -164,10 +161,10 @@ void ValueResponse::writeHeaderVersion01(std::ofstream& wf)
 void ValueResponse::validateBuffer()
 {
     for(uint32_t cnt = 0; cnt < getNumberOfEntries(); cnt++) {
-        uint32_t value = m_responsePtr->getDataField(ValueTableDecode[cnt].cmdId + 1);
+        uint32_t value = m_responsePtr->getDataField(m_valueTable.getCommandId(cnt));
 
         // It is known that: Ruecklauf-Soll Heizkreis = 50 deg
-        if(ValueTableDecode[cnt].cmdId + 1 == 19) {
+        if(m_valueTable.getCommandId(cnt) == 19) {
             if(value != 500) {
                 std::cout << "There is an issue in the raw data, value is: " << value << std::endl;
                 printRawBuffer();
