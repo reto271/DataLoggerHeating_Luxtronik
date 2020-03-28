@@ -180,9 +180,9 @@ void FileDataReader::readRawDataFromFile()
                     break;
             }
             posInBuffer++;
-            pU8RawData += dataSetSize;
-        }
 
+        }
+        pU8RawData += dataSetSize;
         // Iterate through BitBuffer
         delete[] pU8RawDataOri;
     }
