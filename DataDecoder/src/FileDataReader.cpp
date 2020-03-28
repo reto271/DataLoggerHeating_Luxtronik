@@ -3,11 +3,13 @@
 #include <iomanip>
 #include <ctime>
 #include <assert.h>
+#include <cstring>
 
 #include "Common/src/ValueTable.hpp"
 #include "Common/src/ValueTable_v1.hpp"
 #include "Common/src/ValueTable_v2.hpp"
 #include "Common/src/FeedbackCollector.hpp"
+#include "Common/src/BitBuffer.hpp"
 
 FileDataReader::FileDataReader(std::string fileName)
     : m_fileName(fileName)
@@ -57,10 +59,10 @@ bool FileDataReader::readHeaderData()
 
 
     if(nullptr == m_pValueTable) {
-    std::cout << "- FileDataReader::" << __FUNCTION__ << ", ln: " << __LINE__ << std::endl;
+        std::cout << "- FileDataReader::" << __FUNCTION__ << ", ln: " << __LINE__ << std::endl;
         return false;
     } else {
-    std::cout << "- FileDataReader::" << __FUNCTION__ << ", ln: " << __LINE__ << std::endl;
+        std::cout << "- FileDataReader::" << __FUNCTION__ << ", ln: " << __LINE__ << std::endl;
         return true;
     }
 }
@@ -68,7 +70,7 @@ bool FileDataReader::readHeaderData()
 bool FileDataReader::decodeData()
 {
     if(nullptr == m_pValueTable) {
-    std::cout << "- FileDataReader::" << __FUNCTION__ << ", ln: " << __LINE__ << std::endl;
+        std::cout << "- FileDataReader::" << __FUNCTION__ << ", ln: " << __LINE__ << std::endl;
         return false;
     }
 
@@ -80,24 +82,22 @@ bool FileDataReader::decodeData()
         case 2:
             readRawDataFromFile_v1_v2();
             break;
-    default:
+        default:
             readRawDataFromFile();
-        break;
+            break;
     }
 
     return writeToCSV(headerLine);
 }
 
-
-
 void FileDataReader::readRawDataFromFile_v1_v2()
 {
     uint32_t dataSizeInDoubleWords = (m_fileLength - (m_sizeFileHeader * 4)) / 4;
-    m_nrRecords = dataSizeInDoubleWords / (m_nrDataEntriesPerRecord + 2);                 // 2: 8bytes for the time stamp (std::time_t)
+    m_nrRecords = dataSizeInDoubleWords / (m_pValueTable->getNrDataEntriesPerSet() + 2);                 // 2: 8bytes for the time stamp (std::time_t)
     std::cout << "No records : " << m_nrRecords << std::endl;
 
     // Allocate buffer and read from file
-    uint32_t bufferSize = m_nrRecords * (m_nrDataEntriesPerRecord + 2);
+    uint32_t bufferSize = m_nrRecords * (m_nrDataEntriesPerRecord + 2); // 2 * 4 bytes time stamp
     assert(nullptr == m_pBuffer);
     m_pBuffer = new uint32_t[bufferSize];
     m_inputFileStream.read(reinterpret_cast<char*>(m_pBuffer), 4 * bufferSize);
@@ -105,10 +105,89 @@ void FileDataReader::readRawDataFromFile_v1_v2()
 
 void FileDataReader::readRawDataFromFile()
 {
-    assert(0); // not yet implemented
+    uint32_t headerSize = 4 * m_pValueTable->getSizeOfHeader();
+    uint32_t dataFileLength = m_fileLength - headerSize;
+    uint32_t dataSetSize = m_pValueTable->getNrBytesInBufferPerSet();
+    m_nrRecords = dataFileLength / dataSetSize;
+
+    std::cout << "- FileDataReader::" << __FUNCTION__ << ", ln: " << __LINE__ << std::endl;
+    std::cout << "m_nrRecords: " << m_nrRecords << std::endl;
+    std::cout << "m_nrDataEntriesPerRecord: " << m_nrDataEntriesPerRecord << std::endl;
+    std::cout << "m_pValueTable->getNrDataEntriesPerSet(): " << m_pValueTable->getNrDataEntriesPerSet() << std::endl;
+    std::cout << "m_fileLength: " << m_fileLength << std::endl;
+
+    // Prepare buffer used for writeToCSV function
+    uint32_t bufferSize = m_nrRecords * (m_pValueTable->getNrDataEntriesPerSet() + 2);  // 2 * sizeof(uin32_t) for the time stamp
+    std::cout << "bufferSize: " << bufferSize << std::endl;
+    m_pBuffer = new uint32_t[bufferSize];
+    memset(reinterpret_cast<char*>(m_pBuffer), 0, sizeof(uint32_t) * bufferSize);
+    std::cout << "sizeof(m_pBuffer): " << (sizeof(uint32_t) * bufferSize) << std::endl;
+
+    // Read the whole file
+    uint8_t* pU8RawData = new uint8_t[m_fileLength];
+    uint8_t* pU8RawDataOri = pU8RawData;
+    m_inputFileStream.read(reinterpret_cast<char*>(pU8RawData), m_fileLength);
+
+    std::cout << "---------------------------" << std::endl;
+    for(uint32_t i = 0; i < dataFileLength; i++) {
+        std::cout << std::hex << ", 0x" << static_cast<uint16_t>(pU8RawData[i]) << std::dec;
+    }
+    std::cout << std::endl << "---------------------------" << std::endl;
+
+
+    uint32_t posInBuffer = 0;
+    for(uint32_t frameCnt = 0; frameCnt < m_nrRecords; frameCnt++) {
+        // -  // the iterator constructor can also be used to construct from arrays:
+        // -  int myints[] = {16,2,77,29};
+        // -  std::vector<int> fifth (myints, myints + sizeof(myints) / sizeof(int) );
+        std::vector<uint8_t> dataVector(pU8RawData, pU8RawData + dataSetSize);
+
+        // Convert to m_pBuffer
+        BitBuffer bitBuffer(dataVector);
+
+        bitBuffer.printContent();
+
+        // Get time value
+        uint32_t val;
+        bitBuffer.getValue(val, 32);
+        m_pBuffer[posInBuffer] = val;
+        posInBuffer++;
+        bitBuffer.getValue(val, 32);
+        m_pBuffer[posInBuffer] = val;
+        posInBuffer++;
+
+        for(uint32_t cnt = 0; cnt < m_pValueTable->getNrDataEntriesPerSet(); cnt++) {
+            switch(m_pValueTable->getDataTypeInfo(cnt)) {
+                case DataTypeInfo::UNSIGNED:
+                case DataTypeInfo::BOOL:
+                    {
+                        uint32_t val;
+                        bitBuffer.getValue(val, m_pValueTable->getNrBitsInBuffer(cnt));
+                        m_pBuffer[posInBuffer] = val;
+                    }
+                    break;
+
+
+                case DataTypeInfo::SIGNED:
+                    {
+                        uint32_t val;
+                        bitBuffer.getValue(val, m_pValueTable->getNrBitsInBuffer(cnt));
+                        m_pBuffer[posInBuffer] = val;
+                    }
+                    break;
+                default:
+                    assert(0);
+                    break;
+            }
+            posInBuffer++;
+            pU8RawData += dataSetSize;
+        }
+
+        // Iterate through BitBuffer
+        delete[] pU8RawDataOri;
+    }
+    std::cout << "- FileDataReader::" << __FUNCTION__ << ", ln: " << __LINE__ << std::endl;
 }
-
-
 
 bool FileDataReader::writeToCSV(std::string headerLine)
 {
@@ -129,7 +208,7 @@ bool FileDataReader::writeToCSV(std::string headerLine)
         time += static_cast<std::time_t>(m_pBuffer[arrayPos]) << 32;
         arrayPos++;
         csvFile << time;
-        for(uint32_t cnt = 0; cnt < m_nrDataEntriesPerRecord; cnt++) {
+        for(uint32_t cnt = 0; cnt < m_pValueTable->getNrDataEntriesPerSet(); cnt++) {
             csvFile << ", " << std::right << std::setw(9) << *(reinterpret_cast<int32_t*>(&m_pBuffer[arrayPos]));
             arrayPos++;
         }
@@ -143,9 +222,9 @@ bool FileDataReader::writeToCSV(std::string headerLine)
 void FileDataReader::printRawBuffer()
 {
     for(uint32_t record = 0; record < m_nrRecords; record++) {
-        for(uint32_t cnt = 0; cnt < (m_nrDataEntriesPerRecord + 2); cnt++) {
+        for(uint32_t cnt = 0; cnt < (m_pValueTable->getNrDataEntriesPerSet() + 2); cnt++) {
             std::cout << "[" << record << ":" << cnt << "] "
-                      << *(reinterpret_cast<int32_t*>(m_pBuffer[cnt + record * (m_nrDataEntriesPerRecord + 2)])) << ", ";
+                      << *(reinterpret_cast<int32_t*>(m_pBuffer[cnt + record * (m_pValueTable->getNrDataEntriesPerSet() + 2)])) << ", ";
         }
         std::cout << std::endl << std::endl;
     }
@@ -194,52 +273,6 @@ void FileDataReader::validateFile()
     validateNrEntriesPerRecord();
     validateFileLength();
 }
-
-#if 0
-switch(m_fileVersion) {
-    // current file version
-    case FILE_Version:
-        {
-            FeedbackCollector collectFeedback(feedback);
-            std::cout << "fb: " << collectFeedback.getFeedback() << ", @ ln: " << __LINE__ << std::endl;
-            collectFeedback.addAndFeedback(m_sizeFileHeader == FILE_SizeOfHeader);
-            std::cout << "fb: " << collectFeedback.getFeedback() << ", @ ln: " << __LINE__ << std::endl;
-
-            std::cout << "m_nrDataEntriesPerRecord " << m_nrDataEntriesPerRecord << " == FILE_NrDataEntries " << FILE_NrDataEntries << std::endl;
-
-            collectFeedback.addAndFeedback(m_nrDataEntriesPerRecord == FILE_NrDataEntries);
-            std::cout << "fb: " << collectFeedback.getFeedback() << ", @ ln: " << __LINE__ << std::endl;
-            feedback = collectFeedback.getFeedback();
-            std::cout << "fb: " << collectFeedback.getFeedback() << ", @ ln: " << __LINE__ << std::endl;
-        }
-        break;
-
-    case FILE_Version_v2:
-        {
-            FeedbackCollector collectFeedback(feedback);
-            collectFeedback.addAndFeedback(m_sizeFileHeader == FILE_SizeOfHeader_v2);
-            collectFeedback.addAndFeedback(m_nrDataEntriesPerRecord == FILE_NrDataEntries_v2);
-            feedback = collectFeedback.getFeedback();
-        }
-        break;
-
-    case FILE_Version_v1:
-        {
-            FeedbackCollector collectFeedback(feedback);
-            collectFeedback.addAndFeedback(m_sizeFileHeader == FILE_SizeOfHeader_v1);
-            collectFeedback.addAndFeedback(m_nrDataEntriesPerRecord == FILE_NrDataEntries_v1);
-            feedback = collectFeedback.getFeedback();
-        }
-        break;
-
-
-    default:
-        std::cout << "-> File version not supported" << std::endl;
-        feedback = false;
-        break;
-}
-}
-#endif
 
 void FileDataReader::validateHeaderSize()
 {
@@ -326,7 +359,7 @@ void FileDataReader::validateFileLength()
             dataSetSize = m_pValueTable->getNrBytesInBufferPerSet();
             break;
     }
-    if (0 != dataFileLength % dataSetSize) {
+    if(0 != dataFileLength % dataSetSize) {
 
         std::cout << "Data length in file is not modulo of 'number data entreis per set'" << std::endl
                   << "  headerSize: " << headerSize << std::endl

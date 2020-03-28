@@ -19,5 +19,6 @@ add_executable(DataDecoder
                ../Common/src/ValueTable.cpp
                ../Common/src/ValueTable_v1.cpp
                ../Common/src/ValueTable_v2.cpp
+               ../Common/src/BitBuffer.cpp
                ../Common/src/FeedbackCollector.cpp)
 target_link_libraries(DataDecoder)
