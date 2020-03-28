@@ -9,6 +9,14 @@ BitBuffer::BitBuffer()
 {
 }
 
+BitBuffer::BitBuffer(std::vector<uint8_t> data)
+    : m_buffer(data)
+    , m_nrBitsInBuffer(8 * data.size())
+    , m_writePos(8 * data.size())
+    , m_readBitPos(0)
+{
+}
+
 BitBuffer::~BitBuffer()
 {
 }

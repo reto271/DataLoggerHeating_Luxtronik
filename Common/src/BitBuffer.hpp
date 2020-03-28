@@ -7,6 +7,7 @@ class BitBuffer
 {
 public:
     BitBuffer();
+    BitBuffer(std::vector<uint8_t> data);
     ~BitBuffer();
 
     void appendValue(uint32_t value, uint8_t nrBits);
