@@ -1,5 +1,14 @@
 #!/bin/bash
 
+DELETE_ALL=0
+if [ 0 -eq $# ] ; then
+    PARA1 = $1
+    if [ "${PARA1}" = "--all" ] ; then
+        DELETE_ALL=1
+    fi
+fi
+
+
 # Change into the script directory
 SCRIPTDIR=$(readlink -f $(dirname "$0"))
 pushd "${SCRIPTDIR}" > /dev/null
@@ -27,7 +36,9 @@ if [ 0 -eq ${feedback} ] ; then
 fi
 
 cd ..
-rm -vrf GPATH GTAGS GRTAGS
+if [ 1 -eq ${DELETE_ALL} ] ; then
+    rm -vrf GPATH GTAGS GRTAGS
+fi
 
 # Back to the original location
 popd > /dev/null
