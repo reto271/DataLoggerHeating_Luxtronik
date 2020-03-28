@@ -12,5 +12,12 @@ set(CMAKE_CXX_FLAGS "-ggdb -g3 -Wall")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 
 include_directories(${CMAKE_SOURCE_DIR}/..)
-add_executable(DataDecoder src/DataDecoder_main.cpp src/FileDataReader.cpp ../Common/src/FeedbackCollector.cpp)
+add_executable(DataDecoder
+               src/DataDecoder_main.cpp
+               src/FileDataReader.cpp
+               ../Common/src/ValueTableCommon.cpp
+               ../Common/src/ValueTable.cpp
+               ../Common/src/ValueTable_v1.cpp
+               ../Common/src/ValueTable_v2.cpp
+               ../Common/src/FeedbackCollector.cpp)
 target_link_libraries(DataDecoder)

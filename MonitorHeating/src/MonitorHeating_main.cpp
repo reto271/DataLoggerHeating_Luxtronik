@@ -96,7 +96,7 @@ int main(int argc, char* argv[])
         }
         if(ApplicationState::NORMAL == applState) {
             sleep(1);
-        }else{
+        } else {
             sleep(5);
         }
     }
