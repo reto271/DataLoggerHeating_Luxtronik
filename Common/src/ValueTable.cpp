@@ -24,8 +24,7 @@ uint32_t ValueTable::getSizeOfHeader() const
 
 void ValueTable::initValueTable()
 {
-// *INDENT-OFF*
-
+    // *INDENT-OFF*
     m_entries = {
     //  | ID | Identifier                          | Description                                                | Conversion | Unit|
     //  |----|-------------------------------------|------------------------------------------------------------|------------|-----|
