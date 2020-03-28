@@ -1,8 +1,8 @@
 #!/bin/bash
 
 DELETE_ALL=0
-if [ 0 -eq $# ] ; then
-    PARA1 = $1
+if [ 1 -eq $# ] ; then
+    PARA1=$1
     if [ "${PARA1}" = "--all" ] ; then
         DELETE_ALL=1
     fi
