@@ -129,8 +129,17 @@ void FileDataReader::readRawDataFromFile()
     m_inputFileStream.read(reinterpret_cast<char*>(pU8RawData), m_fileLength);
 
     std::cout << "---------------------------" << std::endl;
-    for(uint32_t i = 0; i < dataFileLength; i++) {
-        std::cout << std::hex << ", 0x" << static_cast<uint16_t>(pU8RawData[i]) << std::dec;
+    {
+        std::ios state(nullptr);
+        state.copyfmt(std::cout); // save current formatting
+        std::cout << "0x0000 :";
+        for(uint32_t i = 0; i < dataFileLength; i++) {
+            std::cout << std::hex << " 0x" << std::setw(2) << std::setfill('0') << static_cast<uint16_t>(pU8RawData[i]);
+            if(0 == ((i + 1) % 32)) {
+                std::cout << std::endl << "0x" << std::setw(4) << i + 1 << " :";
+            }
+        }
+        std::cout.copyfmt(state); // restore previous formatting
     }
     std::cout << std::endl << "---------------------------" << std::endl;
 
@@ -184,8 +193,9 @@ void FileDataReader::readRawDataFromFile()
         }
         pU8RawData += dataSetSize;
         // Iterate through BitBuffer
-        delete[] pU8RawDataOri;
     }
+    std::cout << "- FileDataReader::" << __FUNCTION__ << ", ln: " << __LINE__ << std::endl;
+    delete[] pU8RawDataOri;
     std::cout << "- FileDataReader::" << __FUNCTION__ << ", ln: " << __LINE__ << std::endl;
 }
 

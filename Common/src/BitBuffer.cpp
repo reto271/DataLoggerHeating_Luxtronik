@@ -1,6 +1,7 @@
 #include "BitBuffer.hpp"
 #include <iostream>
 #include <assert.h>
+#include <iomanip>
 
 BitBuffer::BitBuffer()
     : m_nrBitsInBuffer(0)
@@ -102,6 +103,8 @@ uint32_t BitBuffer::getNumberBitsInBuffer()
 
 void BitBuffer::printContent()
 {
+    std::ios state(nullptr);
+    state.copyfmt(std::cout);     // save current formatting
     std::cout << "--- printContent ---------" << std::endl;
     std::cout << "  m_nrBitsInBuffer  : " << m_nrBitsInBuffer << std::endl;
     std::cout << "  m_writePos        : " << m_writePos << std::endl;
@@ -109,11 +112,16 @@ void BitBuffer::printContent()
 
     uint32_t nrBytes = (m_nrBitsInBuffer >> 3) + 1;
 
+    std::cout << "0x0000 :";
     for(uint32_t cnt = 0; cnt < nrBytes; cnt++) {
-        std::cout << std::hex << ", 0x" << static_cast<uint32_t>(m_buffer[cnt]);
+        std::cout << std::hex << " 0x" << std::setw(2) << std::setfill('0') << static_cast<uint32_t>(m_buffer[cnt]);
+        if(0 == ((cnt + 1) % 32)) {
+            std::cout << std::endl << "0x" << std::setw(4) << cnt + 1 << " :";
+        }
     }
     std::cout << std::dec << std::endl;
     std::cout << "--- printContent ---------" << std::endl;
+    std::cout.copyfmt(state);     // restore previous formatting
 }
 
 uint32_t BitBuffer::getUnsignedBitMask(uint8_t nrBits)
