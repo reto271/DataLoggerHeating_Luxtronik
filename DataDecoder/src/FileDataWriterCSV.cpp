@@ -29,6 +29,7 @@ bool FileDataWriterCSV::writeHeader(std::string headerLine)
 
     // Write the header line
     m_csvFile << headerLine << std::endl;
+    return true;
 }
 
 bool FileDataWriterCSV::writeData(std::vector<std::uint32_t> dataVector, const uint32_t nrColumnExclTimeStamp)

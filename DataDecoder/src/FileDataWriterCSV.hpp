@@ -2,8 +2,7 @@
 
 #include <fstream>
 #include <vector>
-
-class IValueTable;
+#include <memory>
 
 class FileDataWriterCSV
 {
@@ -18,3 +17,5 @@ private:
     std::string m_fileName;
     std::ofstream m_csvFile;
 };
+
+typedef std::shared_ptr<FileDataWriterCSV> FileDataWriterCSV_SPtr;

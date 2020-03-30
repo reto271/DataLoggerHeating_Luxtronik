@@ -1,16 +1,16 @@
 #pragma once
 
-// #include <iostream>
 #include <fstream>
 #include <memory>
 #include <vector>
+#include "FileDataWriterCSV.hpp"
 
 class IValueTable;
 
 class FileDataReader
 {
 public:
-    FileDataReader(std::string fileName);
+    FileDataReader(std::string fileName, FileDataWriterCSV_SPtr csvWriter);
     virtual ~FileDataReader();
 
     bool readHeaderData();
@@ -46,9 +46,7 @@ private:
     uint32_t m_nrRecords;
 
     std::vector<uint32_t> m_csvBuffer;
-
     std::ifstream m_inputFileStream;
-
     std::shared_ptr<IValueTable> m_pValueTable;
-
+    FileDataWriterCSV_SPtr m_csvWriter;
 };

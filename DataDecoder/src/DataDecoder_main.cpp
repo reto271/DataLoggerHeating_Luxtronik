@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "FileDataReader.hpp"
+#include "FileDataWriterCSV.hpp"
 
 
 /// Main function to setup the connection, restart it periodically, read the data and forwards them to the decoder / serializer.
@@ -14,7 +15,8 @@ int main(int argc, char* argv[])
     std::string fileName = argv[1];
     std::cout << "Processing: " << fileName << std::endl;
 
-    FileDataReader fileDataReader(fileName);
+    FileDataWriterCSV_SPtr fileDataWriter = std::make_shared<FileDataWriterCSV>(fileName + ".csv");
+    FileDataReader fileDataReader(fileName, fileDataWriter);
     if(false == fileDataReader.readHeaderData()) {
         return 2;
     }

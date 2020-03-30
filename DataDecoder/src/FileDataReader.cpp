@@ -13,7 +13,7 @@
 #include "Common/src/FeedbackCollector.hpp"
 #include "Common/src/BitBuffer.hpp"
 
-FileDataReader::FileDataReader(std::string fileName)
+FileDataReader::FileDataReader(std::string fileName, FileDataWriterCSV_SPtr csvWriter)
     : m_fileName(fileName)
     , m_fileLength(0)
     , m_fileVersion(0)
@@ -21,6 +21,7 @@ FileDataReader::FileDataReader(std::string fileName)
     , m_nrDataEntriesPerRecord(0)
     , m_nrRecords(0)
     , m_pValueTable(nullptr)
+    , m_csvWriter(csvWriter)
 {
     m_inputFileStream.open (m_fileName, std::ios::binary | std::ios::in);
 }
@@ -88,11 +89,8 @@ bool FileDataReader::decodeData()
     }
 
     FeedbackCollector writeFeedback(false);
-    {
-        FileDataWriterCSV csvWriter(m_fileName + ".csv");
-        writeFeedback.addAndFeedback(csvWriter.writeHeader(headerLine));
-        writeFeedback.addAndFeedback(csvWriter.writeData(m_csvBuffer, m_pValueTable->getNrDataEntriesPerSet()));
-    }
+    writeFeedback.addAndFeedback(m_csvWriter->writeHeader(headerLine));
+    writeFeedback.addAndFeedback(m_csvWriter->writeData(m_csvBuffer, m_pValueTable->getNrDataEntriesPerSet()));
     return writeFeedback.getFeedback();
 }
 
