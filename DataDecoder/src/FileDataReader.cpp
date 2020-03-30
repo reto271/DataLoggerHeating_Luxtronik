@@ -87,7 +87,7 @@ bool FileDataReader::decodeData()
             break;
     }
 
-    FeedbackCollector writeFeedback(false);
+    FeedbackCollector writeFeedback(true);
     writeFeedback.addAndFeedback(m_csvWriter->writeHeader(headerLine));
     writeFeedback.addAndFeedback(m_csvWriter->writeData(m_csvBuffer, m_pValueTable->getNrDataEntriesPerSet()));
     return writeFeedback.getFeedback();
