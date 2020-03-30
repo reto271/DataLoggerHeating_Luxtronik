@@ -6,14 +6,13 @@
 #include <assert.h>
 #include <cstring>
 
-#include "FileDataWriterCSV.hpp"
 #include "Common/src/ValueTable.hpp"
 #include "Common/src/ValueTable_v1.hpp"
 #include "Common/src/ValueTable_v2.hpp"
 #include "Common/src/FeedbackCollector.hpp"
 #include "Common/src/BitBuffer.hpp"
 
-FileDataReader::FileDataReader(std::string fileName, FileDataWriterCSV_SPtr csvWriter)
+FileDataReader::FileDataReader(std::string fileName, IFileDataWriterCSV_SPtr csvWriter)
     : m_fileName(fileName)
     , m_fileLength(0)
     , m_fileVersion(0)

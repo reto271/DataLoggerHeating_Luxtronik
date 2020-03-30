@@ -15,7 +15,7 @@ int main(int argc, char* argv[])
     std::string fileName = argv[1];
     std::cout << "Processing: " << fileName << std::endl;
 
-    FileDataWriterCSV_SPtr fileDataWriter = std::make_shared<FileDataWriterCSV>(fileName + ".csv");
+    IFileDataWriterCSV_SPtr fileDataWriter = std::make_shared<FileDataWriterCSV>(fileName + ".csv");
     FileDataReader fileDataReader(fileName, fileDataWriter);
     if(false == fileDataReader.readHeaderData()) {
         return 2;
