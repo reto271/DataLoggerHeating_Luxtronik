@@ -389,7 +389,7 @@ std::string FileDataReader::prepareHeader()
     // Prepare the header line
     std::string headerLine = "Time";
     for(uint32_t cnt = 0; cnt < m_pValueTable->getNrDataEntriesPerSet(); cnt++) {
-        headerLine += ", ";
+        headerLine += ",";
         headerLine += m_pValueTable->getDescription(cnt);
 
     }
