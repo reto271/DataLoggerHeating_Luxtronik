@@ -15,6 +15,7 @@ include_directories(${CMAKE_SOURCE_DIR}/..)
 add_executable(DataDecoder
                src/DataDecoder_main.cpp
                src/FileDataReader.cpp
+               src/FileDataWriterCSV.cpp
                ../Common/src/ValueTableCommon.cpp
                ../Common/src/ValueTable.cpp
                ../Common/src/ValueTable_v1.cpp

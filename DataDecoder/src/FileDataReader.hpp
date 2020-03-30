@@ -1,8 +1,9 @@
 #pragma once
 
-#include <iostream>
+// #include <iostream>
 #include <fstream>
 #include <memory>
+#include <vector>
 
 class IValueTable;
 
@@ -44,7 +45,7 @@ private:
     uint32_t m_nrDataEntriesPerRecord;
     uint32_t m_nrRecords;
 
-    uint32_t* m_pBuffer;
+    std::vector<uint32_t> m_csvBuffer;
 
     std::ifstream m_inputFileStream;
 

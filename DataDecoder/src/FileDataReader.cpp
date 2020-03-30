@@ -1,10 +1,12 @@
 #include "FileDataReader.hpp"
 
+#include <iostream>
 #include <iomanip>
 #include <ctime>
 #include <assert.h>
 #include <cstring>
 
+#include "FileDataWriterCSV.hpp"
 #include "Common/src/ValueTable.hpp"
 #include "Common/src/ValueTable_v1.hpp"
 #include "Common/src/ValueTable_v2.hpp"
@@ -18,7 +20,6 @@ FileDataReader::FileDataReader(std::string fileName)
     , m_sizeFileHeader(0)
     , m_nrDataEntriesPerRecord(0)
     , m_nrRecords(0)
-    , m_pBuffer(nullptr)
     , m_pValueTable(nullptr)
 {
     m_inputFileStream.open (m_fileName, std::ios::binary | std::ios::in);
@@ -26,7 +27,6 @@ FileDataReader::FileDataReader(std::string fileName)
 
 FileDataReader::~FileDataReader()
 {
-    delete[] m_pBuffer;
     m_inputFileStream.close();
 }
 
@@ -87,7 +87,13 @@ bool FileDataReader::decodeData()
             break;
     }
 
-    return writeToCSV(headerLine);
+    FeedbackCollector writeFeedback(false);
+    {
+        FileDataWriterCSV csvWriter(m_fileName + ".csv");
+        writeFeedback.addAndFeedback(csvWriter.writeHeader(headerLine));
+        writeFeedback.addAndFeedback(csvWriter.writeData(m_csvBuffer, m_pValueTable->getNrDataEntriesPerSet()));
+    }
+    return writeFeedback.getFeedback();
 }
 
 void FileDataReader::readRawDataFromFile_v1_v2()
@@ -98,9 +104,14 @@ void FileDataReader::readRawDataFromFile_v1_v2()
 
     // Allocate buffer and read from file
     uint32_t bufferSize = m_nrRecords * (m_nrDataEntriesPerRecord + 2); // 2 * 4 bytes time stamp
-    assert(nullptr == m_pBuffer);
-    m_pBuffer = new uint32_t[bufferSize];
-    m_inputFileStream.read(reinterpret_cast<char*>(m_pBuffer), 4 * bufferSize);
+
+    uint32_t* pBuffer = new uint32_t[bufferSize];
+
+
+    m_inputFileStream.read(reinterpret_cast<char*>(pBuffer), 4 * bufferSize);
+
+    m_csvBuffer = std::vector<uint32_t>(pBuffer, pBuffer + bufferSize);
+    delete[] pBuffer;
 }
 
 void FileDataReader::readRawDataFromFile()
@@ -119,9 +130,7 @@ void FileDataReader::readRawDataFromFile()
     // Prepare buffer used for writeToCSV function
     uint32_t bufferSize = m_nrRecords * (m_pValueTable->getNrDataEntriesPerSet() + 2);  // 2 * sizeof(uin32_t) for the time stamp
     std::cout << "bufferSize: " << bufferSize << std::endl;
-    m_pBuffer = new uint32_t[bufferSize];
-    memset(reinterpret_cast<char*>(m_pBuffer), 0, sizeof(uint32_t) * bufferSize);
-    std::cout << "sizeof(m_pBuffer): " << (sizeof(uint32_t) * bufferSize) << std::endl;
+    m_csvBuffer.resize(bufferSize);
 
     // Read the whole file
     uint8_t* pU8RawData = new uint8_t[m_fileLength];
@@ -143,7 +152,6 @@ void FileDataReader::readRawDataFromFile()
     }
     std::cout << std::endl << "---------------------------" << std::endl;
 
-
     uint32_t posInBuffer = 0;
     for(uint32_t frameCnt = 0; frameCnt < m_nrRecords; frameCnt++) {
         // -  // the iterator constructor can also be used to construct from arrays:
@@ -151,7 +159,7 @@ void FileDataReader::readRawDataFromFile()
         // -  std::vector<int> fifth (myints, myints + sizeof(myints) / sizeof(int) );
         std::vector<uint8_t> dataVector(pU8RawData, pU8RawData + dataSetSize);
 
-        // Convert to m_pBuffer
+        // Convert to data vector
         BitBuffer bitBuffer(dataVector);
 
         bitBuffer.printContent();
@@ -159,10 +167,10 @@ void FileDataReader::readRawDataFromFile()
         // Get time value
         uint32_t val;
         bitBuffer.getValue(val, 32);
-        m_pBuffer[posInBuffer] = val;
+        m_csvBuffer.at(posInBuffer) = val;
         posInBuffer++;
         bitBuffer.getValue(val, 32);
-        m_pBuffer[posInBuffer] = val;
+        m_csvBuffer.at(posInBuffer) = val;
         posInBuffer++;
 
         for(uint32_t cnt = 0; cnt < m_pValueTable->getNrDataEntriesPerSet(); cnt++) {
@@ -172,7 +180,7 @@ void FileDataReader::readRawDataFromFile()
                     {
                         uint32_t val;
                         bitBuffer.getValue(val, m_pValueTable->getNrBitsInBuffer(cnt));
-                        m_pBuffer[posInBuffer] = val;
+                        m_csvBuffer.at(posInBuffer) = val;
                     }
                     break;
 
@@ -181,7 +189,7 @@ void FileDataReader::readRawDataFromFile()
                     {
                         uint32_t val;
                         bitBuffer.getValue(val, m_pValueTable->getNrBitsInBuffer(cnt));
-                        m_pBuffer[posInBuffer] = val;
+                        m_csvBuffer.at(posInBuffer) = val;
                     }
                     break;
                 default:
@@ -199,42 +207,12 @@ void FileDataReader::readRawDataFromFile()
     std::cout << "- FileDataReader::" << __FUNCTION__ << ", ln: " << __LINE__ << std::endl;
 }
 
-bool FileDataReader::writeToCSV(std::string headerLine)
-{
-
-    std::ofstream csvFile;
-    std::string outputFileName = m_fileName + ".csv";
-
-    csvFile.open(outputFileName, std::ios::out);
-
-    // Write the header line
-    csvFile << headerLine << std::endl;
-
-    // Write data
-    uint32_t arrayPos = 0;
-    for(uint32_t record = 0; record < m_nrRecords; record++) {
-        std::time_t time = static_cast<std::time_t>(m_pBuffer[arrayPos]);
-        arrayPos++;
-        time += static_cast<std::time_t>(m_pBuffer[arrayPos]) << 32;
-        arrayPos++;
-        csvFile << time;
-        for(uint32_t cnt = 0; cnt < m_pValueTable->getNrDataEntriesPerSet(); cnt++) {
-            csvFile << ", " << std::right << std::setw(9) << *(reinterpret_cast<int32_t*>(&m_pBuffer[arrayPos]));
-            arrayPos++;
-        }
-        csvFile << std::endl;
-    }
-    csvFile.close();
-    std::cout << "File '" << outputFileName << "' successfully written" << std::endl;
-    return true;
-}
-
 void FileDataReader::printRawBuffer()
 {
     for(uint32_t record = 0; record < m_nrRecords; record++) {
         for(uint32_t cnt = 0; cnt < (m_pValueTable->getNrDataEntriesPerSet() + 2); cnt++) {
             std::cout << "[" << record << ":" << cnt << "] "
-                      << *(reinterpret_cast<int32_t*>(m_pBuffer[cnt + record * (m_pValueTable->getNrDataEntriesPerSet() + 2)])) << ", ";
+                      << *(reinterpret_cast<int32_t*>(m_csvBuffer.at(cnt + record * (m_pValueTable->getNrDataEntriesPerSet() + 2)))) << ", ";
         }
         std::cout << std::endl << std::endl;
     }
