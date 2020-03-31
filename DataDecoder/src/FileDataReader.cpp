@@ -313,7 +313,6 @@ void FileDataReader::validateNrEntriesPerRecord()
             }
             break;
     }
-
 }
 
 void FileDataReader::validateFileLength()

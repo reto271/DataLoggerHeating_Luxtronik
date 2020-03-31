@@ -107,7 +107,7 @@ char ValueResponse::serialize()
     uint8_t* pBitBufferData;
     uint32_t nrBytesInBuffer;
     pBitBufferData = bitBuffer.getReferenceToBuffer(nrBytesInBuffer);
-    wf.write(reinterpret_cast<const char*>(pBitBufferData), nrBytesInBuffer );
+    wf.write(reinterpret_cast<const char*>(pBitBufferData), nrBytesInBuffer);
     wf.close();
     return 0;
 }

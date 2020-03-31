@@ -214,8 +214,8 @@ TEST_F(Test_BitBuffer, readWriteSpecificSignedValues)
     // testSingleSignedValue(1, 1); -> would assert
 
     testSingleSignedValue(-1, 2);
-    testSingleSignedValue( 0, 2);
-    testSingleSignedValue( 1, 2);
+    testSingleSignedValue(0, 2);
+    testSingleSignedValue(1, 2);
 
     // testSingleSignedValue(10, 4); -> would assert
     testSingleSignedValue(10, 5);
@@ -275,7 +275,7 @@ TEST_F(Test_BitBuffer, randomBufferReadWriteUnsignedValues)
             if(32 == bitWidth) {
                 bitMask = 0xffffffff;
             }
-            EXPECT_EQ((randomNumberValues[cnt].randVal & bitMask), testValue );
+            EXPECT_EQ((randomNumberValues[cnt].randVal & bitMask), testValue);
         }
         EXPECT_EQ(totalBitWidth, this->getNumberBitsInBuffer());
         EXPECT_EQ(((totalBitWidth - 1) / 8) + 1, bytesInBuffer);
