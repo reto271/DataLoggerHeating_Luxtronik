@@ -52,17 +52,16 @@ bool FileDataReader::readHeaderData()
     std::cout << "Entries per Record: " << m_nrDataEntriesPerRecord << std::endl;
     std::cout << "File length:        " << m_fileLength << std::endl;
 
+    // Find the file version
     determineFileVersion();
 
-
+    // Some validation checks
     validateFile();
 
-
     if(nullptr == m_pValueTable) {
-        std::cout << "- FileDataReader::" << __FUNCTION__ << ", ln: " << __LINE__ << std::endl;
+        std::cout << "No matching value table found. (Fnc: " << __FUNCTION__ << ", ln: " << __LINE__ << std::endl;
         return false;
     } else {
-        std::cout << "- FileDataReader::" << __FUNCTION__ << ", ln: " << __LINE__ << std::endl;
         return true;
     }
 }
@@ -70,11 +69,11 @@ bool FileDataReader::readHeaderData()
 bool FileDataReader::decodeData()
 {
     if(nullptr == m_pValueTable) {
-        std::cout << "- FileDataReader::" << __FUNCTION__ << ", ln: " << __LINE__ << std::endl;
+        std::cout << "No matching value table found. (Fnc: " << __FUNCTION__ << ", ln: " << __LINE__ << std::endl;
         return false;
     }
 
-    std::cout << "- FileDataReader::" << __FUNCTION__ << ", ln: " << __LINE__ << std::endl;
+    // Write header line
     std::string headerLine = prepareHeader();
 
     switch(m_pValueTable->getFileVersion()) {
@@ -104,7 +103,6 @@ void FileDataReader::readRawDataFromFile_v1_v2()
 
     uint32_t* pBuffer = new uint32_t[bufferSize];
 
-
     m_inputFileStream.read(reinterpret_cast<char*>(pBuffer), 4 * bufferSize);
 
     m_csvBuffer = std::vector<uint32_t>(pBuffer, pBuffer + bufferSize);
@@ -118,7 +116,6 @@ void FileDataReader::readRawDataFromFile()
     uint32_t dataSetSize = m_pValueTable->getNrBytesInBufferPerSet();
     m_nrRecords = dataFileLength / dataSetSize;
 
-    std::cout << "- FileDataReader::" << __FUNCTION__ << ", ln: " << __LINE__ << std::endl;
     std::cout << "m_nrRecords: " << m_nrRecords << std::endl;
     std::cout << "m_nrDataEntriesPerRecord: " << m_nrDataEntriesPerRecord << std::endl;
     std::cout << "m_pValueTable->getNrDataEntriesPerSet(): " << m_pValueTable->getNrDataEntriesPerSet() << std::endl;
@@ -134,20 +131,20 @@ void FileDataReader::readRawDataFromFile()
     uint8_t* pU8RawDataOri = pU8RawData;
     m_inputFileStream.read(reinterpret_cast<char*>(pU8RawData), m_fileLength);
 
-    std::cout << "---------------------------" << std::endl;
-    {
-        std::ios state(nullptr);
-        state.copyfmt(std::cout); // save current formatting
-        std::cout << "0x0000 :";
-        for(uint32_t i = 0; i < dataFileLength; i++) {
-            std::cout << std::hex << " 0x" << std::setw(2) << std::setfill('0') << static_cast<uint16_t>(pU8RawData[i]);
-            if(0 == ((i + 1) % 32)) {
-                std::cout << std::endl << "0x" << std::setw(4) << i + 1 << " :";
-            }
-        }
-        std::cout.copyfmt(state); // restore previous formatting
-    }
-    std::cout << std::endl << "---------------------------" << std::endl;
+    //std::cout << "---------------------------" << std::endl;
+    //{
+    //    std::ios state(nullptr);
+    //    state.copyfmt(std::cout); // save current formatting
+    //    std::cout << "0x0000 :";
+    //    for(uint32_t i = 0; i < dataFileLength; i++) {
+    //        std::cout << std::hex << " 0x" << std::setw(2) << std::setfill('0') << static_cast<uint16_t>(pU8RawData[i]);
+    //        if(0 == ((i + 1) % 32)) {
+    //            std::cout << std::endl << "0x" << std::setw(4) << i + 1 << " :";
+    //        }
+    //    }
+    //    std::cout.copyfmt(state); // restore previous formatting
+    //}
+    //std::cout << std::endl << "---------------------------" << std::endl;
 
     uint32_t posInBuffer = 0;
     for(uint32_t frameCnt = 0; frameCnt < m_nrRecords; frameCnt++) {
@@ -158,8 +155,7 @@ void FileDataReader::readRawDataFromFile()
 
         // Convert to data vector
         BitBuffer bitBuffer(dataVector);
-
-        bitBuffer.printContent();
+        //bitBuffer.printContent();
 
         // Get time value
         uint32_t val;
@@ -199,9 +195,7 @@ void FileDataReader::readRawDataFromFile()
         pU8RawData += dataSetSize;
         // Iterate through BitBuffer
     }
-    std::cout << "- FileDataReader::" << __FUNCTION__ << ", ln: " << __LINE__ << std::endl;
     delete[] pU8RawDataOri;
-    std::cout << "- FileDataReader::" << __FUNCTION__ << ", ln: " << __LINE__ << std::endl;
 }
 
 void FileDataReader::printRawBuffer()
@@ -220,7 +214,6 @@ void FileDataReader::determineFileVersion()
     // Test if current version
     m_pValueTable = std::make_shared<ValueTable>();
     if(m_fileVersion == m_pValueTable->getFileVersion()) {
-        std::cout << "- FileDataReader::" << __FUNCTION__ << ", ln: " << __LINE__ << std::endl;
         m_pValueTable->initialize();
         return;
     }
@@ -228,19 +221,16 @@ void FileDataReader::determineFileVersion()
     // Test older versions
     m_pValueTable = std::make_shared<ValueTable_v2>();
     if(m_fileVersion == m_pValueTable->getFileVersion()) {
-        std::cout << "- FileDataReader::" << __FUNCTION__ << ", ln: " << __LINE__ << std::endl;
         m_pValueTable->initialize();
         return;
     }
 
     m_pValueTable = std::make_shared<ValueTable_v1>();
     if(m_fileVersion == m_pValueTable->getFileVersion()) {
-        std::cout << "- FileDataReader::" << __FUNCTION__ << ", ln: " << __LINE__ << std::endl;
         m_pValueTable->initialize();
         return;
     }
 
-    std::cout << "- FileDataReader::" << __FUNCTION__ << ", ln: " << __LINE__ << std::endl;
     m_pValueTable.reset();
     assert(nullptr == m_pValueTable);
 }
@@ -248,12 +238,11 @@ void FileDataReader::determineFileVersion()
 void FileDataReader::validateFile()
 {
     if(nullptr == m_pValueTable) {
-        std::cout << "No table found in FileDataReader::" << __FUNCTION__ << std::endl;
+        std::cout << "No matching value table found. (Fnc: " << __FUNCTION__ << ", ln: " << __LINE__ << std::endl;
         return;
     }
 
     // Conistency check for the detected file version
-    std::cout << "- FileDataReader::" << __FUNCTION__ << ", ln: " << __LINE__ << std::endl;
     validateHeaderSize();
     validateNrEntriesPerRecord();
     validateFileLength();
@@ -261,8 +250,8 @@ void FileDataReader::validateFile()
 
 void FileDataReader::validateHeaderSize()
 {
-    std::cout << "- FileDataReader::" << __FUNCTION__ << ", ln: " << __LINE__ << std::endl;    if(nullptr == m_pValueTable) {
-        std::cout << "- FileDataReader::" << __FUNCTION__ << ", ln: " << __LINE__ << std::endl;
+    if(nullptr == m_pValueTable) {
+        std::cout << "No matching value table found. (Fnc: " << __FUNCTION__ << ", ln: " << __LINE__ << std::endl;
         return;
     }
     if(m_sizeFileHeader != m_pValueTable->getSizeOfHeader()) {
@@ -271,17 +260,13 @@ void FileDataReader::validateHeaderSize()
                   << ", m_pValueTable->getSizeOfHeader(): " << m_pValueTable->getSizeOfHeader() << std::endl;
         m_pValueTable.reset();
         assert(nullptr == m_pValueTable);
-        return;
-    } else {
-        std::cout << "works: @ ln" << __LINE__ << std::endl;
     }
 }
 
 void FileDataReader::validateNrEntriesPerRecord()
 {
-    std::cout << "- FileDataReader::" << __FUNCTION__ << ", ln: " << __LINE__ << std::endl;
     if(nullptr == m_pValueTable) {
-        std::cout << "- FileDataReader::" << __FUNCTION__ << ", ln: " << __LINE__ << std::endl;
+        std::cout << "No matching value table found. (Fnc: " << __FUNCTION__ << ", ln: " << __LINE__ << std::endl;
         return;
     }
 
@@ -295,9 +280,6 @@ void FileDataReader::validateNrEntriesPerRecord()
                           << ", m_pValueTable->getNrDataEntriesPerSet(): " << m_pValueTable->getNrDataEntriesPerSet() << std::endl;
                 m_pValueTable.reset();
                 assert(nullptr == m_pValueTable);
-                return;
-            } else {
-                std::cout << "works: @ ln" << __LINE__ << std::endl;
             }
             break;
         default:
@@ -307,9 +289,6 @@ void FileDataReader::validateNrEntriesPerRecord()
                           << ", m_pValueTable->getNrBytesInBufferPerSet(): " << m_pValueTable->getNrBytesInBufferPerSet() << std::endl;
                 m_pValueTable.reset();
                 assert(nullptr == m_pValueTable);
-                return;
-            } else {
-                std::cout << "works: @ ln" << __LINE__ << std::endl;
             }
             break;
     }
@@ -323,9 +302,8 @@ void FileDataReader::validateFileLength()
     uint32_t dataFileLength;
     uint32_t dataSetSize;
 
-    std::cout << "- FileDataReader::" << __FUNCTION__ << ", ln: " << __LINE__ << std::endl;
     if(nullptr == m_pValueTable) {
-        std::cout << "- FileDataReader::" << __FUNCTION__ << ", ln: " << __LINE__ << std::endl;
+        std::cout << "No matching value table found. (Fnc: " << __FUNCTION__ << ", ln: " << __LINE__ << std::endl;
         return;
     }
 
@@ -344,7 +322,6 @@ void FileDataReader::validateFileLength()
             break;
     }
     if(0 != dataFileLength % dataSetSize) {
-
         std::cout << "Data length in file is not modulo of 'number data entreis per set'" << std::endl
                   << "  headerSize: " << headerSize << std::endl
                   << "  m_fileLength: " << m_fileLength << std::endl
@@ -352,9 +329,6 @@ void FileDataReader::validateFileLength()
                   << "  dataSetSize: " << dataSetSize << std::endl;
         m_pValueTable.reset();
         assert(nullptr == m_pValueTable);
-        return;
-    } else {
-        std::cout << "works: @ ln" << __LINE__ << std::endl;
     }
 }
 

@@ -23,7 +23,6 @@ public:
     MOCK_METHOD(bool, writeData, (std::vector<std::uint32_t> dataVector, const uint32_t nrColumnExclTimeStamp), (override));
 };
 
-// class Test_FileDataReader : public testing::Test, public BitBuffer
 class Test_FileDataReader : public testing::Test
 {
 protected:
@@ -79,22 +78,9 @@ protected:
     std::shared_ptr<std::string> expectedHeaderLine_v2_v3;
 };
 
-// ::testing::AssertionResult compareVectors(std::vector<uint32_t> expVec, std::vector<uint32_t> actVec)
-// {
-//    if (expVec.size() != actVec.size()) {
-//        return ::testing::AssertionFailure() << "Exp len: " << expVec.size() << " length is not act len: " << actVec.size();
-//    }
-//    else {
-//        return ::testing::AssertionSuccess();
-//    }
-////    else
-////        return ::testing::AssertionFailure()
-////               << val << " is outside the range " << a << " to " << b;
-// }
 MATCHER_P (compareVectors, expVec, "")
 {
     bool feedback = true;
-    std::cout << "-------------------------------------" << std::endl;
     if(expVec.size() != arg.size()) {
         std::cout << "Exp len: " << expVec.size() << " length is not act len: " << arg.size() << std::endl;
         feedback = false;
@@ -108,7 +94,6 @@ MATCHER_P (compareVectors, expVec, "")
             }
         }
     }
-    std::cout << "-------------------------------------" << std::endl;
     return feedback;
 }
 
@@ -461,7 +446,6 @@ TEST_F(Test_FileDataReader, fileVersion03_allZeros)
     feedback = fileDataReader->readHeaderData();
     EXPECT_TRUE(feedback);
 
-
     uint32_t expecedNrColExclusiveTimeStamp = 50;
 
     std::vector<uint32_t> expectedVectorCSV(1 * (expecedNrColExclusiveTimeStamp + 2), 0);
@@ -483,47 +467,41 @@ TEST_F(Test_FileDataReader, fileVersion03_validTimestamp_allMaxValues)
     uint32_t expecedNrColExclusiveTimeStamp = 50;
 
     std::vector<uint32_t> expectedVectorCSV(1 * (expecedNrColExclusiveTimeStamp + 2), 0);
-    expectedVectorCSV.at(0) = 0x0bc0dcc0;  // 1. April 1976 0640
-    expectedVectorCSV.at(1) = 0;           // Second part of the timestamp
-    expectedVectorCSV.at(2) = 1023;        // "Vorlauftemperatur Heizkreis",                                         10, "°C",       10, DataTypeInfo::UNSIGNED }, // 0..102.3
-    expectedVectorCSV.at(3) = 1023;        // "Rücklauftemperatur Heizkreis",                                        10, "°C",       10, DataTypeInfo::UNSIGNED }, // 0..102.3
-    expectedVectorCSV.at(4) = 1023;        // "Rücklauf-Soll Heizkreis",                                             10, "°C",       10, DataTypeInfo::UNSIGNED }, // 0..102.3
-    expectedVectorCSV.at(5) = 1023;        // "Heisgastemperatur",                                                   10, "°C",       10, DataTypeInfo::UNSIGNED }, // 0..102.3
-    expectedVectorCSV.at(6) = 1023;        // "Aussentemperatur",                                                    10, "°C",       11, DataTypeInfo::SIGNED},    // -102.4 .. 102.3
-    expectedVectorCSV.at(7) = 511;         // "Durchschnittstemperatur Aussen über 24 h (Funktion Heizgrenze)",      10, "°C",       10, DataTypeInfo::SIGNED},    // -51.2 .. 51.1
-    expectedVectorCSV.at(8) = 1023;        // "Warmwasser Ist-Temperatur",                                           10, "°C",       10, DataTypeInfo::UNSIGNED }, // 0..102.3
-    expectedVectorCSV.at(9) = 1023;        // "Warmwasser Soll-Temperatur",                                          10, "°C",       10, DataTypeInfo::UNSIGNED }, // 0..102.3
-    expectedVectorCSV.at(10) = 1023;       // "Wärmequellen-Eintrittstemperatur",                                    10, "°C",       10, DataTypeInfo::UNSIGNED }, // 0..102.3
-    expectedVectorCSV.at(11) = 1023;       // "Wärmequellen-Austrittstemperatur",                                    10, "°C",       10, DataTypeInfo::UNSIGNED }, // 0..102.3
-    expectedVectorCSV.at(12) = 1;          // "Eingang Abtauende / Soledruck / Durchfluss",                           0,  "-",        1, DataTypeInfo::BOOL },
-    expectedVectorCSV.at(13) = 1;          // "Brauchwarmwasserthermostat",                                           0,  "-",        1, DataTypeInfo::BOOL },
-    expectedVectorCSV.at(14) = 1;          // "EVU Sperre",                                                           0,  "-",        1, DataTypeInfo::BOOL },
-    expectedVectorCSV.at(15) = 1;          // "Hochdruck Kältekreis",                                                 0,  "-",        1, DataTypeInfo::BOOL },
-    expectedVectorCSV.at(16) = 1;          // "Motorschutz OK",                                                       0,  "-",        1, DataTypeInfo::BOOL },
-    expectedVectorCSV.at(17) = 1;          // "Niederdruck",                                                          0,  "-",        1, DataTypeInfo::BOOL },
-    expectedVectorCSV.at(18) = 1;          // "Überwachungskontakt für Potentiostat",                                 0,  "-",        1, DataTypeInfo::BOOL },
-    expectedVectorCSV.at(19) = 1;          // "Abtauventil",                                                          0,  "-",        1, DataTypeInfo::BOOL },
-    expectedVectorCSV.at(20) = 1;          // "Brauchwasserpumpe/Umstellventil",                                      0,  "-",        1, DataTypeInfo::BOOL },
-    expectedVectorCSV.at(21) = 1;          // "Heizungsumwälzpumpe",                                                  0,  "-",        1, DataTypeInfo::BOOL },
-    expectedVectorCSV.at(22) = 1;          // "Ventilation (Lüftung)",                                                0,  "-",        1, DataTypeInfo::BOOL },
-    expectedVectorCSV.at(23) = 1;          // "Solepumpe/Ventilator",                                                 0,  "-",        1, DataTypeInfo::BOOL },
-    expectedVectorCSV.at(24) = 1;          // "Verdichter 1",                                                         0,  "-",        1, DataTypeInfo::BOOL },
-    expectedVectorCSV.at(25) = 1;          // "Zirkulationspumpe",                                                    0,  "-",        1, DataTypeInfo::BOOL },
-    expectedVectorCSV.at(26) = 1;          // "Zusatzumwälzpumpe",                                                    0,  "-",        1, DataTypeInfo::BOOL },
-    expectedVectorCSV.at(27) = 1;          // "Steuersignal Zusatzheizung v. Heizung",                                0,  "-",        1, DataTypeInfo::BOOL },
-    expectedVectorCSV.at(28) = 1;          // "Steuersignal Zusatzheizung/Störsignal",                                0,  "-",        1, DataTypeInfo::BOOL },
-
-    expectedVectorCSV.at(29) = (1 << 30) - 1;              // "Betriebsstunden Verdichter 1",                                         0, "Sekunden", 30, DataTypeInfo::UNSIGNED}, // 0 .. 34 years
-
-    expectedVectorCSV.at(30) = (1 << 22) - 1; // "Impulse Verdichter 1",                                                 0, "Impulse" , 22, DataTypeInfo::UNSIGNED}, // 346 times more than today
-
-    expectedVectorCSV.at(31) = (1 << 30) - 1;// "Betriebsstunden Zweiter Wärmeerzeuger 2",                              0, "Sekunden", 30, DataTypeInfo::UNSIGNED}, // 0 .. 34 years -> Heats up to 60 deg
-
+    expectedVectorCSV.at(0) = 0x0bc0dcc0;      // 1. April 1976 0640
+    expectedVectorCSV.at(1) = 0;               // Second part of the timestamp
+    expectedVectorCSV.at(2) = 1023;            // "Vorlauftemperatur Heizkreis",                                         10, "°C",       10, DataTypeInfo::UNSIGNED }, // 0..102.3
+    expectedVectorCSV.at(3) = 1023;            // "Rücklauftemperatur Heizkreis",                                        10, "°C",       10, DataTypeInfo::UNSIGNED }, // 0..102.3
+    expectedVectorCSV.at(4) = 1023;            // "Rücklauf-Soll Heizkreis",                                             10, "°C",       10, DataTypeInfo::UNSIGNED }, // 0..102.3
+    expectedVectorCSV.at(5) = 1023;            // "Heisgastemperatur",                                                   10, "°C",       10, DataTypeInfo::UNSIGNED }, // 0..102.3
+    expectedVectorCSV.at(6) = 1023;            // "Aussentemperatur",                                                    10, "°C",       11, DataTypeInfo::SIGNED},    // -102.4 .. 102.3
+    expectedVectorCSV.at(7) = 511;             // "Durchschnittstemperatur Aussen über 24 h (Funktion Heizgrenze)",      10, "°C",       10, DataTypeInfo::SIGNED},    // -51.2 .. 51.1
+    expectedVectorCSV.at(8) = 1023;            // "Warmwasser Ist-Temperatur",                                           10, "°C",       10, DataTypeInfo::UNSIGNED }, // 0..102.3
+    expectedVectorCSV.at(9) = 1023;            // "Warmwasser Soll-Temperatur",                                          10, "°C",       10, DataTypeInfo::UNSIGNED }, // 0..102.3
+    expectedVectorCSV.at(10) = 1023;           // "Wärmequellen-Eintrittstemperatur",                                    10, "°C",       10, DataTypeInfo::UNSIGNED }, // 0..102.3
+    expectedVectorCSV.at(11) = 1023;           // "Wärmequellen-Austrittstemperatur",                                    10, "°C",       10, DataTypeInfo::UNSIGNED }, // 0..102.3
+    expectedVectorCSV.at(12) = 1;              // "Eingang Abtauende / Soledruck / Durchfluss",                           0,  "-",        1, DataTypeInfo::BOOL },
+    expectedVectorCSV.at(13) = 1;              // "Brauchwarmwasserthermostat",                                           0,  "-",        1, DataTypeInfo::BOOL },
+    expectedVectorCSV.at(14) = 1;              // "EVU Sperre",                                                           0,  "-",        1, DataTypeInfo::BOOL },
+    expectedVectorCSV.at(15) = 1;              // "Hochdruck Kältekreis",                                                 0,  "-",        1, DataTypeInfo::BOOL },
+    expectedVectorCSV.at(16) = 1;              // "Motorschutz OK",                                                       0,  "-",        1, DataTypeInfo::BOOL },
+    expectedVectorCSV.at(17) = 1;              // "Niederdruck",                                                          0,  "-",        1, DataTypeInfo::BOOL },
+    expectedVectorCSV.at(18) = 1;              // "Überwachungskontakt für Potentiostat",                                 0,  "-",        1, DataTypeInfo::BOOL },
+    expectedVectorCSV.at(19) = 1;              // "Abtauventil",                                                          0,  "-",        1, DataTypeInfo::BOOL },
+    expectedVectorCSV.at(20) = 1;              // "Brauchwasserpumpe/Umstellventil",                                      0,  "-",        1, DataTypeInfo::BOOL },
+    expectedVectorCSV.at(21) = 1;              // "Heizungsumwälzpumpe",                                                  0,  "-",        1, DataTypeInfo::BOOL },
+    expectedVectorCSV.at(22) = 1;              // "Ventilation (Lüftung)",                                                0,  "-",        1, DataTypeInfo::BOOL },
+    expectedVectorCSV.at(23) = 1;              // "Solepumpe/Ventilator",                                                 0,  "-",        1, DataTypeInfo::BOOL },
+    expectedVectorCSV.at(24) = 1;              // "Verdichter 1",                                                         0,  "-",        1, DataTypeInfo::BOOL },
+    expectedVectorCSV.at(25) = 1;              // "Zirkulationspumpe",                                                    0,  "-",        1, DataTypeInfo::BOOL },
+    expectedVectorCSV.at(26) = 1;              // "Zusatzumwälzpumpe",                                                    0,  "-",        1, DataTypeInfo::BOOL },
+    expectedVectorCSV.at(27) = 1;              // "Steuersignal Zusatzheizung v. Heizung",                                0,  "-",        1, DataTypeInfo::BOOL },
+    expectedVectorCSV.at(28) = 1;              // "Steuersignal Zusatzheizung/Störsignal",                                0,  "-",        1, DataTypeInfo::BOOL },
+    expectedVectorCSV.at(29) = (1 << 30) - 1;  // "Betriebsstunden Verdichter 1",                                         0, "Sekunden", 30, DataTypeInfo::UNSIGNED}, // 0 .. 34 years
+    expectedVectorCSV.at(30) = (1 << 22) - 1;  // "Impulse Verdichter 1",                                                 0, "Impulse" , 22, DataTypeInfo::UNSIGNED}, // 346 times more than today
+    expectedVectorCSV.at(31) = (1 << 30) - 1;  // "Betriebsstunden Zweiter Wärmeerzeuger 2",                              0, "Sekunden", 30, DataTypeInfo::UNSIGNED}, // 0 .. 34 years -> Heats up to 60 deg
     expectedVectorCSV.at(32) = (1 << 30) - 1;  // "Betriebsstunden Wärmepumpe",                                           0, "Sekunden", 30, DataTypeInfo::UNSIGNED}, // 0 .. 34 years
     expectedVectorCSV.at(33) = (1 << 30) - 1;  // "Betriebsstunden Heizung",                                              0, "Sekunden", 30, DataTypeInfo::UNSIGNED}, // 0 .. 34 years
     expectedVectorCSV.at(34) = (1 << 30) - 1;  // "Betriebsstunden Warmwasser",                                           0, "Sekunden", 30, DataTypeInfo::UNSIGNED}, // 0 .. 34 years
-
-
     expectedVectorCSV.at(35) = (1 << 17) - 1;  // "Wärmepumpe läuft seit",                                                0, "Sekunden", 17, DataTypeInfo::UNSIGNED}, // 0 .. 36h
     expectedVectorCSV.at(36) = (1 << 17) - 1;  // "Zweiter Wärmeerzeuger 2 läuft seit",                                   0, "Sekunden", 17, DataTypeInfo::UNSIGNED}, // 0 .. 36h -> Heats up to 60 deg
     expectedVectorCSV.at(37) = (1 << 17) - 1;  // "Netzeinschaltverzögerung",                                             0, "Sekunden", 17, DataTypeInfo::UNSIGNED}, // 0 .. 36h
@@ -534,17 +512,13 @@ TEST_F(Test_FileDataReader, fileVersion03_validTimestamp_allMaxValues)
     expectedVectorCSV.at(42) = (1 << 17) - 1;  // "Heizungsregler Weniger-Zeit",                                          0, "Sekunden", 17, DataTypeInfo::UNSIGNED}, // 0 .. 36h
     expectedVectorCSV.at(43) = (1 << 17) - 1;  // "Thermische Desinfektion läuft seit",                                   0, "Sekunden", 17, DataTypeInfo::UNSIGNED}, // 0 .. 36h -> Heats up to 60 deg
     expectedVectorCSV.at(44) = (1 << 17) - 1;  // "Sperre Warmwasser",                                                    0, "Sekunden", 17, DataTypeInfo::UNSIGNED}, // 0 .. 36h -> potentially 0
-
-    expectedVectorCSV.at(45) = (1 << 7) - 1;  // "Wärmepumpentyp|0 = ERC|Typenschlüssel",                                0, "-",         7, DataTypeInfo::UNSIGNED}, // enum 0..75 < 2^7 = 128 -> potentially  const
-
-    expectedVectorCSV.at(46) = (1 << 2) - 1;      // "Bivalenzstufe",                                                      0, "enum",  2, DataTypeInfo::UNSIGNED },  // According the enum
-    expectedVectorCSV.at(47) = (1 << 3) - 1;  // (1<<3)-1;  // "Betriebszustand",                                                      0, "enum",      3, DataTypeInfo::UNSIGNED },  // According the enum
-
+    expectedVectorCSV.at(45) = (1 << 7) - 1;   // "Wärmepumpentyp|0 = ERC|Typenschlüssel",                                0, "-",         7, DataTypeInfo::UNSIGNED}, // enum 0..75 < 2^7 = 128 -> potentially  const
+    expectedVectorCSV.at(46) = (1 << 2) - 1;   // "Bivalenzstufe",                                                        0, "enum",  2, DataTypeInfo::UNSIGNED },  // According the enum
+    expectedVectorCSV.at(47) = (1 << 3) - 1;   // (1<<3)-1;  // "Betriebszustand",                                        0, "enum",      3, DataTypeInfo::UNSIGNED },  // According the enum
     expectedVectorCSV.at(48) = (1 << 28) - 1;  // "Wärmemengenzähler Heizung",                                           10, "kWh",      28, DataTypeInfo::UNSIGNED}, // 460 times more than today
     expectedVectorCSV.at(49) = (1 << 26) - 1;  // "Wärmemengenzähler Brauchwasser",                                      10, "kWh",      26, DataTypeInfo::UNSIGNED}, // 382 times more than today
     expectedVectorCSV.at(50) = (1 << 28) - 1;  // "Wärmemengenzähler Gesamt",                                            10, "kWh",      28, DataTypeInfo::UNSIGNED}, // 350 times more than today
     expectedVectorCSV.at(51) = (1 << 10) - 1;  // "Wärmemengenzähler Durchfluss",                                         1, "l / h",    10, DataTypeInfo::UNSIGNED}, // 0 .. 1024l/h  -> potentially unused
-
 
     EXPECT_CALL(*csvWriter, writeHeader(*expectedHeaderLine_v2_v3)).WillOnce(Return(true));
     EXPECT_CALL(*csvWriter, writeData(compareVectors(expectedVectorCSV), expecedNrColExclusiveTimeStamp)).WillOnce(Return(true));
@@ -556,78 +530,14 @@ TEST_F(Test_FileDataReader, fileVersion03_validTimestamp_allMaxValues)
 
 TEST_F(Test_FileDataReader, DISABLED_fileVersion03_enumerateValues)
 {
-    bool feedback;
-    fileDataReader = std::make_shared<FileDataReader>("Test/testData/fileVersion_03_allMax.dat", csvWriter); // real test
-    feedback = fileDataReader->readHeaderData();
-    EXPECT_TRUE(feedback);
+//    val1 = 1
+//    val2 = 2
+//    ...
+}
 
-    uint32_t expecedNrColExclusiveTimeStamp = 50;
-
-    std::vector<uint32_t> expectedVectorCSV(1 * (expecedNrColExclusiveTimeStamp + 2), 0);
-    expectedVectorCSV.at(0) = 0x0bc0dcc0;
-#if 0
-
-    {  10, /*ID_WEB_Temperatur_TVL*/ "Vorlauftemperatur Heizkreis", 10, "°C", 10, DataTypeInfo::UNSIGNED },                                                              // 0..102.3
-    {  11, /*ID_WEB_Temperatur_TRL*/ "Rücklauftemperatur Heizkreis", 10, "°C", 10, DataTypeInfo::UNSIGNED },                                                             // 0..102.3
-    {  12, /*ID_WEB_Sollwert_TRL_HZ*/ "Rücklauf-Soll Heizkreis", 10, "°C", 10, DataTypeInfo::UNSIGNED },                                                                 // 0..102.3
-    {  14, /*ID_WEB_Temperatur_THG*/ "Heisgastemperatur", 10, "°C", 10, DataTypeInfo::UNSIGNED },                                                                        // 0..102.3
-    {  15, /*ID_WEB_Temperatur_TA*/ "Aussentemperatur", 10, "°C", 11, DataTypeInfo::SIGNED},                                                                             // -102.4 .. 102.3
-    {  16, /*ID_WEB_Mitteltemperatur*/ "Durchschnittstemperatur Aussen über 24 h (Funktion Heizgrenze)", 10, "°C", 10, DataTypeInfo::SIGNED},                            // -51.2 .. 51.1
-    {  17, /*ID_WEB_Temperatur_TBW*/ "Warmwasser Ist-Temperatur", 10, "°C", 10, DataTypeInfo::UNSIGNED },                                                                // 0..102.3
-    {  18, /*ID_WEB_Einst_BWS_akt*/ "Warmwasser Soll-Temperatur", 10, "°C", 10, DataTypeInfo::UNSIGNED },                                                                // 0..102.3
-    {  19, /*ID_WEB_Temperatur_TWE*/ "Wärmequellen-Eintrittstemperatur", 10, "°C", 10, DataTypeInfo::UNSIGNED },                                                         // 0..102.3
-    {  20, /*ID_WEB_Temperatur_TWA*/ "Wärmequellen-Austrittstemperatur", 10, "°C", 10, DataTypeInfo::UNSIGNED },                                                         // 0..102.3
-    {  29, /*ID_WEB_ASDin*/ "Eingang Abtauende / Soledruck / Durchfluss", 0, "-", 1, DataTypeInfo::BOOL },
-    {  30, /*ID_WEB_BWTin_Eingang*/ "Brauchwarmwasserthermostat", 0, "-", 1, DataTypeInfo::BOOL },
-    {  31, /*ID_WEB_EVUin_Eingang*/ "EVU Sperre", 0, "-", 1, DataTypeInfo::BOOL },
-    {  32, /*ID_WEB_HDin_Eingang*/ "Hochdruck Kältekreis", 0, "-", 1, DataTypeInfo::BOOL },
-    {  33, /*ID_WEB_MOTin_Eingang*/ "Motorschutz OK", 0, "-", 1, DataTypeInfo::BOOL },
-    {  34, /*ID_WEB_NDin_Eingang*/ "Niederdruck", 0, "-", 1, DataTypeInfo::BOOL },
-    {  35, /*ID_WEB_PEXin_Eingang*/ "Überwachungskontakt für Potentiostat", 0, "-", 1, DataTypeInfo::BOOL },
-    {  37, /*ID_WEB_AVout_Ausgang*/ "Abtauventil", 0, "-", 1, DataTypeInfo::BOOL },
-    {  38, /*ID_WEB_BUPout_Ausgang*/ "Brauchwasserpumpe/Umstellventil", 0, "-", 1, DataTypeInfo::BOOL },
-    {  39, /*ID_WEB_HUPout_Ausgang*/ "Heizungsumwälzpumpe", 0, "-", 1, DataTypeInfo::BOOL },
-    {  42, /*ID_WEB_VENout_Ausgang*/ "Ventilation (Lüftung)", 0, "-", 1, DataTypeInfo::BOOL },
-    {  43, /*ID_WEB_VBOout_Ausgang*/ "Solepumpe/Ventilator", 0, "-", 1, DataTypeInfo::BOOL },
-    {  44, /*ID_WEB_VD1out_Ausgang*/ "Verdichter 1", 0, "-", 1, DataTypeInfo::BOOL },
-    {  46, /*ID_WEB_ZIPout_Ausgang*/ "Zirkulationspumpe", 0, "-", 1, DataTypeInfo::BOOL },
-    {  47, /*ID_WEB_ZUPout_Ausgang*/ "Zusatzumwälzpumpe", 0, "-", 1, DataTypeInfo::BOOL },
-    {  48, /*ID_WEB_ZW1out_Ausgang*/ "Steuersignal Zusatzheizung v. Heizung", 0, "-", 1, DataTypeInfo::BOOL },
-    {  49, /*ID_WEB_ZW2SSTout_Ausgang*/ "Steuersignal Zusatzheizung/Störsignal", 0, "-", 1, DataTypeInfo::BOOL },
-    {  56, /*ID_WEB_Zaehler_BetrZeitVD1*/ "Betriebsstunden Verdichter 1", 0, "Sekunden", 30, DataTypeInfo::UNSIGNED},                                                   // 0 .. 34 years
-    {  57, /*ID_WEB_Zaehler_BetrZeitImpVD1*/ "Impulse Verdichter 1", 0, "Impulse", 22, DataTypeInfo::UNSIGNED},                                                         // 346 times more than today
-    {  61, /*ID_WEB_Zaehler_BetrZeitZWE2*/ "Betriebsstunden Zweiter Wärmeerzeuger 2", 0, "Sekunden", 30, DataTypeInfo::UNSIGNED},                                       // 0 .. 34 years -> Heats up to 60 deg
-    {  63, /*ID_WEB_Zaehler_BetrZeitWP*/ "Betriebsstunden Wärmepumpe", 0, "Sekunden", 30, DataTypeInfo::UNSIGNED},                                                      // 0 .. 34 years
-    {  64, /*ID_WEB_Zaehler_BetrZeitHz*/ "Betriebsstunden Heizung", 0, "Sekunden", 30, DataTypeInfo::UNSIGNED},                                                         // 0 .. 34 years
-    {  65, /*ID_WEB_Zaehler_BetrZeitBW*/ "Betriebsstunden Warmwasser", 0, "Sekunden", 30, DataTypeInfo::UNSIGNED},                                                      // 0 .. 34 years
-    {  67, /*ID_WEB_Time_WPein_akt*/ "Wärmepumpe läuft seit", 0, "Sekunden", 17, DataTypeInfo::UNSIGNED},                                                               // 0 .. 36h
-    {  69, /*ID_WEB_Time_ZWE2_akt*/ "Zweiter Wärmeerzeuger 2 läuft seit", 0, "Sekunden", 17, DataTypeInfo::UNSIGNED},                                                   // 0 .. 36h -> Heats up to 60 deg
-    {  70, /*ID_WEB_Timer_EinschVerz*/ "Netzeinschaltverzögerung", 0, "Sekunden", 17, DataTypeInfo::UNSIGNED},                                                          // 0 .. 36h
-    {  71, /*ID_WEB_Time_SSPAUS_akt*/ "Schaltspielsperre Aus", 0, "Sekunden", 17, DataTypeInfo::UNSIGNED},                                                              // 0 .. 36h
-    {  72, /*ID_WEB_Time_SSPEIN_akt*/ "Schaltspielsperre Ein", 0, "Sekunden", 17, DataTypeInfo::UNSIGNED},                                                              // 0 .. 36h
-    {  73, /*ID_WEB_Time_VDStd_akt*/ "Verdichter-Standzeit", 0, "Sekunden", 17, DataTypeInfo::UNSIGNED},                                                                // 0 .. 36h
-    {  74, /*ID_WEB_Time_HRM_akt*/ "Heizungsregler Mehr-Zeit", 0, "Sekunden", 17, DataTypeInfo::UNSIGNED},                                                              // 0 .. 36h
-    {  75, /*ID_WEB_Time_HRW_akt*/ "Heizungsregler Weniger-Zeit", 0, "Sekunden", 17, DataTypeInfo::UNSIGNED},                                                           // 0 .. 36h
-    {  76, /*ID_WEB_Time_LGS_akt*/ "Thermische Desinfektion läuft seit", 0, "Sekunden", 17, DataTypeInfo::UNSIGNED},                                                    // 0 .. 36h -> Heats up to 60 deg
-    {  77, /*ID_WEB_Time_SBW_akt*/ "Sperre Warmwasser", 0, "Sekunden", 17, DataTypeInfo::UNSIGNED},                                                                     // 0 .. 36h -> potentially 0
-    {  78, /*ID_WEB_Code_WP_akt*/ "Wärmepumpentyp|0 = ERC|Typenschlüssel", 0, "-", 7, DataTypeInfo::UNSIGNED},                                                          // enum 0..75 < 2^7 = 128 -> potentially  const
-    {  79, /*ID_WEB_BIV_Stufe_akt*/ "Bivalenzstufe", 0, "enum", 2, DataTypeInfo::UNSIGNED },                                                                 // According the enum
-    {  80, /*ID_WEB_WP_BZ_akt*/ "Betriebszustand", 0, "enum", 3, DataTypeInfo::UNSIGNED },                                                                                // According the enum
-    { 151, /*ID_WEB_WMZ_Heizung*/ "Wärmemengenzähler Heizung", 10, "kWh", 28, DataTypeInfo::UNSIGNED},                                                                  // 460 times more than today
-    { 152, /*ID_WEB_WMZ_Brauchwasser*/ "Wärmemengenzähler Brauchwasser", 10, "kWh", 26, DataTypeInfo::UNSIGNED},                                                        // 382 times more than today
-    { 154, /*ID_WEB_WMZ_Seit*/ "Wärmemengenzähler Gesamt", 10, "kWh", 28, DataTypeInfo::UNSIGNED},                                                                      // 350 times more than today
-    { 155, /*ID_WEB_WMZ_Durchfluss*/ "Wärmemengenzähler Durchfluss", 1, "l / h", 10, DataTypeInfo::UNSIGNED},                                                           // 0 .. 1024l/h  -> potentially unused
-#endif
-
-
-
-
-
-
-    EXPECT_CALL(*csvWriter, writeHeader(*expectedHeaderLine_v2_v3)).WillOnce(Return(true));
-    EXPECT_CALL(*csvWriter, writeData(expectedVectorCSV, expecedNrColExclusiveTimeStamp)).WillOnce(Return(true));
-    feedback = fileDataReader->decodeData();
-    EXPECT_TRUE(feedback);
+TEST_F(Test_FileDataReader, DISABLED_fileVersion03_minValus)
+{
+//    signed values! -(max)
 }
 
 
@@ -654,58 +564,3 @@ TEST_F(Test_FileDataReader, DISABLED_template)
 }
 
 }  // unnamed namespace
-
-
-
-#if 0
-{  10, /*ID_WEB_Temperatur_TVL*/ "Vorlauftemperatur Heizkreis", 10, "°C", 10, DataTypeInfo::UNSIGNED },                                                                  // 0..102.3
-{  11, /*ID_WEB_Temperatur_TRL*/ "Rücklauftemperatur Heizkreis", 10, "°C", 10, DataTypeInfo::UNSIGNED },                                                                 // 0..102.3
-{  12, /*ID_WEB_Sollwert_TRL_HZ*/ "Rücklauf-Soll Heizkreis", 10, "°C", 10, DataTypeInfo::UNSIGNED },                                                                     // 0..102.3
-{  14, /*ID_WEB_Temperatur_THG*/ "Heisgastemperatur", 10, "°C", 10, DataTypeInfo::UNSIGNED },                                                                            // 0..102.3
-{  15, /*ID_WEB_Temperatur_TA*/ "Aussentemperatur", 10, "°C", 11, DataTypeInfo::SIGNED},                                                                                 // -102.4 .. 102.3
-{  16, /*ID_WEB_Mitteltemperatur*/ "Durchschnittstemperatur Aussen über 24 h (Funktion Heizgrenze)", 10, "°C", 10, DataTypeInfo::SIGNED},                                // -51.2 .. 51.1
-{  17, /*ID_WEB_Temperatur_TBW*/ "Warmwasser Ist-Temperatur", 10, "°C", 10, DataTypeInfo::UNSIGNED },                                                                    // 0..102.3
-{  18, /*ID_WEB_Einst_BWS_akt*/ "Warmwasser Soll-Temperatur", 10, "°C", 10, DataTypeInfo::UNSIGNED },                                                                    // 0..102.3
-{  19, /*ID_WEB_Temperatur_TWE*/ "Wärmequellen-Eintrittstemperatur", 10, "°C", 10, DataTypeInfo::UNSIGNED },                                                             // 0..102.3
-{  20, /*ID_WEB_Temperatur_TWA*/ "Wärmequellen-Austrittstemperatur", 10, "°C", 10, DataTypeInfo::UNSIGNED },                                                             // 0..102.3
-{  29, /*ID_WEB_ASDin*/ "Eingang Abtauende / Soledruck / Durchfluss", 0, "-", 1, DataTypeInfo::BOOL },
-{  30, /*ID_WEB_BWTin_Eingang*/ "Brauchwarmwasserthermostat", 0, "-", 1, DataTypeInfo::BOOL },
-{  31, /*ID_WEB_EVUin_Eingang*/ "EVU Sperre", 0, "-", 1, DataTypeInfo::BOOL },
-{  32, /*ID_WEB_HDin_Eingang*/ "Hochdruck Kältekreis", 0, "-", 1, DataTypeInfo::BOOL },
-{  33, /*ID_WEB_MOTin_Eingang*/ "Motorschutz OK", 0, "-", 1, DataTypeInfo::BOOL },
-{  34, /*ID_WEB_NDin_Eingang*/ "Niederdruck", 0, "-", 1, DataTypeInfo::BOOL },
-{  35, /*ID_WEB_PEXin_Eingang*/ "Überwachungskontakt für Potentiostat", 0, "-", 1, DataTypeInfo::BOOL },
-{  37, /*ID_WEB_AVout_Ausgang*/ "Abtauventil", 0, "-", 1, DataTypeInfo::BOOL },
-{  38, /*ID_WEB_BUPout_Ausgang*/ "Brauchwasserpumpe/Umstellventil", 0, "-", 1, DataTypeInfo::BOOL },
-{  39, /*ID_WEB_HUPout_Ausgang*/ "Heizungsumwälzpumpe", 0, "-", 1, DataTypeInfo::BOOL },
-{  42, /*ID_WEB_VENout_Ausgang*/ "Ventilation (Lüftung)", 0, "-", 1, DataTypeInfo::BOOL },
-{  43, /*ID_WEB_VBOout_Ausgang*/ "Solepumpe/Ventilator", 0, "-", 1, DataTypeInfo::BOOL },
-{  44, /*ID_WEB_VD1out_Ausgang*/ "Verdichter 1", 0, "-", 1, DataTypeInfo::BOOL },
-{  46, /*ID_WEB_ZIPout_Ausgang*/ "Zirkulationspumpe", 0, "-", 1, DataTypeInfo::BOOL },
-{  47, /*ID_WEB_ZUPout_Ausgang*/ "Zusatzumwälzpumpe", 0, "-", 1, DataTypeInfo::BOOL },
-{  48, /*ID_WEB_ZW1out_Ausgang*/ "Steuersignal Zusatzheizung v. Heizung", 0, "-", 1, DataTypeInfo::BOOL },
-{  49, /*ID_WEB_ZW2SSTout_Ausgang*/ "Steuersignal Zusatzheizung/Störsignal", 0, "-", 1, DataTypeInfo::BOOL },
-{  56, /*ID_WEB_Zaehler_BetrZeitVD1*/ "Betriebsstunden Verdichter 1", 0, "Sekunden", 30, DataTypeInfo::UNSIGNED},                                                       // 0 .. 34 years
-{  57, /*ID_WEB_Zaehler_BetrZeitImpVD1*/ "Impulse Verdichter 1", 0, "Impulse", 22, DataTypeInfo::UNSIGNED},                                                             // 346 times more than today
-{  61, /*ID_WEB_Zaehler_BetrZeitZWE2*/ "Betriebsstunden Zweiter Wärmeerzeuger 2", 0, "Sekunden", 30, DataTypeInfo::UNSIGNED},                                           // 0 .. 34 years -> Heats up to 60 deg
-{  63, /*ID_WEB_Zaehler_BetrZeitWP*/ "Betriebsstunden Wärmepumpe", 0, "Sekunden", 30, DataTypeInfo::UNSIGNED},                                                          // 0 .. 34 years
-{  64, /*ID_WEB_Zaehler_BetrZeitHz*/ "Betriebsstunden Heizung", 0, "Sekunden", 30, DataTypeInfo::UNSIGNED},                                                             // 0 .. 34 years
-{  65, /*ID_WEB_Zaehler_BetrZeitBW*/ "Betriebsstunden Warmwasser", 0, "Sekunden", 30, DataTypeInfo::UNSIGNED},                                                          // 0 .. 34 years
-{  67, /*ID_WEB_Time_WPein_akt*/ "Wärmepumpe läuft seit", 0, "Sekunden", 17, DataTypeInfo::UNSIGNED},                                                                   // 0 .. 36h
-{  69, /*ID_WEB_Time_ZWE2_akt*/ "Zweiter Wärmeerzeuger 2 läuft seit", 0, "Sekunden", 17, DataTypeInfo::UNSIGNED},                                                       // 0 .. 36h -> Heats up to 60 deg
-{  70, /*ID_WEB_Timer_EinschVerz*/ "Netzeinschaltverzögerung", 0, "Sekunden", 17, DataTypeInfo::UNSIGNED},                                                              // 0 .. 36h
-{  71, /*ID_WEB_Time_SSPAUS_akt*/ "Schaltspielsperre Aus", 0, "Sekunden", 17, DataTypeInfo::UNSIGNED},                                                                  // 0 .. 36h
-{  72, /*ID_WEB_Time_SSPEIN_akt*/ "Schaltspielsperre Ein", 0, "Sekunden", 17, DataTypeInfo::UNSIGNED},                                                                  // 0 .. 36h
-{  73, /*ID_WEB_Time_VDStd_akt*/ "Verdichter-Standzeit", 0, "Sekunden", 17, DataTypeInfo::UNSIGNED},                                                                    // 0 .. 36h
-{  74, /*ID_WEB_Time_HRM_akt*/ "Heizungsregler Mehr-Zeit", 0, "Sekunden", 17, DataTypeInfo::UNSIGNED},                                                                  // 0 .. 36h
-{  75, /*ID_WEB_Time_HRW_akt*/ "Heizungsregler Weniger-Zeit", 0, "Sekunden", 17, DataTypeInfo::UNSIGNED},                                                               // 0 .. 36h
-{  76, /*ID_WEB_Time_LGS_akt*/ "Thermische Desinfektion läuft seit", 0, "Sekunden", 17, DataTypeInfo::UNSIGNED},                                                        // 0 .. 36h -> Heats up to 60 deg
-{  77, /*ID_WEB_Time_SBW_akt*/ "Sperre Warmwasser", 0, "Sekunden", 17, DataTypeInfo::UNSIGNED},                                                                         // 0 .. 36h -> potentially 0
-{  78, /*ID_WEB_Code_WP_akt*/ "Wärmepumpentyp|0 = ERC|Typenschlüssel", 0, "-", 7, DataTypeInfo::UNSIGNED},                                                              // enum 0..75 < 2^7 = 128 -> potentially  const
-{  79, /*ID_WEB_BIV_Stufe_akt*/ "Bivalenzstufe", 0, "enum", 2, DataTypeInfo::UNSIGNED },                                                                     // According the enum
-{  80, /*ID_WEB_WP_BZ_akt*/ "Betriebszustand", 0, "enum", 3, DataTypeInfo::UNSIGNED },                                                                                    // According the enum
-{ 151, /*ID_WEB_WMZ_Heizung*/ "Wärmemengenzähler Heizung", 10, "kWh", 28, DataTypeInfo::UNSIGNED},                                                                      // 460 times more than today
-{ 152, /*ID_WEB_WMZ_Brauchwasser*/ "Wärmemengenzähler Brauchwasser", 10, "kWh", 26, DataTypeInfo::UNSIGNED},                                                            // 382 times more than today
-{ 154, /*ID_WEB_WMZ_Seit*/ "Wärmemengenzähler Gesamt", 10, "kWh", 28, DataTypeInfo::UNSIGNED},                                                                          // 350 times more than today
-{ 155, /*ID_WEB_WMZ_Durchfluss*/ "Wärmemengenzähler Durchfluss", 1, "l / h", 10, DataTypeInfo::UNSIGNED},                                                               // 0 .. 1024l/h  -> potentially unused
-#endif
