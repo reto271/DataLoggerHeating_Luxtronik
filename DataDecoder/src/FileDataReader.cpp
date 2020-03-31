@@ -59,7 +59,7 @@ bool FileDataReader::readHeaderData()
     validateFile();
 
     if(nullptr == m_pValueTable) {
-        std::cout << "No matching value table found. (Fnc: " << __FUNCTION__ << ", ln: " << __LINE__ << std::endl;
+        std::cout << "No matching value table found. (Fnc: " << __FUNCTION__ << ", ln: " << __LINE__ << ")" << std::endl;
         return false;
     } else {
         return true;
@@ -69,7 +69,7 @@ bool FileDataReader::readHeaderData()
 bool FileDataReader::decodeData()
 {
     if(nullptr == m_pValueTable) {
-        std::cout << "No matching value table found. (Fnc: " << __FUNCTION__ << ", ln: " << __LINE__ << std::endl;
+        std::cout << "No matching value table found. (Fnc: " << __FUNCTION__ << ", ln: " << __LINE__ << ")" << std::endl;
         return false;
     }
 
@@ -131,8 +131,8 @@ void FileDataReader::readRawDataFromFile()
     uint8_t* pU8RawDataOri = pU8RawData;
     m_inputFileStream.read(reinterpret_cast<char*>(pU8RawData), m_fileLength);
 
-    //std::cout << "---------------------------" << std::endl;
-    //{
+    // std::cout << "---------------------------" << std::endl;
+    // {
     //    std::ios state(nullptr);
     //    state.copyfmt(std::cout); // save current formatting
     //    std::cout << "0x0000 :";
@@ -143,8 +143,8 @@ void FileDataReader::readRawDataFromFile()
     //        }
     //    }
     //    std::cout.copyfmt(state); // restore previous formatting
-    //}
-    //std::cout << std::endl << "---------------------------" << std::endl;
+    // }
+    // std::cout << std::endl << "---------------------------" << std::endl;
 
     uint32_t posInBuffer = 0;
     for(uint32_t frameCnt = 0; frameCnt < m_nrRecords; frameCnt++) {
@@ -155,7 +155,7 @@ void FileDataReader::readRawDataFromFile()
 
         // Convert to data vector
         BitBuffer bitBuffer(dataVector);
-        //bitBuffer.printContent();
+        // bitBuffer.printContent();
 
         // Get time value
         uint32_t val;
@@ -238,7 +238,7 @@ void FileDataReader::determineFileVersion()
 void FileDataReader::validateFile()
 {
     if(nullptr == m_pValueTable) {
-        std::cout << "No matching value table found. (Fnc: " << __FUNCTION__ << ", ln: " << __LINE__ << std::endl;
+        std::cout << "No matching value table found. (Fnc: " << __FUNCTION__ << ", ln: " << __LINE__ << ")" << std::endl;
         return;
     }
 
@@ -251,7 +251,7 @@ void FileDataReader::validateFile()
 void FileDataReader::validateHeaderSize()
 {
     if(nullptr == m_pValueTable) {
-        std::cout << "No matching value table found. (Fnc: " << __FUNCTION__ << ", ln: " << __LINE__ << std::endl;
+        std::cout << "No matching value table found. (Fnc: " << __FUNCTION__ << ", ln: " << __LINE__ << ")" << std::endl;
         return;
     }
     if(m_sizeFileHeader != m_pValueTable->getSizeOfHeader()) {
@@ -266,7 +266,7 @@ void FileDataReader::validateHeaderSize()
 void FileDataReader::validateNrEntriesPerRecord()
 {
     if(nullptr == m_pValueTable) {
-        std::cout << "No matching value table found. (Fnc: " << __FUNCTION__ << ", ln: " << __LINE__ << std::endl;
+        std::cout << "No matching value table found. (Fnc: " << __FUNCTION__ << ", ln: " << __LINE__ << ")" << std::endl;
         return;
     }
 
@@ -303,7 +303,7 @@ void FileDataReader::validateFileLength()
     uint32_t dataSetSize;
 
     if(nullptr == m_pValueTable) {
-        std::cout << "No matching value table found. (Fnc: " << __FUNCTION__ << ", ln: " << __LINE__ << std::endl;
+        std::cout << "No matching value table found. (Fnc: " << __FUNCTION__ << ", ln: " << __LINE__ << ")" << std::endl;
         return;
     }
 
