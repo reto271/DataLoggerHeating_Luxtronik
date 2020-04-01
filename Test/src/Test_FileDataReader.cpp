@@ -76,6 +76,8 @@ protected:
     FileDataReader_SPtr fileDataReader;
     std::shared_ptr<std::string> expectedHeaderLine_v1;
     std::shared_ptr<std::string> expectedHeaderLine_v2_v3;
+    std::string m_filePath = "Test/testData/";  // real test
+//    std::string m_filePath("../testData/"); //debugger
 };
 
 MATCHER_P (compareVectors, expVec, "")
@@ -100,8 +102,7 @@ MATCHER_P (compareVectors, expVec, "")
 TEST_F(Test_FileDataReader, fileVersion1)
 {
     bool feedback;
-    fileDataReader = std::make_shared<FileDataReader>("Test/testData/fileVersion_01.dat", csvWriter); // real test
-//    fileDataReader = std::make_shared<FileDataReader>("../testData/fileVersion_01.dat", csvWriter); //debugger
+    fileDataReader = std::make_shared<FileDataReader>(m_filePath + "fileVersion_01.dat", csvWriter);
     feedback = fileDataReader->readHeaderData();
     EXPECT_TRUE(feedback);
 
@@ -260,7 +261,7 @@ TEST_F(Test_FileDataReader, fileVersion1)
 TEST_F(Test_FileDataReader, fileVersion2)
 {
     bool feedback;
-    fileDataReader = std::make_shared<FileDataReader>("Test/testData/fileVersion_02.dat", csvWriter); // real test
+    fileDataReader = std::make_shared<FileDataReader>(m_filePath + "fileVersion_02.dat", csvWriter);
     feedback = fileDataReader->readHeaderData();
     EXPECT_TRUE(feedback);
 
@@ -434,15 +435,15 @@ TEST_F(Test_FileDataReader, fileVersion2)
 TEST_F(Test_FileDataReader, unsupportedFileVersion)
 {
     bool feedback;
-    fileDataReader = std::make_shared<FileDataReader>("Test/testData/fileVersion_NotSupported.dat", csvWriter); // real test
+    fileDataReader = std::make_shared<FileDataReader>(m_filePath + "fileVersion_NotSupported.dat", csvWriter);
     feedback = fileDataReader->readHeaderData();
     EXPECT_FALSE(feedback);
 }
 
-TEST_F(Test_FileDataReader, fileVersion03_allZeros)
+TEST_F(Test_FileDataReader, fileVersion03_zeroValues)
 {
     bool feedback;
-    fileDataReader = std::make_shared<FileDataReader>("Test/testData/fileVersion_03_allZeros.dat", csvWriter); // real test
+    fileDataReader = std::make_shared<FileDataReader>(m_filePath + "fileVersion_03_zeroValues.dat", csvWriter);
     feedback = fileDataReader->readHeaderData();
     EXPECT_TRUE(feedback);
 
@@ -456,19 +457,18 @@ TEST_F(Test_FileDataReader, fileVersion03_allZeros)
     EXPECT_TRUE(feedback);
 }
 
-TEST_F(Test_FileDataReader, fileVersion03_validTimestamp_allMaxValues)
+TEST_F(Test_FileDataReader, fileVersion03_maxValues)
 {
     bool feedback;
-    fileDataReader = std::make_shared<FileDataReader>("Test/testData/fileVersion_03_allMax.dat", csvWriter); // real test
-    // fileDataReader = std::make_shared<FileDataReader>("../testData/fileVersion_03_allMax.dat", csvWriter); //debugger
+    fileDataReader = std::make_shared<FileDataReader>(m_filePath + "fileVersion_03_maxValues.dat", csvWriter);
     feedback = fileDataReader->readHeaderData();
     EXPECT_TRUE(feedback);
 
     uint32_t expecedNrColExclusiveTimeStamp = 50;
 
     std::vector<uint32_t> expectedVectorCSV(1 * (expecedNrColExclusiveTimeStamp + 2), 0);
-    expectedVectorCSV.at(0) = 0x0bc0dcc0;      // 1. April 1976 0640
-    expectedVectorCSV.at(1) = 0;               // Second part of the timestamp
+    expectedVectorCSV.at(0) = 0xffffffff;      // First part of the timestamp
+    expectedVectorCSV.at(1) = 0xffffffff;      // Second part of the timestamp
     expectedVectorCSV.at(2) = 1023;            // "Vorlauftemperatur Heizkreis",                                         10, "°C",       10, DataTypeInfo::UNSIGNED }, // 0..102.3
     expectedVectorCSV.at(3) = 1023;            // "Rücklauftemperatur Heizkreis",                                        10, "°C",       10, DataTypeInfo::UNSIGNED }, // 0..102.3
     expectedVectorCSV.at(4) = 1023;            // "Rücklauf-Soll Heizkreis",                                             10, "°C",       10, DataTypeInfo::UNSIGNED }, // 0..102.3
@@ -526,41 +526,44 @@ TEST_F(Test_FileDataReader, fileVersion03_validTimestamp_allMaxValues)
     EXPECT_TRUE(feedback);
 }
 
-
-
-TEST_F(Test_FileDataReader, DISABLED_fileVersion03_enumerateValues)
-{
-//    val1 = 1
-//    val2 = 2
-//    ...
-}
-
-TEST_F(Test_FileDataReader, DISABLED_fileVersion03_minValus)
-{
-//    signed values! -(max)
-}
-
-
-
-TEST_F(Test_FileDataReader, DISABLED_template)
+// signed values! -(max)
+TEST_F(Test_FileDataReader, fileVersion03_minValus)
 {
     bool feedback;
-    fileDataReader = std::make_shared<FileDataReader>("Test/testData/fileVersion_02.dat", csvWriter); // real test
+    fileDataReader = std::make_shared<FileDataReader>(m_filePath + "fileVersion_03_minValues.dat", csvWriter);
     feedback = fileDataReader->readHeaderData();
     EXPECT_TRUE(feedback);
 
     uint32_t expecedNrColExclusiveTimeStamp = 50;
 
-    std::vector<uint32_t> expectedVectorCSV(3 * (expecedNrColExclusiveTimeStamp + 2));
-    expectedVectorCSV.at(0) = 0x5E7A90F0;        // F0 90 7A 5E
-    expectedVectorCSV.at(1) = 0x00000000;        // 00 00 00 00
-    expectedVectorCSV.at(2) = 0x00000173;        // 73 01 00 00
-    expectedVectorCSV.at(3) = 0x0000013E;        // 3E 01 00 00
+    std::vector<uint32_t> expectedVectorCSV(1 * (expecedNrColExclusiveTimeStamp + 2), 0);
+
+    auto setSignedExpectation = [&expectedVectorCSV](uint32_t position, int32_t signedValue, uint32_t nrBits) -> uint32_t {
+                                    uint32_t bitMask = (1 << nrBits) - 1;
+                                    uint32_t uVal = (bitMask & (*reinterpret_cast<uint32_t*>(&signedValue)));
+                                    std::cout << "sVal: " << signedValue << ", uVal: " << uVal << " / 0x" << std::hex << uVal << std::dec
+                                              << ", unmasked: " << (*reinterpret_cast<uint32_t*>(&signedValue))
+                                              << " / 0x" << std::hex << (*reinterpret_cast<uint32_t*>(&signedValue)) << std::dec << std::endl;
+                                    expectedVectorCSV.at(position) = uVal;
+                                    return uVal;
+                                };
+
+    setSignedExpectation(6, -1024, 11);      // "Aussentemperatur",                                                    10, "°C",       11, DataTypeInfo::SIGNED},    // -102.4 .. 102.3
+    setSignedExpectation(7, -512, 10);       // "Durchschnittstemperatur Aussen über 24 h (Funktion Heizgrenze)",      10, "°C",       10, DataTypeInfo::SIGNED},    // -51.2 .. 51.1
 
     EXPECT_CALL(*csvWriter, writeHeader(*expectedHeaderLine_v2_v3)).WillOnce(Return(true));
-    EXPECT_CALL(*csvWriter, writeData(expectedVectorCSV, expecedNrColExclusiveTimeStamp)).WillOnce(Return(true));
+    EXPECT_CALL(*csvWriter, writeData(compareVectors(expectedVectorCSV), expecedNrColExclusiveTimeStamp)).WillOnce(Return(true));
     feedback = fileDataReader->decodeData();
     EXPECT_TRUE(feedback);
+}
+
+TEST_F(Test_FileDataReader, DISABLED_fileVersion03_enumerateValues)
+{
+//    expectedVectorCSV.at(0) = 0x0bc0dcc0;      // 1. April 1976 0640
+//    expectedVectorCSV.at(1) = 0;               // Second part of the timestamp
+//    val1 = 1
+//    val2 = 2
+//    ...
 }
 
 }  // unnamed namespace
