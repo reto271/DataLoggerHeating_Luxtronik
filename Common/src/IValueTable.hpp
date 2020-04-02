@@ -11,14 +11,6 @@ enum class DataTypeInfo {
 class IValueTable
 {
 public:
-    IValueTable()
-    {
-    }
-
-    virtual ~IValueTable()
-    {
-    }
-
     virtual void initialize() = 0;
 
     virtual uint32_t getCommandId(uint32_t entryNr) const = 0;

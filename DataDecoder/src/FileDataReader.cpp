@@ -12,7 +12,7 @@
 #include "Common/src/FeedbackCollector.hpp"
 #include "Common/src/BitBuffer.hpp"
 
-FileDataReader::FileDataReader(std::string fileName, IFileDataWriterCSV_SPtr csvWriter)
+FileDataReader::FileDataReader(std::string fileName, IFileDataWriterCSV_SPtr csvWriter, bool enableLog)
     : m_fileName(fileName)
     , m_fileLength(0)
     , m_fileVersion(0)
@@ -21,6 +21,7 @@ FileDataReader::FileDataReader(std::string fileName, IFileDataWriterCSV_SPtr csv
     , m_nrRecords(0)
     , m_pValueTable(nullptr)
     , m_csvWriter(csvWriter)
+    , m_enableLog(enableLog)
 {
     m_inputFileStream.open (m_fileName, std::ios::binary | std::ios::in);
 }
@@ -47,11 +48,12 @@ bool FileDataReader::readHeaderData()
     m_inputFileStream.read(reinterpret_cast<char*>(&m_sizeFileHeader), 4);
     m_inputFileStream.read(reinterpret_cast<char*>(&m_nrDataEntriesPerRecord), 4);
 
-    std::cout << "File version:       " << m_fileVersion << std::endl;
-    std::cout << "Header size:        " << m_sizeFileHeader << std::endl;
-    std::cout << "Entries per Record: " << m_nrDataEntriesPerRecord << std::endl;
-    std::cout << "File length:        " << m_fileLength << std::endl;
-
+    if(true == m_enableLog) {
+        std::cout << "File version:       " << m_fileVersion << std::endl;
+        std::cout << "Header size:        " << m_sizeFileHeader << std::endl;
+        std::cout << "Entries per Record: " << m_nrDataEntriesPerRecord << std::endl;
+        std::cout << "File length:        " << m_fileLength << std::endl;
+    }
     // Find the file version
     determineFileVersion();
 
@@ -96,8 +98,9 @@ void FileDataReader::readRawDataFromFile_v1_v2()
 {
     uint32_t dataSizeInDoubleWords = (m_fileLength - (m_sizeFileHeader * 4)) / 4;
     m_nrRecords = dataSizeInDoubleWords / (m_pValueTable->getNrDataEntriesPerSet() + 2);                 // 2: 8bytes for the time stamp (std::time_t)
-    std::cout << "No records : " << m_nrRecords << std::endl;
-
+    if(true == m_enableLog) {
+        std::cout << "No records : " << m_nrRecords << std::endl;
+    }
     // Allocate buffer and read from file
     uint32_t bufferSize = m_nrRecords * (m_nrDataEntriesPerRecord + 2); // 2 * 4 bytes time stamp
 
@@ -116,14 +119,17 @@ void FileDataReader::readRawDataFromFile()
     uint32_t dataSetSize = m_pValueTable->getNrBytesInBufferPerSet();
     m_nrRecords = dataFileLength / dataSetSize;
 
-    std::cout << "m_nrRecords: " << m_nrRecords << std::endl;
-    std::cout << "m_nrDataEntriesPerRecord: " << m_nrDataEntriesPerRecord << std::endl;
-    std::cout << "m_pValueTable->getNrDataEntriesPerSet(): " << m_pValueTable->getNrDataEntriesPerSet() << std::endl;
-    std::cout << "m_fileLength: " << m_fileLength << std::endl;
-
+    if(true == m_enableLog) {
+        std::cout << "m_nrRecords: " << m_nrRecords << std::endl;
+        std::cout << "m_nrDataEntriesPerRecord: " << m_nrDataEntriesPerRecord << std::endl;
+        std::cout << "m_pValueTable->getNrDataEntriesPerSet(): " << m_pValueTable->getNrDataEntriesPerSet() << std::endl;
+        std::cout << "m_fileLength: " << m_fileLength << std::endl;
+    }
     // Prepare buffer used for writeToCSV function
     uint32_t bufferSize = m_nrRecords * (m_pValueTable->getNrDataEntriesPerSet() + 2);  // 2 * sizeof(uin32_t) for the time stamp
-    std::cout << "bufferSize: " << bufferSize << std::endl;
+    if(true == m_enableLog) {
+        std::cout << "bufferSize: " << bufferSize << std::endl;
+    }
     m_csvBuffer.resize(bufferSize);
 
     // Read the whole file
@@ -212,20 +218,20 @@ void FileDataReader::printRawBuffer()
 void FileDataReader::determineFileVersion()
 {
     // Test if current version
-    m_pValueTable = std::make_shared<ValueTable>();
+    m_pValueTable = std::make_shared<ValueTable>(m_enableLog);
     if(m_fileVersion == m_pValueTable->getFileVersion()) {
         m_pValueTable->initialize();
         return;
     }
 
     // Test older versions
-    m_pValueTable = std::make_shared<ValueTable_v2>();
+    m_pValueTable = std::make_shared<ValueTable_v2>(m_enableLog);
     if(m_fileVersion == m_pValueTable->getFileVersion()) {
         m_pValueTable->initialize();
         return;
     }
 
-    m_pValueTable = std::make_shared<ValueTable_v1>();
+    m_pValueTable = std::make_shared<ValueTable_v1>(m_enableLog);
     if(m_fileVersion == m_pValueTable->getFileVersion()) {
         m_pValueTable->initialize();
         return;

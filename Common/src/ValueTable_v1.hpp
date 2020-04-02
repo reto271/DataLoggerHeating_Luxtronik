@@ -6,7 +6,7 @@ class ValueTable_v1 : public ValueTableCommon
 {
 public:
 
-    ValueTable_v1();
+    ValueTable_v1(bool enableLog);
 
     virtual ~ValueTable_v1();
 

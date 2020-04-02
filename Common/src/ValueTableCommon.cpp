@@ -4,8 +4,9 @@
 
 
 
-ValueTableCommon::ValueTableCommon()
+ValueTableCommon::ValueTableCommon(bool enableLog)
     : m_isInitialized(false)
+    , m_enableLog(enableLog)
 {
 }
 
@@ -29,9 +30,11 @@ void ValueTableCommon::initialize()
         m_nrBitsInBufferPerSet += getNrBitsInBuffer(cnt);
     }
     m_bytesPerSetInclTimeStamp = (((m_nrBitsInBufferPerSet - 1) / 8) + 1) + 8; // 8 is the time stamp
-    std::cout << "Nr bits per data set: " << m_nrBitsInBufferPerSet
-              << ", bytes per data set: " << m_bytesPerSetInclTimeStamp
-              << ", number of values per data set: " << getNrDataEntriesPerSet() << std::endl;
+    if(true == m_enableLog) {
+        std::cout << "Nr bits per data set: " << m_nrBitsInBufferPerSet
+                  << ", bytes per data set: " << m_bytesPerSetInclTimeStamp
+                  << ", number of values per data set: " << getNrDataEntriesPerSet() << std::endl;
+    }
 }
 
 uint32_t ValueTableCommon::getCommandId(uint32_t entryNr) const

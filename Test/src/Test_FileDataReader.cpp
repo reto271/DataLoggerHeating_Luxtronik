@@ -28,6 +28,7 @@ class Test_FileDataReader : public testing::Test
 protected:
     void SetUp() override
     {
+        m_enableLog = false;
         srand(time(NULL));
         csvWriter = std::make_shared<MockFileDataWriterCSV>();
         expectedHeaderLine_v1 = std::make_shared<std::string>("Time,Vorlauftemperatur Heizkreis,Rücklauftemperatur Heizkreis,Rücklauf-Soll Heizkreis,"
@@ -78,6 +79,7 @@ protected:
     std::shared_ptr<std::string> expectedHeaderLine_v2_v3;
     std::string m_filePath = "Test/testData/";  // real test
 //    std::string m_filePath("../testData/"); //debugger
+    bool m_enableLog;
 };
 
 MATCHER_P (compareVectors, expVec, "")
@@ -100,7 +102,7 @@ MATCHER_P (compareVectors, expVec, "")
 TEST_F(Test_FileDataReader, fileVersion1)
 {
     bool feedback;
-    fileDataReader = std::make_shared<FileDataReader>(m_filePath + "fileVersion_01.dat", csvWriter);
+    fileDataReader = std::make_shared<FileDataReader>(m_filePath + "fileVersion_01.dat", csvWriter, m_enableLog);
     feedback = fileDataReader->readHeaderData();
     EXPECT_TRUE(feedback);
 
@@ -259,7 +261,7 @@ TEST_F(Test_FileDataReader, fileVersion1)
 TEST_F(Test_FileDataReader, fileVersion2)
 {
     bool feedback;
-    fileDataReader = std::make_shared<FileDataReader>(m_filePath + "fileVersion_02.dat", csvWriter);
+    fileDataReader = std::make_shared<FileDataReader>(m_filePath + "fileVersion_02.dat", csvWriter, m_enableLog);
     feedback = fileDataReader->readHeaderData();
     EXPECT_TRUE(feedback);
 
@@ -433,7 +435,7 @@ TEST_F(Test_FileDataReader, fileVersion2)
 TEST_F(Test_FileDataReader, unsupportedFileVersion)
 {
     bool feedback;
-    fileDataReader = std::make_shared<FileDataReader>(m_filePath + "fileVersion_NotSupported.dat", csvWriter);
+    fileDataReader = std::make_shared<FileDataReader>(m_filePath + "fileVersion_NotSupported.dat", csvWriter, m_enableLog);
     feedback = fileDataReader->readHeaderData();
     EXPECT_FALSE(feedback);
 }
@@ -441,7 +443,7 @@ TEST_F(Test_FileDataReader, unsupportedFileVersion)
 TEST_F(Test_FileDataReader, fileVersion03_zeroValues)
 {
     bool feedback;
-    fileDataReader = std::make_shared<FileDataReader>(m_filePath + "fileVersion_03_zeroValues.dat", csvWriter);
+    fileDataReader = std::make_shared<FileDataReader>(m_filePath + "fileVersion_03_zeroValues.dat", csvWriter, m_enableLog);
     feedback = fileDataReader->readHeaderData();
     EXPECT_TRUE(feedback);
 
@@ -458,7 +460,7 @@ TEST_F(Test_FileDataReader, fileVersion03_zeroValues)
 TEST_F(Test_FileDataReader, fileVersion03_maxValues)
 {
     bool feedback;
-    fileDataReader = std::make_shared<FileDataReader>(m_filePath + "fileVersion_03_maxValues.dat", csvWriter);
+    fileDataReader = std::make_shared<FileDataReader>(m_filePath + "fileVersion_03_maxValues.dat", csvWriter, m_enableLog);
     feedback = fileDataReader->readHeaderData();
     EXPECT_TRUE(feedback);
 
@@ -528,7 +530,7 @@ TEST_F(Test_FileDataReader, fileVersion03_maxValues)
 TEST_F(Test_FileDataReader, fileVersion03_minValues)
 {
     bool feedback;
-    fileDataReader = std::make_shared<FileDataReader>(m_filePath + "fileVersion_03_minValues.dat", csvWriter);
+    fileDataReader = std::make_shared<FileDataReader>(m_filePath + "fileVersion_03_minValues.dat", csvWriter, m_enableLog);
     feedback = fileDataReader->readHeaderData();
     EXPECT_TRUE(feedback);
 
@@ -555,7 +557,7 @@ TEST_F(Test_FileDataReader, fileVersion03_minValues)
 TEST_F(Test_FileDataReader, fileVersion03_enumerateValues)
 {
     bool feedback;
-    fileDataReader = std::make_shared<FileDataReader>(m_filePath + "fileVersion_03_enumerateValues.dat", csvWriter);
+    fileDataReader = std::make_shared<FileDataReader>(m_filePath + "fileVersion_03_enumerateValues.dat", csvWriter, m_enableLog);
     feedback = fileDataReader->readHeaderData();
     EXPECT_TRUE(feedback);
 

@@ -4,7 +4,8 @@
 
 
 
-ValueTable::ValueTable()
+ValueTable::ValueTable(bool enableLog)
+    : ValueTableCommon(enableLog)
 {
 }
 

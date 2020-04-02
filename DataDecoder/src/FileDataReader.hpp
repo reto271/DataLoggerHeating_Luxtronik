@@ -11,7 +11,7 @@ class IValueTable;
 class FileDataReader
 {
 public:
-    FileDataReader(std::string fileName, IFileDataWriterCSV_SPtr csvWriter);
+    FileDataReader(std::string fileName, IFileDataWriterCSV_SPtr csvWriter, bool enableLog);
     virtual ~FileDataReader();
 
     bool readHeaderData();
@@ -50,6 +50,8 @@ private:
     std::ifstream m_inputFileStream;
     std::shared_ptr<IValueTable> m_pValueTable;
     IFileDataWriterCSV_SPtr m_csvWriter;
+
+    bool m_enableLog;
 };
 
 PointerDefinition(FileDataReader);

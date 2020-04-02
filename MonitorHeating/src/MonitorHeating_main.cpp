@@ -84,7 +84,7 @@ int main(int argc, char* argv[])
         }
 
         if(nullptr != receiveDataPtr) {
-            ValueResponse decodeValueResp(receiveDataPtr, currentUnixTime);
+            ValueResponse decodeValueResp(receiveDataPtr, currentUnixTime, true);
             // decodeValueResp.decode();
             decodeValueResp.serialize();
         } else {

@@ -15,7 +15,7 @@ public:
     /// written to the data file.
     /// \param[in] receiveDataPtr pointer to the received TCP raw data.
     /// \param[in] currentUnixTime time of the data sample in seconds since January, 1st 1970.
-    ValueResponse(RecDataStoragePtr receiveDataPtr, std::time_t currentUnixTime);
+    ValueResponse(RecDataStoragePtr receiveDataPtr, std::time_t currentUnixTime, bool enableLog);
 
     /// Returns the number data entries in the current data set.
     /// \return returns the number of data entries in a single data sample

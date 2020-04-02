@@ -10,7 +10,7 @@ class ValueTableCommon : public IValueTable
 {
 public:
 
-    ValueTableCommon();
+    ValueTableCommon(bool enableLog);
 
     virtual ~ValueTableCommon();
 
@@ -41,4 +41,5 @@ protected:
     uint32_t m_bytesPerSetInclTimeStamp;
 
     bool m_isInitialized;
+    bool m_enableLog;
 };
