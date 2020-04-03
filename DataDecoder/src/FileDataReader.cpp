@@ -109,8 +109,21 @@ void FileDataReader::readRawDataFromFile_v1_v2()
     uint32_t* pBuffer = new uint32_t[bufferSize];
 
     m_inputFileStream.read(reinterpret_cast<char*>(pBuffer), 4 * bufferSize);
-
-    m_csvBuffer = std::vector<uint32_t>(pBuffer, pBuffer + bufferSize);
+    m_csvBuffer = std::vector<IFileDataWriterCSV::DataEntryCSV>(bufferSize);
+    uint32_t pos = 0;
+    for(uint32_t recNr = 0; recNr < m_nrRecords; recNr++) {
+        for(uint32_t column = 0; column < (m_nrDataEntriesPerRecord+2); column++) {
+            if(2 > column) {
+                // Time information
+                m_csvBuffer.at(pos).value = pBuffer[pos];
+                m_csvBuffer.at(pos).divisor = 1;
+            } else {
+                m_csvBuffer.at(pos).value = pBuffer[pos];
+                m_csvBuffer.at(pos).divisor = m_pValueTable->getConversionDivisor(column - 2);
+            }
+            pos++;
+        }
+    }
     delete[] pBuffer;
 }
 
@@ -168,10 +181,12 @@ void FileDataReader::readRawDataFromFile()
         // Get time value
         uint32_t val;
         bitBuffer.getValue(val, 32);
-        m_csvBuffer.at(posInBuffer) = val;
+        m_csvBuffer.at(posInBuffer).value = val;
+        m_csvBuffer.at(posInBuffer).divisor = 1;
         posInBuffer++;
         bitBuffer.getValue(val, 32);
-        m_csvBuffer.at(posInBuffer) = val;
+        m_csvBuffer.at(posInBuffer).value = val;
+        m_csvBuffer.at(posInBuffer).divisor = 1;
         posInBuffer++;
 
         for(uint32_t cnt = 0; cnt < m_pValueTable->getNrDataEntriesPerSet(); cnt++) {
@@ -181,16 +196,18 @@ void FileDataReader::readRawDataFromFile()
                     {
                         uint32_t val;
                         bitBuffer.getValue(val, m_pValueTable->getNrBitsInBuffer(cnt));
-                        m_csvBuffer.at(posInBuffer) = val;
+                        m_csvBuffer.at(posInBuffer).value = val;
+                        m_csvBuffer.at(posInBuffer).divisor = m_pValueTable->getConversionDivisor(cnt);
                     }
                     break;
 
 
                 case DataTypeInfo::SIGNED:
                     {
-                        uint32_t val;
-                        bitBuffer.getValue(val, m_pValueTable->getNrBitsInBuffer(cnt));
-                        m_csvBuffer.at(posInBuffer) = val;
+                        int32_t iVal;
+                        bitBuffer.getValue(iVal, m_pValueTable->getNrBitsInBuffer(cnt));
+                        m_csvBuffer.at(posInBuffer).value = *reinterpret_cast<uint32_t*>(&iVal);
+                        m_csvBuffer.at(posInBuffer).divisor = m_pValueTable->getConversionDivisor(cnt);
                     }
                     break;
                 default:
@@ -198,7 +215,6 @@ void FileDataReader::readRawDataFromFile()
                     break;
             }
             posInBuffer++;
-
         }
         pU8RawData += dataSetSize;
         // Iterate through BitBuffer
@@ -211,7 +227,7 @@ void FileDataReader::printRawBuffer()
     for(uint32_t record = 0; record < m_nrRecords; record++) {
         for(uint32_t cnt = 0; cnt < (m_pValueTable->getNrDataEntriesPerSet() + 2); cnt++) {
             std::cout << "[" << record << ":" << cnt << "] "
-                      << *(reinterpret_cast<int32_t*>(m_csvBuffer.at(cnt + record * (m_pValueTable->getNrDataEntriesPerSet() + 2)))) << ", ";
+                      << *(reinterpret_cast<int32_t*>(m_csvBuffer.at(cnt + record * (m_pValueTable->getNrDataEntriesPerSet() + 2)).value)) << ", ";
         }
         std::cout << std::endl << std::endl;
     }

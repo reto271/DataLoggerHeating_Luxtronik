@@ -31,7 +31,7 @@ bool FileDataWriterCSV::writeHeader(std::string headerLine)
     return true;
 }
 
-bool FileDataWriterCSV::writeData(std::vector<std::uint32_t> dataVector, const uint32_t nrColumnExclTimeStamp)
+bool FileDataWriterCSV::writeData(std::vector<DataEntryCSV> dataVector, const uint32_t nrColumnExclTimeStamp)
 {
     std::cout << "FileDataWriterCSV::writeData" << std::endl;
 
@@ -56,13 +56,14 @@ bool FileDataWriterCSV::writeData(std::vector<std::uint32_t> dataVector, const u
     // Write data
     uint32_t arrayPos = 0;
     for(uint32_t record = 0; record < nrRows; record++) {
-        std::time_t time = static_cast<std::time_t>(dataVector[arrayPos]);
+        std::time_t time = static_cast<std::time_t>(dataVector[arrayPos].value);
         arrayPos++;
-        time += static_cast<std::time_t>(dataVector[arrayPos]) << 32;
+        time += static_cast<std::time_t>(dataVector[arrayPos].value) << 32;
         arrayPos++;
         m_csvFile << time;
         for(uint32_t cnt = 0; cnt < nrColumnExclTimeStamp; cnt++) {
-            m_csvFile << ", " << std::right << std::setw(9) << *(reinterpret_cast<int32_t*>(&dataVector[arrayPos]));
+            double value = static_cast<double>(*(reinterpret_cast<int32_t*>(&(dataVector.at(arrayPos).value)))) / static_cast<double>(dataVector.at(arrayPos).divisor);
+            m_csvFile << ", " << std::right << std::setw(9) << value;
             arrayPos++;
         }
         m_csvFile << std::endl;

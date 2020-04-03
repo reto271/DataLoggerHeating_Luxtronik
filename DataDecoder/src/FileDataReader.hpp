@@ -46,7 +46,7 @@ private:
     uint32_t m_nrDataEntriesPerRecord;
     uint32_t m_nrRecords;
 
-    std::vector<uint32_t> m_csvBuffer;
+    std::vector<IFileDataWriterCSV::DataEntryCSV> m_csvBuffer;
     std::ifstream m_inputFileStream;
     std::shared_ptr<IValueTable> m_pValueTable;
     IFileDataWriterCSV_SPtr m_csvWriter;

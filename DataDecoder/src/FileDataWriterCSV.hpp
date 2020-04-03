@@ -13,7 +13,7 @@ public:
     virtual ~FileDataWriterCSV();
 
     bool writeHeader(std::string headerLine) override;
-    bool writeData(std::vector<std::uint32_t> dataVector, const uint32_t nrColumnExclTimeStamp) override;
+    bool writeData(std::vector<DataEntryCSV> dataVector, const uint32_t nrColumnExclTimeStamp) override;
 
 private:
     std::string m_fileName;
