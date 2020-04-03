@@ -35,7 +35,7 @@ private:
     void validateFileLength();
 
     std::string prepareHeader();
-
+    std::string prepareUnits();
 
     std::string m_fileName;
     uint32_t m_fileLength;

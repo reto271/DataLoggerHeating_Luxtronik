@@ -48,33 +48,33 @@ void ValueTable::initValueTable()
     //  {  26, /*ID_WEB_Temperatur_TSK*/            "Fühler Solarkollektor",                                               10, "°C"},                -> deactivate
     //  {  27, /*ID_WEB_Temperatur_TSS*/            "Fühler Solarspeicher",                                                10, "°C"},                -> deactivate
     //  {  28, /*ID_WEB_Temperatur_TEE*/            "Fühler externe Energiequelle",                                        10, "°C"},                -> deactivate
-        {  29, /*ID_WEB_ASDin*/                     "Eingang Abtauende / Soledruck / Durchfluss",                           0,  "-",  1, DataTypeInfo::BOOL },
-        {  30, /*ID_WEB_BWTin_Eingang*/             "Brauchwarmwasserthermostat",                                           0,  "-",  1, DataTypeInfo::BOOL },
-        {  31, /*ID_WEB_EVUin_Eingang*/             "EVU Sperre",                                                           0,  "-",  1, DataTypeInfo::BOOL },
-        {  32, /*ID_WEB_HDin_Eingang*/              "Hochdruck Kältekreis",                                                 0,  "-",  1, DataTypeInfo::BOOL },
-        {  33, /*ID_WEB_MOTin_Eingang*/             "Motorschutz OK",                                                       0,  "-",  1, DataTypeInfo::BOOL },
-        {  34, /*ID_WEB_NDin_Eingang*/              "Niederdruck",                                                          0,  "-",  1, DataTypeInfo::BOOL },
-        {  35, /*ID_WEB_PEXin_Eingang*/             "Überwachungskontakt für Potentiostat",                                 0,  "-",  1, DataTypeInfo::BOOL },
-    //  {  36, /*ID_WEB_SWTin_Eingang*/             "Schwimmbadthermostat",                                                 0,  "-"},                -> deactivate
-        {  37, /*ID_WEB_AVout_Ausgang*/             "Abtauventil",                                                          0,  "-",  1, DataTypeInfo::BOOL },
-        {  38, /*ID_WEB_BUPout_Ausgang*/            "Brauchwasserpumpe/Umstellventil",                                      0,  "-",  1, DataTypeInfo::BOOL },
-        {  39, /*ID_WEB_HUPout_Ausgang*/            "Heizungsumwälzpumpe",                                                  0,  "-",  1, DataTypeInfo::BOOL },
-    //  {  40, /*ID_WEB_MA1out_Ausgang*/            "Mischkreis 1 Auf",                                                     0,  "-"},                -> deactivate
-    //  {  41, /*ID_WEB_MZ1out_Ausgang*/            "Mischkreis 1 Zu",                                                      0,  "-"},                -> deactivate
-        {  42, /*ID_WEB_VENout_Ausgang*/            "Ventilation (Lüftung)",                                                0,  "-",  1, DataTypeInfo::BOOL },
-        {  43, /*ID_WEB_VBOout_Ausgang*/            "Solepumpe/Ventilator",                                                 0,  "-",  1, DataTypeInfo::BOOL },
-        {  44, /*ID_WEB_VD1out_Ausgang*/            "Verdichter 1",                                                         0,  "-",  1, DataTypeInfo::BOOL },
-    //  {  45, /*ID_WEB_VD2out_Ausgang*/            "Verdichter 2",                                                         0,  "-"},                -> deactivate
-        {  46, /*ID_WEB_ZIPout_Ausgang*/            "Zirkulationspumpe",                                                    0,  "-",  1, DataTypeInfo::BOOL },
-        {  47, /*ID_WEB_ZUPout_Ausgang*/            "Zusatzumwälzpumpe",                                                    0,  "-",  1, DataTypeInfo::BOOL },
-        {  48, /*ID_WEB_ZW1out_Ausgang*/            "Steuersignal Zusatzheizung v. Heizung",                                0,  "-",  1, DataTypeInfo::BOOL },
-        {  49, /*ID_WEB_ZW2SSTout_Ausgang*/         "Steuersignal Zusatzheizung/Störsignal",                                0,  "-",  1, DataTypeInfo::BOOL },
-    //  {  50, /*ID_WEB_ZW3SSTout_Ausgang*/         "Zusatzheizung 3",                                                      0,  "-"},                -> deactivate
-    //  {  51, /*ID_WEB_FP2out_Ausgang*/            "Pumpe Mischkreis 2",                                                   0,  "-"},                -> deactivate
-    //  {  52, /*ID_WEB_SLPout_Ausgang*/            "Solarladepumpe",                                                       0,  "-"},                -> deactivate
-    //  {  53, /*ID_WEB_SUPout_Ausgang*/            "Schwimmbadpumpe",                                                      0,  "-"},                -> deactivate
-    //  {  54, /*ID_WEB_MZ2out_Ausgang*/            "Mischkreis 2 Zu",                                                      0,  "-"},                -> deactivate
-    //  {  55, /*ID_WEB_MA2out_Ausgang*/            "Mischkreis 2 Auf",                                                     0,  "-"},                -> deactivate
+        {  29, /*ID_WEB_ASDin*/                     "Eingang Abtauende / Soledruck / Durchfluss",                           0,  "bool",  1, DataTypeInfo::BOOL },
+        {  30, /*ID_WEB_BWTin_Eingang*/             "Brauchwarmwasserthermostat",                                           0,  "bool",  1, DataTypeInfo::BOOL },
+        {  31, /*ID_WEB_EVUin_Eingang*/             "EVU Sperre",                                                           0,  "bool",  1, DataTypeInfo::BOOL },
+        {  32, /*ID_WEB_HDin_Eingang*/              "Hochdruck Kältekreis",                                                 0,  "bool",  1, DataTypeInfo::BOOL },
+        {  33, /*ID_WEB_MOTin_Eingang*/             "Motorschutz OK",                                                       0,  "bool",  1, DataTypeInfo::BOOL },
+        {  34, /*ID_WEB_NDin_Eingang*/              "Niederdruck",                                                          0,  "bool",  1, DataTypeInfo::BOOL },
+        {  35, /*ID_WEB_PEXin_Eingang*/             "Überwachungskontakt für Potentiostat",                                 0,  "bool",  1, DataTypeInfo::BOOL },
+    //  {  36, /*ID_WEB_SWTin_Eingang*/             "Schwimmbadthermostat",                                                 0,  "bool"},                -> deactivate
+        {  37, /*ID_WEB_AVout_Ausgang*/             "Abtauventil",                                                          0,  "bool",  1, DataTypeInfo::BOOL },
+        {  38, /*ID_WEB_BUPout_Ausgang*/            "Brauchwasserpumpe/Umstellventil",                                      0,  "bool",  1, DataTypeInfo::BOOL },
+        {  39, /*ID_WEB_HUPout_Ausgang*/            "Heizungsumwälzpumpe",                                                  0,  "bool",  1, DataTypeInfo::BOOL },
+    //  {  40, /*ID_WEB_MA1out_Ausgang*/            "Mischkreis 1 Auf",                                                     0,  "bool"},                -> deactivate
+    //  {  41, /*ID_WEB_MZ1out_Ausgang*/            "Mischkreis 1 Zu",                                                      0,  "bool"},                -> deactivate
+        {  42, /*ID_WEB_VENout_Ausgang*/            "Ventilation (Lüftung)",                                                0,  "bool",  1, DataTypeInfo::BOOL },
+        {  43, /*ID_WEB_VBOout_Ausgang*/            "Solepumpe/Ventilator",                                                 0,  "bool",  1, DataTypeInfo::BOOL },
+        {  44, /*ID_WEB_VD1out_Ausgang*/            "Verdichter 1",                                                         0,  "bool",  1, DataTypeInfo::BOOL },
+    //  {  45, /*ID_WEB_VD2out_Ausgang*/            "Verdichter 2",                                                         0,  "bool"},                -> deactivate
+        {  46, /*ID_WEB_ZIPout_Ausgang*/            "Zirkulationspumpe",                                                    0,  "bool",  1, DataTypeInfo::BOOL },
+        {  47, /*ID_WEB_ZUPout_Ausgang*/            "Zusatzumwälzpumpe",                                                    0,  "bool",  1, DataTypeInfo::BOOL },
+        {  48, /*ID_WEB_ZW1out_Ausgang*/            "Steuersignal Zusatzheizung v. Heizung",                                0,  "bool",  1, DataTypeInfo::BOOL },
+        {  49, /*ID_WEB_ZW2SSTout_Ausgang*/         "Steuersignal Zusatzheizung/Störsignal",                                0,  "bool",  1, DataTypeInfo::BOOL },
+    //  {  50, /*ID_WEB_ZW3SSTout_Ausgang*/         "Zusatzheizung 3",                                                      0,  "bool"},                -> deactivate
+    //  {  51, /*ID_WEB_FP2out_Ausgang*/            "Pumpe Mischkreis 2",                                                   0,  "bool"},                -> deactivate
+    //  {  52, /*ID_WEB_SLPout_Ausgang*/            "Solarladepumpe",                                                       0,  "bool"},                -> deactivate
+    //  {  53, /*ID_WEB_SUPout_Ausgang*/            "Schwimmbadpumpe",                                                      0,  "bool"},                -> deactivate
+    //  {  54, /*ID_WEB_MZ2out_Ausgang*/            "Mischkreis 2 Zu",                                                      0,  "bool"},                -> deactivate
+    //  {  55, /*ID_WEB_MA2out_Ausgang*/            "Mischkreis 2 Auf",                                                     0,  "bool"},                -> deactivate
         {  56, /*ID_WEB_Zaehler_BetrZeitVD1*/       "Betriebsstunden Verdichter 1",                                         0, "Sekunden", 30, DataTypeInfo::UNSIGNED}, // 0 .. 34 years
         {  57, /*ID_WEB_Zaehler_BetrZeitImpVD1*/    "Impulse Verdichter 1",                                                 0, "Impulse" , 22, DataTypeInfo::UNSIGNED}, // 346 times more than today
     //  {  58, /*ID_WEB_Zaehler_BetrZeitVD2*/       "Betriebsstunden Verdichter 2",                                         0, "Sekunden" }, //                    -> deactivate
@@ -98,7 +98,7 @@ void ValueTable::initValueTable()
         {  76, /*ID_WEB_Time_LGS_akt*/              "Thermische Desinfektion läuft seit",                                   0, "Sekunden", 17, DataTypeInfo::UNSIGNED}, // 0 .. 36h -> Heats up to 60 deg
         {  77, /*ID_WEB_Time_SBW_akt*/              "Sperre Warmwasser",                                                    0, "Sekunden", 17, DataTypeInfo::UNSIGNED}, // 0 .. 36h -> potentially 0
 
-        {  78, /*ID_WEB_Code_WP_akt*/               "Wärmepumpentyp|0 = ERC|Typenschlüssel",                                0, "-",         7, DataTypeInfo::UNSIGNED}, // enum 0..75 < 2^7 = 128 -> potentially  const
+        {  78, /*ID_WEB_Code_WP_akt*/               "Wärmepumpentyp|0 = ERC|Typenschlüssel",                                0, "enum",         7, DataTypeInfo::UNSIGNED}, // enum 0..75 < 2^7 = 128 -> potentially  const
     //- 78|ID_WEB_Code_WP_akt|Wärmepumpentyp|0 = ERC|Typenschlüssel
     //-  | | | | 1 = SW1
     //-  | | | | 2 = SW2
@@ -296,7 +296,7 @@ void ValueTable::initValueTable()
         { 154, /*ID_WEB_WMZ_Seit*/                  "Wärmemengenzähler Gesamt",                                            10, "kWh", 28, DataTypeInfo::UNSIGNED}, // 350 times more than today
 
     //- 155|ID_WEB_WMZ_Durchfluss|Wärmemengenzähler Durchfluss|Keine|l / h
-        { 155, /*ID_WEB_WMZ_Durchfluss*/            "Wärmemengenzähler Durchfluss",                                         1, "l / h", 10, DataTypeInfo::UNSIGNED}, // 0 .. 1024l/h  -> potentially unused
+        { 155, /*ID_WEB_WMZ_Durchfluss*/            "Wärmemengenzähler Durchfluss",                                         1, "l/h", 10, DataTypeInfo::UNSIGNED}, // 0 .. 1024l/h  -> potentially unused
 
     //- 156|ID_WEB_AnalogOut1|Analog Ausgang 1|Wert / 100|V
     //- 157|ID_WEB_AnalogOut2|Analog Ausgang 2|Wert / 100|V

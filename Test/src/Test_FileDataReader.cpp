@@ -66,6 +66,17 @@ protected:
                                                                  "Heizungsregler Weniger-Zeit," "Thermische Desinfektion läuft seit," "Sperre Warmwasser,"
                                                                  "Wärmepumpentyp|0 = ERC|Typenschlüssel," "Bivalenzstufe," "Betriebszustand," "Wärmemengenzähler Heizung,"
                                                                  "Wärmemengenzähler Brauchwasser," "Wärmemengenzähler Gesamt," "Wärmemengenzähler Durchfluss");
+
+        expectedUnitLine_v1 = std::make_shared<std::string>("-,°C,°C,°C,°C,°C,°C,°C,°C,°C,°C,°C,°C,°C,°C,°C,°C,°C,°C,°C,-,-,-,-,-,-,-,-,-,-,-,-,-,-,-,-,-,-,-,-,-,"
+                                                            "-,-,-,-,-,-,Sekunden,Impulse,Sekunden,Impulse,Sekunden,Sekunden,Sekunden,Sekunden,Sekunden,Sekunden,"
+                                                            "Sekunden,Sekunden,Sekunden,Sekunden,Sekunden,Sekunden,Sekunden,Sekunden,Sekunden,Sekunden,Sekunden,"
+                                                            "Sekunden,enum");
+
+
+        expectedUnitLine_v2_v3 = std::make_shared<std::string>("-,°C,°C,°C,°C,°C,°C,°C,°C,°C,°C,bool,bool,bool,bool,bool,bool,bool,bool,bool,bool,bool,bool,bool,"
+                                                               "bool,bool,bool,bool,Sekunden,Impulse,Sekunden,"
+                                                               "Sekunden,Sekunden,Sekunden,Sekunden,Sekunden,Sekunden,Sekunden,Sekunden,Sekunden,Sekunden,"
+                                                               "Sekunden,Sekunden,Sekunden,enum,enum,enum,kWh,kWh,kWh,l/h");
     }
 
     void TearDown() override
@@ -77,6 +88,8 @@ protected:
     FileDataReader_SPtr fileDataReader;
     std::shared_ptr<std::string> expectedHeaderLine_v1;
     std::shared_ptr<std::string> expectedHeaderLine_v2_v3;
+    std::shared_ptr<std::string> expectedUnitLine_v1;
+    std::shared_ptr<std::string> expectedUnitLine_v2_v3;
     std::string m_filePath = "Test/testData/";  // real test
 //    std::string m_filePath("../testData/"); //debugger
     bool m_enableLog;
@@ -253,6 +266,7 @@ TEST_F(Test_FileDataReader, fileVersion1)
     expectedVectorCSV.at(141) = 0x00000003;       // 03 00 00 00
 
     EXPECT_CALL(*csvWriter, writeHeader(*expectedHeaderLine_v1)).WillOnce(Return(true));
+    EXPECT_CALL(*csvWriter, writeHeader(*expectedUnitLine_v1)).WillOnce(Return(true));
     EXPECT_CALL(*csvWriter, writeData(expectedVectorCSV, expecedNrColExclusiveTimeStamp)).WillOnce(Return(true));
     feedback = fileDataReader->decodeData();
     EXPECT_TRUE(feedback);
@@ -427,6 +441,7 @@ TEST_F(Test_FileDataReader, fileVersion2)
     expectedVectorCSV.at(155) = 0x00000000;      // 00 00 00 00
 
     EXPECT_CALL(*csvWriter, writeHeader(*expectedHeaderLine_v2_v3)).WillOnce(Return(true));
+    EXPECT_CALL(*csvWriter, writeHeader(*expectedUnitLine_v2_v3)).WillOnce(Return(true));
     EXPECT_CALL(*csvWriter, writeData(expectedVectorCSV, expecedNrColExclusiveTimeStamp)).WillOnce(Return(true));
     feedback = fileDataReader->decodeData();
     EXPECT_TRUE(feedback);
@@ -452,6 +467,7 @@ TEST_F(Test_FileDataReader, fileVersion03_zeroValues)
     std::vector<uint32_t> expectedVectorCSV(1 * (expecedNrColExclusiveTimeStamp + 2), 0);
 
     EXPECT_CALL(*csvWriter, writeHeader(*expectedHeaderLine_v2_v3)).WillOnce(Return(true));
+    EXPECT_CALL(*csvWriter, writeHeader(*expectedUnitLine_v2_v3)).WillOnce(Return(true));
     EXPECT_CALL(*csvWriter, writeData(expectedVectorCSV, expecedNrColExclusiveTimeStamp)).WillOnce(Return(true));
     feedback = fileDataReader->decodeData();
     EXPECT_TRUE(feedback);
@@ -521,6 +537,7 @@ TEST_F(Test_FileDataReader, fileVersion03_maxValues)
     expectedVectorCSV.at(51) = (1 << 10) - 1;  // "Wärmemengenzähler Durchfluss",                                         1, "l / h",    10, DataTypeInfo::UNSIGNED}, // 0 .. 1024l/h  -> potentially unused
 
     EXPECT_CALL(*csvWriter, writeHeader(*expectedHeaderLine_v2_v3)).WillOnce(Return(true));
+    EXPECT_CALL(*csvWriter, writeHeader(*expectedUnitLine_v2_v3)).WillOnce(Return(true));
     EXPECT_CALL(*csvWriter, writeData(compareVectors(expectedVectorCSV), expecedNrColExclusiveTimeStamp)).WillOnce(Return(true));
     feedback = fileDataReader->decodeData();
     EXPECT_TRUE(feedback);
@@ -549,6 +566,7 @@ TEST_F(Test_FileDataReader, fileVersion03_minValues)
     setSignedExpectation(7, -512, 10);       // "Durchschnittstemperatur Aussen über 24 h (Funktion Heizgrenze)",      10, "°C",       10, DataTypeInfo::SIGNED},    // -51.2 .. 51.1
 
     EXPECT_CALL(*csvWriter, writeHeader(*expectedHeaderLine_v2_v3)).WillOnce(Return(true));
+    EXPECT_CALL(*csvWriter, writeHeader(*expectedUnitLine_v2_v3)).WillOnce(Return(true));
     EXPECT_CALL(*csvWriter, writeData(compareVectors(expectedVectorCSV), expecedNrColExclusiveTimeStamp)).WillOnce(Return(true));
     feedback = fileDataReader->decodeData();
     EXPECT_TRUE(feedback);
@@ -618,6 +636,7 @@ TEST_F(Test_FileDataReader, fileVersion03_enumerateValues)
     expectedVectorCSV.at(51) = 33;          // "Wärmemengenzähler Durchfluss",                                         1, "l / h",    10, DataTypeInfo::UNSIGNED}, // 0 .. 1024l/h  -> potentially unused
 
     EXPECT_CALL(*csvWriter, writeHeader(*expectedHeaderLine_v2_v3)).WillOnce(Return(true));
+    EXPECT_CALL(*csvWriter, writeHeader(*expectedUnitLine_v2_v3)).WillOnce(Return(true));
     EXPECT_CALL(*csvWriter, writeData(compareVectors(expectedVectorCSV), expecedNrColExclusiveTimeStamp)).WillOnce(Return(true));
     feedback = fileDataReader->decodeData();
     EXPECT_TRUE(feedback);

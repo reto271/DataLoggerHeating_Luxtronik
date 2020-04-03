@@ -77,6 +77,7 @@ bool FileDataReader::decodeData()
 
     // Write header line
     std::string headerLine = prepareHeader();
+    std::string unitLine = prepareUnits();
 
     switch(m_pValueTable->getFileVersion()) {
         case 1:
@@ -90,6 +91,7 @@ bool FileDataReader::decodeData()
 
     FeedbackCollector writeFeedback(true);
     writeFeedback.addAndFeedback(m_csvWriter->writeHeader(headerLine));
+    writeFeedback.addAndFeedback(m_csvWriter->writeHeader(unitLine));
     writeFeedback.addAndFeedback(m_csvWriter->writeData(m_csvBuffer, m_pValueTable->getNrDataEntriesPerSet()));
     return writeFeedback.getFeedback();
 }
@@ -348,4 +350,16 @@ std::string FileDataReader::prepareHeader()
 
     }
     return headerLine;
+}
+
+std::string FileDataReader::prepareUnits()
+{
+    // Prepare the header line
+    std::string units = "-";
+    for(uint32_t cnt = 0; cnt < m_pValueTable->getNrDataEntriesPerSet(); cnt++) {
+        units += ",";
+        units += m_pValueTable->getUnit(cnt);
+
+    }
+    return units;
 }

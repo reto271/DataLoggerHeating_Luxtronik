@@ -21,7 +21,6 @@ FileDataWriterCSV::~FileDataWriterCSV()
 
 bool FileDataWriterCSV::writeHeader(std::string headerLine)
 {
-    std::cout << "FileDataWriterCSV::writeHeader" << std::endl;
     if(false == m_csvFile.is_open ()) {
         std::cout << "Could not find file: '" << m_fileName << "'" << std::endl;
         return false;
