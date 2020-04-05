@@ -112,7 +112,7 @@ void FileDataReader::readRawDataFromFile_v1_v2()
     m_csvBuffer = std::vector<IFileDataWriterCSV::DataEntryCSV>(bufferSize);
     uint32_t pos = 0;
     for(uint32_t recNr = 0; recNr < m_nrRecords; recNr++) {
-        for(uint32_t column = 0; column < (m_nrDataEntriesPerRecord+2); column++) {
+        for(uint32_t column = 0; column < (m_nrDataEntriesPerRecord + 2); column++) {
             if(2 > column) {
                 // Time information
                 m_csvBuffer.at(pos).value = pBuffer[pos];

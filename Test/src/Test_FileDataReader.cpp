@@ -77,6 +77,17 @@ protected:
                                                                "bool,bool,bool,bool,Sekunden,Impulse,Sekunden,"
                                                                "Sekunden,Sekunden,Sekunden,Sekunden,Sekunden,Sekunden,Sekunden,Sekunden,Sekunden,Sekunden,"
                                                                "Sekunden,Sekunden,Sekunden,enum,enum,enum,kWh,kWh,kWh,l/h");
+
+        std::vector<uint32_t> v1{10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+        expectedDivisor_v1 = v1;
+        EXPECT_EQ(69, expectedDivisor_v1.size());
+
+        std::vector<uint32_t> v2{10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                 1, 1, 1, 1, 1, 1, 1, 1, 10, 10, 10, 1};
+
+        expectedDivisor_v2_v3 = v2;
+        EXPECT_EQ(50, expectedDivisor_v2_v3.size());
     }
 
     void TearDown() override
@@ -90,6 +101,8 @@ protected:
     std::shared_ptr<std::string> expectedHeaderLine_v2_v3;
     std::shared_ptr<std::string> expectedUnitLine_v1;
     std::shared_ptr<std::string> expectedUnitLine_v2_v3;
+    std::vector<uint32_t> expectedDivisor_v1;
+    std::vector<uint32_t> expectedDivisor_v2_v3;
     std::string m_filePath = "Test/testData/";  // real test
 //    std::string m_filePath("../testData/"); //debugger
     bool m_enableLog;
@@ -109,7 +122,7 @@ MATCHER_P (compareVectors, expVec, "")
                 feedback = false;
             }
             // Compare divisor
-            if (expVec.at(cnt).divisor != arg.at(cnt).divisor) {
+            if(expVec.at(cnt).divisor != arg.at(cnt).divisor) {
                 std::cout << "expect divisor(" << cnt << ") is " << expVec.at(cnt).divisor << " != actual(" << cnt << ") is " << arg.at(cnt).divisor << std::endl;
                 feedback = false;
             }
@@ -270,6 +283,16 @@ TEST_F(Test_FileDataReader, fileVersion1)
     expectedVectorCSV.at(139).value = 0x00000000;       // 00 00 00 00
     expectedVectorCSV.at(140).value = 0x00000000;       // 00 00 00 00
     expectedVectorCSV.at(141).value = 0x00000003;       // 03 00 00 00
+
+
+    expectedVectorCSV.at(0).divisor = 1;
+    expectedVectorCSV.at(1).divisor = 1;
+    expectedVectorCSV.at(71).divisor = 1;
+    expectedVectorCSV.at(72).divisor = 1;
+    for(uint32_t cnt = 0; cnt < 69; cnt++) {
+        expectedVectorCSV.at(2 + cnt).divisor = expectedDivisor_v1.at(cnt);
+        expectedVectorCSV.at(73 + cnt).divisor = expectedDivisor_v1.at(cnt);
+    }
 
     EXPECT_CALL(*csvWriter, writeHeader(*expectedHeaderLine_v1)).WillOnce(Return(true));
     EXPECT_CALL(*csvWriter, writeHeader(*expectedUnitLine_v1)).WillOnce(Return(true));
@@ -446,6 +469,17 @@ TEST_F(Test_FileDataReader, fileVersion2)
     expectedVectorCSV.at(154).value = 0x000B9635;      // 35 96 0B 00
     expectedVectorCSV.at(155).value = 0x00000000;      // 00 00 00 00
 
+    expectedVectorCSV.at(0).divisor = 1;
+    expectedVectorCSV.at(1).divisor = 1;
+    expectedVectorCSV.at(52).divisor = 1;
+    expectedVectorCSV.at(53).divisor = 1;
+    expectedVectorCSV.at(104).divisor = 1;
+    expectedVectorCSV.at(105).divisor = 1;
+    for(uint32_t cnt = 0; cnt < 50; cnt++) {
+        expectedVectorCSV.at(2 + cnt).divisor = expectedDivisor_v2_v3.at(cnt);
+        expectedVectorCSV.at(54 + cnt).divisor = expectedDivisor_v2_v3.at(cnt);
+        expectedVectorCSV.at(106 + cnt).divisor = expectedDivisor_v2_v3.at(cnt);
+    }
     EXPECT_CALL(*csvWriter, writeHeader(*expectedHeaderLine_v2_v3)).WillOnce(Return(true));
     EXPECT_CALL(*csvWriter, writeHeader(*expectedUnitLine_v2_v3)).WillOnce(Return(true));
     EXPECT_CALL(*csvWriter, writeData(compareVectors(expectedVectorCSV), expecedNrColExclusiveTimeStamp)).WillOnce(Return(true));
@@ -470,7 +504,7 @@ TEST_F(Test_FileDataReader, fileVersion03_zeroValues)
 
     uint32_t expecedNrColExclusiveTimeStamp = 50;
 
-    std::vector<IFileDataWriterCSV::DataEntryCSV> expectedVectorCSV(1 * (expecedNrColExclusiveTimeStamp + 2), {0,1});
+    std::vector<IFileDataWriterCSV::DataEntryCSV> expectedVectorCSV(1 * (expecedNrColExclusiveTimeStamp + 2), {0, 1});
 
     EXPECT_CALL(*csvWriter, writeHeader(*expectedHeaderLine_v2_v3)).WillOnce(Return(true));
     EXPECT_CALL(*csvWriter, writeHeader(*expectedUnitLine_v2_v3)).WillOnce(Return(true));
@@ -488,7 +522,7 @@ TEST_F(Test_FileDataReader, fileVersion03_maxValues)
 
     uint32_t expecedNrColExclusiveTimeStamp = 50;
 
-    std::vector<IFileDataWriterCSV::DataEntryCSV> expectedVectorCSV(1 * (expecedNrColExclusiveTimeStamp + 2), {0,1});
+    std::vector<IFileDataWriterCSV::DataEntryCSV> expectedVectorCSV(1 * (expecedNrColExclusiveTimeStamp + 2), {0, 1});
     expectedVectorCSV.at(0).value = 0xffffffff;      // First part of the timestamp
     expectedVectorCSV.at(1).value = 0xffffffff;      // Second part of the timestamp
     expectedVectorCSV.at(2).value = 1023;            // "Vorlauftemperatur Heizkreis",                                         10, "°C",       10, DataTypeInfo::UNSIGNED }, // 0..102.3
@@ -559,7 +593,7 @@ TEST_F(Test_FileDataReader, fileVersion03_minValues)
 
     uint32_t expecedNrColExclusiveTimeStamp = 50;
 
-    std::vector<IFileDataWriterCSV::DataEntryCSV> expectedVectorCSV(1 * (expecedNrColExclusiveTimeStamp + 2), {0,1});
+    std::vector<IFileDataWriterCSV::DataEntryCSV> expectedVectorCSV(1 * (expecedNrColExclusiveTimeStamp + 2), {0, 1});
 
     auto setSignedExpectation = [&expectedVectorCSV](uint32_t position, int32_t signedValue, uint32_t nrBits) -> uint32_t {
                                     uint32_t bitMask = (1 << nrBits) - 1;
@@ -587,7 +621,7 @@ TEST_F(Test_FileDataReader, fileVersion03_enumerateValues)
 
     uint32_t expecedNrColExclusiveTimeStamp = 50;
 
-    std::vector<IFileDataWriterCSV::DataEntryCSV> expectedVectorCSV(1 * (expecedNrColExclusiveTimeStamp + 2), {0,1});
+    std::vector<IFileDataWriterCSV::DataEntryCSV> expectedVectorCSV(1 * (expecedNrColExclusiveTimeStamp + 2), {0, 1});
     expectedVectorCSV.at(0).value = 0x0bc0dcc0;   // 1. April 1976 0640
     expectedVectorCSV.at(1).value = 0;            // Second part of the timestamp
     expectedVectorCSV.at(2).value = 1;            // "Vorlauftemperatur Heizkreis",                                         10, "°C",       10, DataTypeInfo::UNSIGNED }, // 0..102.3

@@ -32,7 +32,7 @@ clear all;
 ##close all;
 clc;
 
-fileName = "../HeatingData/2020_03_29.dat.csv";
+fileName = "../HeatingData/2020_04_05.dat.csv";
 
 data = csvread (fileName, 1, 0);
 timeInMinutes = (data(:,1)-data(1,1))/60;
