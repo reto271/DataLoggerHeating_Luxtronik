@@ -3,13 +3,16 @@
 #include <fstream>
 #include <vector>
 #include <memory>
+#include <stdint.h>
+#include <variant>
+
 #include "Common/src/CommonTypeDefs.hpp"
 
 class IFileDataWriterCSV
 {
 public:
     typedef struct {
-        uint32_t value;
+        std::variant<uint32_t, int32_t> uiVal;
         uint32_t divisor;
     } DataEntryCSV;
 

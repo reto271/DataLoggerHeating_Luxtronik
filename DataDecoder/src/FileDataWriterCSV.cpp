@@ -56,13 +56,26 @@ bool FileDataWriterCSV::writeData(std::vector<DataEntryCSV> dataVector, const ui
     // Write data
     uint32_t arrayPos = 0;
     for(uint32_t record = 0; record < nrRows; record++) {
-        std::time_t time = static_cast<std::time_t>(dataVector[arrayPos].value);
+        std::time_t time = static_cast<std::time_t>(std::get<uint32_t>(dataVector[arrayPos].uiVal));
         arrayPos++;
-        time += static_cast<std::time_t>(dataVector[arrayPos].value) << 32;
+        time += static_cast<std::time_t>(std::get<uint32_t>(dataVector[arrayPos].uiVal)) << 32;
         arrayPos++;
         m_csvFile << time;
         for(uint32_t cnt = 0; cnt < nrColumnExclTimeStamp; cnt++) {
-            double value = static_cast<double>(*(reinterpret_cast<int32_t*>(&(dataVector.at(arrayPos).value)))) / static_cast<double>(dataVector.at(arrayPos).divisor);
+            double value = 0;
+            // Is it an unsigned value?
+            auto* uVal = std::get_if<uint32_t>(&(dataVector.at(arrayPos).uiVal));
+            if (nullptr != uVal) {
+                value = static_cast<double>(*uVal) / static_cast<double>(dataVector.at(arrayPos).divisor);
+            } else {
+                // else test that it is truely a signed value
+                auto* iVal = std::get_if<int32_t>(&(dataVector.at(arrayPos).uiVal));
+                if (nullptr != iVal) {
+                    value = static_cast<double>(*(reinterpret_cast<int32_t*>(iVal))) / static_cast<double>(dataVector.at(arrayPos).divisor);
+                } else {
+                    assert(0);
+                }
+            }
             m_csvFile << ", " << std::right << std::setw(9) << value;
             arrayPos++;
         }
