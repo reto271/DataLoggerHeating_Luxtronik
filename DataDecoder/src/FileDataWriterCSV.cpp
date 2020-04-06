@@ -65,12 +65,12 @@ bool FileDataWriterCSV::writeData(std::vector<DataEntryCSV> dataVector, const ui
             double value = 0;
             // Is it an unsigned value?
             auto* uVal = std::get_if<uint32_t>(&(dataVector.at(arrayPos).uiVal));
-            if (nullptr != uVal) {
+            if(nullptr != uVal) {
                 value = static_cast<double>(*uVal) / static_cast<double>(dataVector.at(arrayPos).divisor);
             } else {
                 // else test that it is truely a signed value
                 auto* iVal = std::get_if<int32_t>(&(dataVector.at(arrayPos).uiVal));
-                if (nullptr != iVal) {
+                if(nullptr != iVal) {
                     value = static_cast<double>(*(reinterpret_cast<int32_t*>(iVal))) / static_cast<double>(dataVector.at(arrayPos).divisor);
                 } else {
                     assert(0);

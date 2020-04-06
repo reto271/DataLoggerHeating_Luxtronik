@@ -118,20 +118,20 @@ MATCHER_P (compareVectors, expVec, "")
         for(uint32_t cnt = 0; cnt < arg.size(); cnt++) {
             // Compare value if unsigned
             {
-                auto* uExp  = std::get_if<uint32_t>(&expVec.at(cnt).uiVal);
-                auto* uAct  = std::get_if<uint32_t>(&arg.at(cnt).uiVal);
-                if (nullptr == uExp) {
-                    if (nullptr != uAct) {
+                auto* uExp = std::get_if<uint32_t>(&expVec.at(cnt).uiVal);
+                auto* uAct = std::get_if<uint32_t>(&arg.at(cnt).uiVal);
+                if(nullptr == uExp) {
+                    if(nullptr != uAct) {
                         std::cout << "ERROR (" << cnt << ") ln: " << __LINE__ << std::endl;
                         feedback = false;
                     }
                 } else {
-                    if (nullptr == uAct) {
+                    if(nullptr == uAct) {
                         std::cout << "ERROR ln: " << __LINE__ << std::endl;
                         feedback = false;
                     } else {
                         // Compare values
-                        if (*uExp != *uAct) {
+                        if(*uExp != *uAct) {
                             std::cout << "expect value(" << cnt << ") is " << *uExp << " != actual(" << cnt << ") is " << *uAct << std::endl;
                             feedback = false;
                         }
@@ -142,20 +142,20 @@ MATCHER_P (compareVectors, expVec, "")
 
             // Compare value if signed
             {
-                auto* sExp  = std::get_if<int32_t>(&expVec.at(cnt).uiVal);
-                auto* sAct  = std::get_if<int32_t>(&arg.at(cnt).uiVal);
-                if (nullptr == sExp) {
-                    if (nullptr != sAct) {
+                auto* sExp = std::get_if<int32_t>(&expVec.at(cnt).uiVal);
+                auto* sAct = std::get_if<int32_t>(&arg.at(cnt).uiVal);
+                if(nullptr == sExp) {
+                    if(nullptr != sAct) {
                         std::cout << "ERROR (" << cnt << ") ln: " << __LINE__ << std::endl;
                         feedback = false;
                     }
                 } else {
-                    if (nullptr == sAct) {
+                    if(nullptr == sAct) {
                         std::cout << "ERROR ln: " << __LINE__ << std::endl;
                         feedback = false;
                     } else {
                         // Compare values
-                        if (*sExp != *sAct) {
+                        if(*sExp != *sAct) {
                             std::cout << "expect value(" << cnt << ") is " << *sExp << " != actual(" << cnt << ") is " << *sAct << std::endl;
                             feedback = false;
                         }
@@ -549,7 +549,7 @@ TEST_F(Test_FileDataReader, DISABLED_fileVersion03_zeroValues)
     expectedVectorCSV.at(0).divisor = 1;
     expectedVectorCSV.at(1).divisor = 1;
     for(uint32_t cnt = 0; cnt < expecedNrColExclusiveTimeStamp; cnt++) {
-        expectedVectorCSV.at(2+cnt).divisor = expectedDivisor_v2_v3.at(cnt);
+        expectedVectorCSV.at(2 + cnt).divisor = expectedDivisor_v2_v3.at(cnt);
     }
 
     EXPECT_CALL(*csvWriter, writeHeader(*expectedHeaderLine_v2_v3)).WillOnce(Return(true));
@@ -625,7 +625,7 @@ TEST_F(Test_FileDataReader, DISABLED_fileVersion03_maxValues)
     expectedVectorCSV.at(0).divisor = 1;
     expectedVectorCSV.at(1).divisor = 1;
     for(uint32_t cnt = 0; cnt < expecedNrColExclusiveTimeStamp; cnt++) {
-        expectedVectorCSV.at(2+cnt).divisor = expectedDivisor_v2_v3.at(cnt);
+        expectedVectorCSV.at(2 + cnt).divisor = expectedDivisor_v2_v3.at(cnt);
     }
 
     EXPECT_CALL(*csvWriter, writeHeader(*expectedHeaderLine_v2_v3)).WillOnce(Return(true));
@@ -660,7 +660,7 @@ TEST_F(Test_FileDataReader, DISABLED_fileVersion03_minValues)
     expectedVectorCSV.at(0).divisor = 1;
     expectedVectorCSV.at(1).divisor = 1;
     for(uint32_t cnt = 0; cnt < expecedNrColExclusiveTimeStamp; cnt++) {
-        expectedVectorCSV.at(2+cnt).divisor = expectedDivisor_v2_v3.at(cnt);
+        expectedVectorCSV.at(2 + cnt).divisor = expectedDivisor_v2_v3.at(cnt);
     }
 
     EXPECT_CALL(*csvWriter, writeHeader(*expectedHeaderLine_v2_v3)).WillOnce(Return(true));
@@ -733,10 +733,10 @@ TEST_F(Test_FileDataReader, DISABLED_fileVersion03_enumerateValues)
     expectedVectorCSV.at(50).uiVal = 32;          // "Wärmemengenzähler Gesamt",                                            10, "kWh",      28, DataTypeInfo::UNSIGNED}, // 350 times more than today
     expectedVectorCSV.at(51).uiVal = 33;          // "Wärmemengenzähler Durchfluss",                                         1, "l / h",    10, DataTypeInfo::UNSIGNED}, // 0 .. 1024l/h  -> potentially unused
 
-     expectedVectorCSV.at(0).divisor = 1;
+    expectedVectorCSV.at(0).divisor = 1;
     expectedVectorCSV.at(1).divisor = 1;
     for(uint32_t cnt = 0; cnt < expecedNrColExclusiveTimeStamp; cnt++) {
-        expectedVectorCSV.at(2+cnt).divisor = expectedDivisor_v2_v3.at(cnt);
+        expectedVectorCSV.at(2 + cnt).divisor = expectedDivisor_v2_v3.at(cnt);
     }
 
     EXPECT_CALL(*csvWriter, writeHeader(*expectedHeaderLine_v2_v3)).WillOnce(Return(true));

@@ -228,12 +228,12 @@ void FileDataReader::printRawBuffer()
         for(uint32_t cnt = 0; cnt < (m_pValueTable->getNrDataEntriesPerSet() + 2); cnt++) {
             // Is it an unsigned value?
             auto* uVal = std::get_if<uint32_t>(&m_csvBuffer.at(cnt + record * (m_pValueTable->getNrDataEntriesPerSet() + 2)).uiVal);
-            if (nullptr != uVal) {
+            if(nullptr != uVal) {
                 std::cout << "[" << record << ":" << cnt << "] " << *uVal << ", ";
             } else {
                 // Test if it is truly a signed value
                 auto* iVal = std::get_if<int32_t>(&m_csvBuffer.at(cnt + record * (m_pValueTable->getNrDataEntriesPerSet() + 2)).uiVal);
-                if (nullptr != iVal) {
+                if(nullptr != iVal) {
                     std::cout << "[" << record << ":" << cnt << "] " << *(reinterpret_cast<int32_t*>(iVal)) << ", ";
                 } else {
                     assert(0);
