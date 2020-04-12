@@ -32,9 +32,9 @@ clear all;
 ##close all;
 clc;
 
-fileName = "../HeatingData/2020_04_05.dat.csv";
+fileName = "../HeatingData/2020_04_12.dat.csv";
 
-data = csvread (fileName, 1, 0);
+data = csvread (fileName, 2, 0);
 timeInMinutes = (data(:,1)-data(1,1))/60;
 
 fileID = fopen(fileName);
