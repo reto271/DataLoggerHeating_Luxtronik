@@ -29,13 +29,14 @@
 
 
 clear all;
-##close all;
+close all;
 clc;
 
-fileName = "../HeatingData/2020_04_12.dat.csv";
+fileName = "../HeatingData/2020_04_22.dat.csv";
 
 data = csvread (fileName, 2, 0);
 timeInMinutes = (data(:,1)-data(1,1))/60;
+timeInHours = timeInMinutes / 60;
 
 fileID = fopen(fileName);
 textLine = textscan(fileID,'%s', 72,'Delimiter',';');
@@ -46,8 +47,8 @@ clear textLine;
 
 ##------------------------------------------------------------
 figure(1);
-plot(timeInMinutes, data(:,2)/10, timeInMinutes, data(:,3)/10, ...
-     timeInMinutes, data(:,9)/10, timeInMinutes, data(:,10)/10);
+plot(timeInMinutes, data(:,2), timeInMinutes, data(:,3), ...
+     timeInMinutes, data(:,9), timeInMinutes, data(:,10));
 grid on;
 title("Manual - first data set");
 xlabel("time in minutes");
@@ -57,7 +58,7 @@ legend([headerText(2), headerText(3), headerText(9), headerText(10)], "location"
 ##------------------------------------------------------------
 figure(2);
 hdl2(1) = subplot(2,1,1);
-plot(timeInMinutes, data(:,2)/10, timeInMinutes, data(:,3)/10, timeInMinutes, data(:,9)/10);
+plot(timeInMinutes, data(:,2), timeInMinutes, data(:,3), timeInMinutes, data(:,9));
 grid on;
 title("Manual - first data set");
 xlabel("time in minutes");
@@ -73,3 +74,48 @@ ylabel("State");
 legend([headerText(6)], "location", "eastoutside");
 
 linkaxes(hdl2, 'x');
+
+##------------------------------------------------------------
+figure(3);
+plot(timeInHours, data(:,6), ...
+     timeInHours, data(:,8), ...
+     timeInHours, data(:,14), ...
+     timeInHours, data(:,35)/60, ...
+     timeInHours, data(:,47));
+grid on;
+title("Manual - first data set");
+xlabel("time in minutes");
+#ylabel("Temperature in deg Celcius");
+legend([headerText(6), ...
+        headerText(8), ...
+        headerText(14), ...
+        headerText(35), ...
+        headerText(47) ...
+        ], "location", "southoutside");
+
+##------------------------------------------------------------
+figure(4);
+hdl4(1) = subplot(2,1,1);
+plot(timeInHours, data(:,6), ...
+     timeInHours, data(:,8), ...
+     timeInHours, data(:,35)/60);
+grid on;
+title("Wather Temperatures");
+xlabel("time in hours");
+ylabel("Temperature [dec C]");
+legend([headerText(6), ...
+        headerText(8), ...
+        headerText(35) ...
+        ], "location", "northoutside");
+        
+hdl4(2) = subplot(2,1,2);
+plot(timeInHours, -1-data(:,14), ...
+     timeInHours, data(:,47), ...
+     [0],[6],[0],[-3]);
+grid on;
+title("Manual - first data set");
+xlabel("time in minutes");
+legend([headerText(14), ...
+        headerText(47) ...
+        ], "location", "southoutside");
+linkaxes(hdl4, 'x');
