@@ -32,7 +32,7 @@ clear all;
 close all;
 clc;
 
-fileName = "../HeatingData/2020_04_22.dat.csv";
+fileName = "../HeatingData/2020_04_27.dat.csv";
 
 data = csvread (fileName, 2, 0);
 timeInMinutes = (data(:,1)-data(1,1))/60;
@@ -47,65 +47,15 @@ clear textLine;
 
 ##------------------------------------------------------------
 figure(1);
-plot(timeInMinutes, data(:,2), timeInMinutes, data(:,3), ...
-     timeInMinutes, data(:,9), timeInMinutes, data(:,10));
-grid on;
-title("Manual - first data set");
-xlabel("time in minutes");
-ylabel("Temperature in deg Celcius");
-legend([headerText(2), headerText(3), headerText(9), headerText(10)], "location", "southoutside");
-
-##------------------------------------------------------------
-figure(2);
-hdl2(1) = subplot(2,1,1);
-plot(timeInMinutes, data(:,2), timeInMinutes, data(:,3), timeInMinutes, data(:,9));
-grid on;
-title("Manual - first data set");
-xlabel("time in minutes");
-ylabel("Temperature in deg Celcius");
-legend([headerText(2), headerText(3), headerText(9)], "location", "eastoutside");
-
-hdl2(2) = subplot(2,1,2);
-plot(timeInMinutes, data(:,6)/10);
-grid on;
-title("Manual - first data set");
-xlabel("time in minutes");
-ylabel("State");
-legend([headerText(6)], "location", "eastoutside");
-
-linkaxes(hdl2, 'x');
-
-##------------------------------------------------------------
-figure(3);
-plot(timeInHours, data(:,6), ...
-     timeInHours, data(:,8), ...
-     timeInHours, data(:,14), ...
-     timeInHours, data(:,35)/60, ...
-     timeInHours, data(:,47));
-grid on;
-title("Manual - first data set");
-xlabel("time in minutes");
-#ylabel("Temperature in deg Celcius");
-legend([headerText(6), ...
-        headerText(8), ...
-        headerText(14), ...
-        headerText(35), ...
-        headerText(47) ...
-        ], "location", "southoutside");
-
-##------------------------------------------------------------
-figure(4);
 hdl4(1) = subplot(2,1,1);
 plot(timeInHours, data(:,6), ...
-     timeInHours, data(:,8), ...
-     timeInHours, data(:,35)/60);
+     timeInHours, data(:,8));
 grid on;
-title("Wather Temperatures");
+title("Temperatures");
 xlabel("time in hours");
 ylabel("Temperature [dec C]");
 legend([headerText(6), ...
-        headerText(8), ...
-        headerText(35) ...
+        headerText(8) ...
         ], "location", "northoutside");
         
 hdl4(2) = subplot(2,1,2);
@@ -118,4 +68,31 @@ xlabel("time in minutes");
 legend([headerText(14), ...
         headerText(47) ...
         ], "location", "southoutside");
+linkaxes(hdl4, 'x');
+
+
+##------------------------------------------------------------
+figure(2);
+hdl4(1) = subplot(2,1,1);
+plot(
+     timeInHours, data(:,35)/60);
+grid on;
+title("Wather Temperatures");
+xlabel("time in hours");
+ylabel("time in minutes");
+legend([headerText(35) ...
+        ], "location", "northoutside");
+        
+totalEVU_Sperre = cumsum(1-data(:,14));        
+EVU_Sperre = (1-data(:,14))*max(totalEVU_Sperre);
+hdl4(2) = subplot(2,1,2);
+plot(timeInHours, EVU_Sperre, ...
+     timeInHours, totalEVU_Sperre);
+grid on;
+title("Total Sperrzeit");
+xlabel("time in hours");
+ylabel("time in minutes");
+legend([headerText(14), ...
+        "Total EVU Speerzeit" ...
+        ], "location", "northoutside");
 linkaxes(hdl4, 'x');
