@@ -171,7 +171,7 @@ void ValueTable::initValueTable()
     //- 79|ID_WEB_BIV_Stufe_akt|Bivalenzstufe|1 = ein Verdichter darf laufen|Betriebszustand
     //-  | | | | 2 = zwei Verdichter dürfen laufen
     //-  | | | | 3 = zusätzlicher Wärmeerzeuger darf mitlaufen
-        {  80, /*ID_WEB_WP_BZ_akt*/              "Betriebszustand",                                                    1, "enum",  3, DataTypeInfo::UNSIGNED },  // According the enum
+        {  80, /*ID_WEB_WP_BZ_akt*/              "Betriebszustand (0:heat 1:wather 3:blocked 5:idle)",                                                    1, "enum",  3, DataTypeInfo::UNSIGNED },  // According the enum
     //-          0 = Heizen
     //-          1 = Warmwasser
     //-          2 = Schwimmbad / Photovoltaik

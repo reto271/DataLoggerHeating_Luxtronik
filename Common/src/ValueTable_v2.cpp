@@ -74,7 +74,7 @@ void ValueTable_v2::initValueTable()
     {  77, /*ID_WEB_Time_SBW_akt*/              "Sperre Warmwasser",                                                    1, "Sekunden" },  // potentially 0
     {  78, /*ID_WEB_Code_WP_akt*/               "Wärmepumpentyp|0 = ERC|Typenschlüssel",                                1, "enum" },  //-> new, potentially  const
     {  79, /*ID_WEB_BIV_Stufe_akt*/             "Bivalenzstufe",                                                        1, "enum" },
-    {  80, /*ID_WEB_WP_BZ_akt*/                 "Betriebszustand",                                                      1, "enum" },
+    {  80, /*D_WEB_WP_BZ_akt*/                  "Betriebszustand (0:heat 1:wather 3:blocked 5:idle)",                   1, "enum" },
     { 151, /*ID_WEB_WMZ_Heizung*/               "Wärmemengenzähler Heizung",                                           10, "kWh"},  //
     { 152, /*ID_WEB_WMZ_Brauchwasser*/          "Wärmemengenzähler Brauchwasser",                                      10, "kWh"},
     { 154, /*ID_WEB_WMZ_Seit*/                  "Wärmemengenzähler Gesamt",                                            10, "kWh"},

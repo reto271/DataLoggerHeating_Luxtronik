@@ -50,7 +50,7 @@ protected:
                                                               "Betriebsstunden Kühlung,Wärmepumpe läuft seit,Zweiter Wärmeerzeuger 1 läuft seit,"
                                                               "Zweiter Wärmeerzeuger 2 läuft seit,Netzeinschaltverzögerung,Schaltspielsperre Aus,"
                                                               "Schaltspielsperre Ein,Verdichter-Standzeit,Heizungsregler Mehr-Zeit,Heizungsregler Weniger-Zeit,"
-                                                              "Thermische Desinfektion läuft seit,Sperre Warmwasser,Betriebszustand");
+                                                              "Thermische Desinfektion läuft seit,Sperre Warmwasser,Betriebszustand (0:heat 1:wather 3:blocked 5:idle)");
 
         expectedHeaderLine_v2_v3 = std::make_shared<std::string>("Time," "Vorlauftemperatur Heizkreis," "Rücklauftemperatur Heizkreis," "Rücklauf-Soll Heizkreis," "Heisgastemperatur,"
                                                                  "Aussentemperatur," "Durchschnittstemperatur Aussen über 24 h (Funktion Heizgrenze),"
@@ -64,7 +64,7 @@ protected:
                                                                  "Betriebsstunden Warmwasser," "Wärmepumpe läuft seit," "Zweiter Wärmeerzeuger 2 läuft seit," "Netzeinschaltverzögerung,"
                                                                  "Schaltspielsperre Aus," "Schaltspielsperre Ein," "Verdichter-Standzeit," "Heizungsregler Mehr-Zeit,"
                                                                  "Heizungsregler Weniger-Zeit," "Thermische Desinfektion läuft seit," "Sperre Warmwasser,"
-                                                                 "Wärmepumpentyp|0 = ERC|Typenschlüssel," "Bivalenzstufe," "Betriebszustand," "Wärmemengenzähler Heizung,"
+                                                                 "Wärmepumpentyp|0 = ERC|Typenschlüssel," "Bivalenzstufe," "Betriebszustand (0:heat 1:wather 3:blocked 5:idle)," "Wärmemengenzähler Heizung,"
                                                                  "Wärmemengenzähler Brauchwasser," "Wärmemengenzähler Gesamt," "Wärmemengenzähler Durchfluss");
 
         expectedUnitLine_v1 = std::make_shared<std::string>("-,°C,°C,°C,°C,°C,°C,°C,°C,°C,°C,°C,°C,°C,°C,°C,°C,°C,°C,°C,-,-,-,-,-,-,-,-,-,-,-,-,-,-,-,-,-,-,-,-,-,"

@@ -30,9 +30,14 @@
 
 clear all;
 close all;
+clear figure;
 clc;
 
-fileName = "../HeatingData/2020_04_27.dat.csv";
+fileDate="2020_05_01"
+
+%Prepare files and output strings
+fileDateStr=strrep(fileDate, "_", "-")
+fileName = ["../HeatingData/" fileDate ".dat.csv"];
 
 data = csvread (fileName, 2, 0);
 timeInMinutes = (data(:,1)-data(1,1))/60;
@@ -51,7 +56,7 @@ hdl4(1) = subplot(2,1,1);
 plot(timeInHours, data(:,6), ...
      timeInHours, data(:,8));
 grid on;
-title("Temperatures");
+title(["Temperatures - " fileDateStr]);
 xlabel("time in hours");
 ylabel("Temperature [dec C]");
 legend([headerText(6), ...
@@ -63,7 +68,7 @@ plot(timeInHours, -1-data(:,14), ...
      timeInHours, data(:,47), ...
      [0],[6],[0],[-3]);
 grid on;
-title("Manual - first data set");
+title(["Manual - first data set - " fileDateStr]);
 xlabel("time in minutes");
 legend([headerText(14), ...
         headerText(47) ...
@@ -77,7 +82,7 @@ hdl4(1) = subplot(2,1,1);
 plot(
      timeInHours, data(:,35)/60);
 grid on;
-title("Wather Temperatures");
+title(["Wather Temperatures - " fileDateStr]);
 xlabel("time in hours");
 ylabel("time in minutes");
 legend([headerText(35) ...
@@ -89,10 +94,10 @@ hdl4(2) = subplot(2,1,2);
 plot(timeInHours, EVU_Sperre, ...
      timeInHours, totalEVU_Sperre);
 grid on;
-title("Total Sperrzeit");
+title(["Total Sperrzeit - " fileDateStr]);
 xlabel("time in hours");
 ylabel("time in minutes");
 legend([headerText(14), ...
         "Total EVU Speerzeit" ...
-        ], "location", "northoutside");
+        ], "location", "southoutside");
 linkaxes(hdl4, 'x');
