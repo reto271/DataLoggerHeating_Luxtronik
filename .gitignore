@@ -53,6 +53,7 @@ tmp/
 HeatingData/*.dat
 HeatingData/*.csv
 HeatingData/*.log
+HeatingData/*.png
 
 # documentation files
 docu/
