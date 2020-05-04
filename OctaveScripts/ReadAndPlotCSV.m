@@ -1,20 +1,20 @@
 ## Copyright (C) 2020 reto271
-## 
+##
 ## This program is free software: you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
 ## the Free Software Foundation, either version 3 of the License, or
 ## (at your option) any later version.
-## 
+##
 ## This program is distributed in the hope that it will be useful, but
 ## WITHOUT ANY WARRANTY; without even the implied warranty of
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ## GNU General Public License for more details.
-## 
+##
 ## You should have received a copy of the GNU General Public License
 ## along with this program.  If not, see
 ## <https://www.gnu.org/licenses/>.
 
-## -*- texinfo -*- 
+## -*- texinfo -*-
 ## @deftypefn {} {@var{retval} =} ReadAndPlotCSV (@var{input1}, @var{input2})
 ##
 ## @seealso{}
@@ -33,7 +33,7 @@ close all;
 clear figure;
 clc;
 
-fileDate="2020_05_01"
+fileDate="2020_04_22"
 
 %Prepare files and output strings
 fileDateStr=strrep(fileDate, "_", "-")
@@ -62,7 +62,7 @@ ylabel("Temperature [dec C]");
 legend([headerText(6), ...
         headerText(8) ...
         ], "location", "northoutside");
-        
+
 hdl4(2) = subplot(2,1,2);
 plot(timeInHours, -1-data(:,14), ...
      timeInHours, data(:,47), ...
@@ -87,8 +87,8 @@ xlabel("time in hours");
 ylabel("time in minutes");
 legend([headerText(35) ...
         ], "location", "northoutside");
-        
-totalEVU_Sperre = cumsum(1-data(:,14));        
+
+totalEVU_Sperre = cumsum(1-data(:,14));
 EVU_Sperre = (1-data(:,14))*max(totalEVU_Sperre);
 hdl4(2) = subplot(2,1,2);
 plot(timeInHours, EVU_Sperre, ...
