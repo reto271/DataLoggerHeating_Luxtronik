@@ -25,6 +25,6 @@ set ytics ("no-data" -0.1, "not-blocked" 0, "blocked" 1)
 set yrange [-0.2:1.1]
 #plot for [col = 2:*] '../../HeatingData/BlockingTimeSummary.csv' using 1:col
 
-set term pngcairo size 1600,1200
+set term pngcairo size 1000, 1100
 set output '../../HeatingData/BlockingTimeSummary.png'
 plot for [col = 2:*] '../../HeatingData/BlockingTimeSummary.csv' using 1:col

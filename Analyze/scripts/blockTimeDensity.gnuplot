@@ -34,7 +34,7 @@ set ylabel 'Probalbility in %'
 set yrange [-10:110]
 #plot  '../../HeatingData/BlockingTimeCumSum.csv'  using 1:2
 
-set term pngcairo size 1600,1200
+set term pngcairo size 1000, 800
 #set terminal postscript eps color colortext
 set output '../../HeatingData/BlockingTimeCumSum.png'
 plot  '../../HeatingData/BlockingTimeCumSum.csv'  using 1:2 with linespoints ls 1

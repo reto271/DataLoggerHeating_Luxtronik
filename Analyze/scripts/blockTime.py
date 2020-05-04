@@ -98,7 +98,7 @@ timeVector = generateTimeVector()
 operatingStateSum.append(timeVector)
 operatingStateCumSum[0] = 'Sum'
 
-for fileName in os.listdir(DATA_FILE_LOCATION):
+for fileName in sorted(os.listdir(DATA_FILE_LOCATION)):
     if fileName.endswith(".dat.csv") :
         operationState = readDataFromFile(fileName)
         nrData = len(operationState)
