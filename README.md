@@ -1,6 +1,6 @@
 # Data Logger, Converter and Analysis Tool for Luxtronik Heating Control
 
-The project consists of three major components and three minor.
+The project consists of three major components and three minor components.
 
 Component      | Classification | Comment
 -------------- | ------------- | -------
@@ -16,6 +16,8 @@ Utils          | Minor         | Local time to unix-time converter util
 Uses the command 3004 to read the current data from the Luxtronik heating controller. It takes the IP address as input parameter and reads the data every minute from the controller. The data is stored in binary format. The number of used bits is optimized for each value to minimize the file size. The Common/src/ValueTable.cpp lists the stored values and the corresponding bit-sizes.
 
 The binary files are suitable to backup, since the consume little space.
+
+_I do run the MonitorHeating on a Raspberry Pi Model 2B V1.1. Periodically the data is written to a file server._
 
 # DataDecoder
 The data decoder converts the binary data files into CSV files. The CSV files consume more space than the binary files but are more suitable for further processing.
