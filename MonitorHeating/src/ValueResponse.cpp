@@ -35,9 +35,10 @@ ValueResponse::ValueResponse(RecDataStoragePtr receiveDataPtr, std::time_t curre
     m_valueTable.initialize();
 
     if(false == doesFileExist()) {
-        std::ofstream wf(fileNameFromDate().c_str(), std::ios::out | std::ios::binary | std::ios_base::app);
+        std::string fileName(fileNameFromDate());
+        std::ofstream wf(fileName.c_str(), std::ios::out | std::ios::binary | std::ios_base::app);
         if(!wf) {
-            std::cout << "Cannot open file!" << std::endl;
+            std::cout << "Cannot open file '" << fileName << "'!" << std::endl;
         } else {
             // Add header to the buffer
             std::cout << "Create header of file: '" << fileNameFromDate() << "'" << std::endl;
