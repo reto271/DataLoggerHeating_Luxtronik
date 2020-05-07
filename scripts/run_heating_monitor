@@ -1,8 +1,0 @@
-#!/bin/sh
-
-# Startup script for the heating monitor
-# 1) place it in /etc/init.d/
-# 2) provide executable permission (chmod +x /etc/init.d/startup_heating_monitor
-# 3) eventually create a symbolic link to rc.d (ln -s /etc/init.d/run_heating_monitor /etc/rc3.d/
-
-/home/openhabian/git/DataLoggerHeating_Luxtronik/scripts/monitorHeating.sh
