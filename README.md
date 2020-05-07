@@ -1,5 +1,10 @@
 # Data Logger, Converter and Analysis Tool for Luxtronik Heating Control
 
+## System Overview
+
+![System Overview](Documentation/overview.png)
+
+## System Components
 The project consists of three major components and three minor components.
 
 Component      | Classification | Comment
@@ -11,7 +16,7 @@ OctaveScripts  | Minor         | Prints graphs based on the CSV files
 Tests          | Minor         | Runs some tests on the MonitorHeating and DataDecoder
 Utils          | Minor         | Local time to unix-time converter util
 
-![System Overview](Documentation/overview.png)
+
 
 # MonitorHeating
 Uses the command 3004 to read the current data from the Luxtronik heating controller. It takes the IP address as input parameter and reads the data every minute from the controller. The data is stored in binary format. The number of used bits is optimized for each value to minimize the file size. The Common/src/ValueTable.cpp lists the stored values and the corresponding bit-sizes.
