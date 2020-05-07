@@ -6,23 +6,28 @@
 #   /home/openhabian/git/DataLoggerHeating_Luxtronik/scripts/monitorHeating.sh
 # Keep 'exit 0' at the end of the /etc/rc.local
 # ----------------------------------------------------------------------------------------------
+LOG_FILE=./HeatingData/boot1.log
 
 # Change into the project root directory
 SCRIPTDIR=$(readlink -f $(dirname "$0"))
 pushd "${SCRIPTDIR}" > /dev/null
 cd ..
 
-echo "Starting up..." > ./HeatingData/boot.log
-pwd >> ./HeatingData/boot.log
-runuser -l openhabian '/home/openhabian/git/DataLoggerHeating_Luxtronik/MonitorHeating/bin/MonitorHeating 192.168.1.144 | tee -a ./HeatingData/trace.log'
+echo "Starting up..." > ${LOG_FILE}
+echo "Process working directory" >> ${LOG_FILE}
+pwd >> ${LOG_FILE}
+echo "---------------------------" >> ${LOG_FILE}
+
+echo "Run monitor heating as user openhabian" >> ${LOG_FILE}
+su -s /bin/bash -c '/home/openhabian/git/DataLoggerHeating_Luxtronik/scripts/monitorHeating_internal.sh &' openhabian
 feedback=$?
-echo "Run user cmd feedback: ${feedback}" >> ./HeatingData/boot.log
+echo "Run user cmd feedback: ${feedback}" >> ${LOG_FILE}
 
 if [ 0 -ne ${feedback} ] ; then
-    echo "Run it as root" >> ./HeatingData/boot.log
-    ./MonitorHeating/bin/MonitorHeating 192.168.1.144 | tee -a ./HeatingData/trace.log
-else
-    echo "It did work!!!" >> ./HeatingData/boot.log
+    echo "Did not work, run it as root" >> ${LOG_FILE}
+    ./script/monitorHeating_internal.sh
+    feedback=$?
+    echo "Run as root feedback: ${feedback}" >> ${LOG_FILE}
 fi
 
 # Back to the original location
