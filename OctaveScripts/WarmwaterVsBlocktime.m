@@ -29,11 +29,11 @@
 
 
 clear all;
-close all;
+#close all;
 clear figure;
 clc;
 
-fileDate="2020_04_22"
+fileDate="2020_05_14"
 
 %Prepare files and output strings
 fileDateStr=strrep(fileDate, "_", "-")

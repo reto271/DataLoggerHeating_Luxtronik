@@ -88,6 +88,7 @@ bool TcpConnection::waitResponse(RecDataStoragePtr pReceiveDataBuffer, const uin
     uint8_t recData[REC_BUFFER_SIZE];
     uint32_t recDataLen;
     uint32_t totalRecDataLen = 0;
+    uint32_t frameCnt = 0;
 
     while(totalRecDataLen < expectedNrBytes) {
         memset(recData, 0x00, REC_BUFFER_SIZE);
@@ -98,8 +99,24 @@ bool TcpConnection::waitResponse(RecDataStoragePtr pReceiveDataBuffer, const uin
         } else {
             pReceiveDataBuffer->addData(recData, recDataLen);
             totalRecDataLen += recDataLen;
-            std::cout << "Rec nr bytes: " << recDataLen << ", total received: " << totalRecDataLen << std::endl;
+            // Usually the Luxtronic sends 4 Bytes followed by a frame of 1004 bytes. Lets dump info if it deviates
+            switch(frameCnt) {
+            case 0:
+                if (4 != recDataLen) {
+                    std::cout << "Frame nr: " << frameCnt << " rec nr bytes: " << recDataLen << ", total received: " << totalRecDataLen << std::endl;
+                }
+                break;
+            case 1:
+                if (1004 != recDataLen) {
+                    std::cout << "Frame nr: " << frameCnt << " rec nr bytes: " << recDataLen << ", total received: " << totalRecDataLen << std::endl;
+                }
+                break;
+            default:
+                std::cout << "Frame nr: " << frameCnt << " rec nr bytes: " << recDataLen << ", total received: " << totalRecDataLen << std::endl;
+                break;
+            }
         }
+        frameCnt++;
     }
     return true;
 }

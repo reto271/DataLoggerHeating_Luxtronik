@@ -10,8 +10,11 @@
 /// Reset the connection at 3 in the morning
 /// \param pConnection, reference to the TCP connection
 /// \param pTime, reference to the current time
-/// \return false if reconnection was not possible, true otherwise
-bool resetConnectionAt0300(TcpConnection* pConnection, SynchronizeTime* pTime);
+void resetConnectionAt0300(TcpConnection& tcpConnection, SynchronizeTime* pTime);
+
+/// Connect or reconnect to the heating controller. Keeps trying every minute
+///  until success.
+void connectToHeatingController(TcpConnection& tcpConnection);
 
 /// Application state, to enable some debug functions
 enum class ApplicationState {
@@ -28,27 +31,27 @@ int main(int argc, char* argv[])
     ApplicationState applState = ApplicationState::NORMAL;
     std::string ipAddr;
 
-    std::cout << std::endl;
+    std::cout << std::endl << "Application started" << std::endl;
 
     switch(argc) {
-        case 2:
-            ipAddr = argv[1];
-            break;
+    case 2:
+        ipAddr = argv[1];
+        break;
 
-        case 3:
-            {
-                ipAddr = argv[1];
-                std::string dbgSwitch = argv[2];
-                if("--debug" == dbgSwitch) {
-                    std::cout << "ApplicationState::DEBUG" << std::endl;
-                    applState = ApplicationState::DEBUG;
-                }
-            }
-            break;
+    case 3:
+    {
+        ipAddr = argv[1];
+        std::string dbgSwitch = argv[2];
+        if("--debug" == dbgSwitch) {
+            std::cout << "ApplicationState::DEBUG" << std::endl;
+            applState = ApplicationState::DEBUG;
+        }
+    }
+    break;
 
-        default:
-            std::cout << std::endl << "Usage: " << argv[0] << " <ip of server>" << std::endl;
-            return 1;
+    default:
+        std::cout << std::endl << "Usage: " << argv[0] << " <ip of server>" << std::endl;
+        return 1;
     }
 
     IP_AddressValidator validateIp(ipAddr);
@@ -58,9 +61,8 @@ int main(int argc, char* argv[])
     }
 
     TcpConnection tcpConnection(argv[1], 8889);
-    if(false == tcpConnection.connectToHeating()) {
-        return 3;
-    }
+    // Connect to the controller, keeps trying...
+    connectToHeatingController(tcpConnection);
 
     while(true) {
         if(ApplicationState::NORMAL == applState) {
@@ -74,26 +76,21 @@ int main(int argc, char* argv[])
             std::cout << "Reconnecting ..." << std::endl;
             // Reconnect, it seems there is connection error
             tcpConnection.disconnectFromHeating();
-            if(false == tcpConnection.connectToHeating()) {
-                // Reconnect failed
-                std::cout << "Reconnecting FAILED!!!" << std::endl;
-                return 4;
-            }
-            // Try a second time...
+            // Connect to the controller, keeps trying...
+            connectToHeatingController(tcpConnection);
+            // Try a second time to get the data...
             receiveDataPtr = tcpConnection.requestValues();
         }
 
         if(nullptr != receiveDataPtr) {
             ValueResponse decodeValueResp(receiveDataPtr, currentUnixTime, true);
-            // decodeValueResp.decode();
             decodeValueResp.serialize();
         } else {
             std::cout << "Second consecutive failure" << std::endl;
             return 5;
         }
-        if(false == resetConnectionAt0300(&tcpConnection, &sync)) {
-            return 6;
-        }
+        // Reset the connection every 24h
+        resetConnectionAt0300(tcpConnection, &sync);
         if(ApplicationState::NORMAL == applState) {
             sleep(1);
         } else {
@@ -105,18 +102,30 @@ int main(int argc, char* argv[])
     return 0;
 }
 
-bool resetConnectionAt0300(TcpConnection* pConnection, SynchronizeTime* pTime)
+void resetConnectionAt0300(TcpConnection& tcpConnection, SynchronizeTime* pTime)
 {
     if(true == pTime->isFullHour(false)) {
         if(3 == pTime->getHour(false)) {
             // Periodically reconnect
-            pConnection->disconnectFromHeating();
-            if(false == pConnection->connectToHeating()) {
-                // Reconnect failed
-                std::cout << "Periodic reconnecting FAILED!!!" << std::endl;
-                return false;
-            }
+            tcpConnection.disconnectFromHeating();
+            // Connect to the controller, keeps trying...
+            connectToHeatingController(tcpConnection);
         }
     }
-    return true;
+}
+
+void connectToHeatingController(TcpConnection& tcpConnection)
+{
+    bool isConnected = false;
+    std::time_t currentUnixTime = std::time(nullptr);
+    SynchronizeTime syncTime;
+    do {
+        isConnected = tcpConnection.connectToHeating();
+        if (false == isConnected) {
+            std::cout << "Could not establish connection, try again in a minute. Current time: "  << std::asctime(std::localtime(&currentUnixTime));
+            currentUnixTime = syncTime.waitForMinute();
+        }
+
+    } while (false == isConnected);
+    std::cout << "Got connection at: " << std::asctime(std::localtime(&currentUnixTime)) << std::flush;
 }

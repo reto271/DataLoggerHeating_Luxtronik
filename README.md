@@ -44,3 +44,5 @@ A util to convert local time to Unix time.
 
 # Acknowledgments
 Thanks to Bouni and his documentation on https://github.com/Bouni/Home-Assistant-Luxtronik
+
+May, 2020

@@ -29,7 +29,7 @@ ValueResponse::ValueResponse(RecDataStoragePtr receiveDataPtr, std::time_t curre
     , m_currentUnixTime(currentUnixTime)
     , m_valueTable(enableLog)
 {
-    std::cout << "Current time: " << currentUnixTime << " / 0x" << std::hex << m_currentUnixTime << std::dec
+    std::cout << "Current time: 0x" << std::hex << m_currentUnixTime << std::dec
               << " --- " << std::asctime(std::localtime(&currentUnixTime));
 
     m_valueTable.initialize();

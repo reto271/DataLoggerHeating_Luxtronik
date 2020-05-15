@@ -29,11 +29,11 @@
 
 
 clear all;
-close all;
+#close all;
 clear figure;
 clc;
 
-fileDate="2020_04_22"
+fileDate="2020_05_14"
 
 %Prepare files and output strings
 fileDateStr=strrep(fileDate, "_", "-")
@@ -53,7 +53,7 @@ clear textLine;
 ##------------------------------------------------------------
 
 ##------------------------------------------------------------
-figure(1);
+figure(10);
 hdl4(1) = subplot(2,1,1);
 plot(timeInHours, data(:,6), ...
      timeInHours, data(:,10), ...
