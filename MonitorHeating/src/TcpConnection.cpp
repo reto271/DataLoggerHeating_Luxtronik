@@ -101,19 +101,19 @@ bool TcpConnection::waitResponse(RecDataStoragePtr pReceiveDataBuffer, const uin
             totalRecDataLen += recDataLen;
             // Usually the Luxtronic sends 4 Bytes followed by a frame of 1004 bytes. Lets dump info if it deviates
             switch(frameCnt) {
-            case 0:
-                if (4 != recDataLen) {
+                case 0:
+                    if(4 != recDataLen) {
+                        std::cout << "Frame nr: " << frameCnt << " rec nr bytes: " << recDataLen << ", total received: " << totalRecDataLen << std::endl;
+                    }
+                    break;
+                case 1:
+                    if(1004 != recDataLen) {
+                        std::cout << "Frame nr: " << frameCnt << " rec nr bytes: " << recDataLen << ", total received: " << totalRecDataLen << std::endl;
+                    }
+                    break;
+                default:
                     std::cout << "Frame nr: " << frameCnt << " rec nr bytes: " << recDataLen << ", total received: " << totalRecDataLen << std::endl;
-                }
-                break;
-            case 1:
-                if (1004 != recDataLen) {
-                    std::cout << "Frame nr: " << frameCnt << " rec nr bytes: " << recDataLen << ", total received: " << totalRecDataLen << std::endl;
-                }
-                break;
-            default:
-                std::cout << "Frame nr: " << frameCnt << " rec nr bytes: " << recDataLen << ", total received: " << totalRecDataLen << std::endl;
-                break;
+                    break;
             }
         }
         frameCnt++;

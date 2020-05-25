@@ -9,6 +9,7 @@
 #include "Common/src/ValueTable.hpp"
 #include "Common/src/ValueTable_v1.hpp"
 #include "Common/src/ValueTable_v2.hpp"
+#include "Common/src/ValueTable_v3.hpp"
 #include "Common/src/FeedbackCollector.hpp"
 #include "Common/src/BitBuffer.hpp"
 
@@ -254,6 +255,12 @@ void FileDataReader::determineFileVersion()
     }
 
     // Test older versions
+    m_pValueTable = std::make_shared<ValueTable_v3>(m_enableLog);
+    if(m_fileVersion == m_pValueTable->getFileVersion()) {
+        m_pValueTable->initialize();
+        return;
+    }
+
     m_pValueTable = std::make_shared<ValueTable_v2>(m_enableLog);
     if(m_fileVersion == m_pValueTable->getFileVersion()) {
         m_pValueTable->initialize();
@@ -308,7 +315,7 @@ void FileDataReader::validateNrEntriesPerRecord()
     switch(m_pValueTable->getFileVersion()) {
         case 1:
         case 2:
-
+            // File version 1 & 2 did not yet use BitBuffer
             if(m_nrDataEntriesPerRecord != m_pValueTable->getNrDataEntriesPerSet()) {
                 std::cout << "Number entries per data set does not match: "
                           << "m_nrDataEntriesPerRecord: " << m_nrDataEntriesPerRecord
@@ -345,12 +352,12 @@ void FileDataReader::validateFileLength()
     switch(m_pValueTable->getFileVersion()) {
         case 1:
         case 2:
+            // File verson 1 & 2 did not yet use BitBuffer
             headerSize = 4 * m_pValueTable->getSizeOfHeader();
             dataFileLength = m_fileLength - headerSize;
             dataSetSize = 4 * m_pValueTable->getNrDataEntriesPerSet() + 8;
             break;
         default:
-
             headerSize = 4 * m_pValueTable->getSizeOfHeader();
             dataFileLength = m_fileLength - headerSize;
             dataSetSize = m_pValueTable->getNrBytesInBufferPerSet();

@@ -9,7 +9,7 @@ ValueTable_v3::ValueTable_v3(bool enableLog)
 {
 }
 
-ValueTable_v3::~ValueTable_3()
+ValueTable_v3::~ValueTable_v3()
 {
 }
 

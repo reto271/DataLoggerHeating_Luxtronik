@@ -15,7 +15,7 @@ FileDataWriterCSV::FileDataWriterCSV(std::string fileName)
 
 FileDataWriterCSV::~FileDataWriterCSV()
 {
-    if (false == m_fileIsEmpty) {
+    if(false == m_fileIsEmpty) {
         std::cout << "File '" << m_fileName << "' successfully written" << std::endl;
     } else {
         std::cout << "ERROR: File '" << m_fileName << "' is empty, due conversion error." << std::endl;
