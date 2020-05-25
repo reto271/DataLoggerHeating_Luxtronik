@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
     ApplicationState applState = ApplicationState::NORMAL;
     std::string ipAddr;
 
-    std::cout << std::endl << "Application started" << std::endl;
+    std::cout << "Application started" << std::endl;
 
     switch(argc) {
         case 2:
