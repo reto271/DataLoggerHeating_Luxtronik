@@ -2,11 +2,14 @@
 
 #include "FileDataReader.hpp"
 #include "FileDataWriterCSV.hpp"
-
+#include "Common/src/ProgramVersion.hpp"
 
 /// Main function to setup the connection, restart it periodically, read the data and forwards them to the decoder / serializer.
 int main(int argc, char* argv[])
 {
+    ProgramVersion progVersion;
+    progVersion.printProgramInfo("DataDecoder");
+
     if(argc != 2) {
         std::cout << std::endl << "Usage: " << argv[0] << " <FileName>" << std::endl;
         return 1;

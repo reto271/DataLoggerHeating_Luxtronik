@@ -20,6 +20,7 @@ add_executable(MonitorHeating
                 src/SynchronizeTime.cpp
                 ../Common/src/BitBuffer.cpp
                 ../Common/src/IP_AddressValidator.cpp
+                ../Common/src/ProgramVersion.cpp
                 ../Common/src/ValueTableCommon.cpp
                 ../Common/src/ValueTable.cpp)
 

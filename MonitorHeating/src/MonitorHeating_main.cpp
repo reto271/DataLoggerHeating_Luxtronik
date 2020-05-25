@@ -6,6 +6,7 @@
 #include "SynchronizeTime.hpp"
 #include "TcpConnection.hpp"
 #include "Common/src/IP_AddressValidator.hpp"
+#include "Common/src/ProgramVersion.hpp"
 
 /// Reset the connection at 3 in the morning
 /// \param pConnection, reference to the TCP connection
@@ -26,6 +27,9 @@ enum class ApplicationState {
 /// Main function to setup the connection, restart it periodically, read the data and forwards them to the decoder / serializer.
 int main(int argc, char* argv[])
 {
+    ProgramVersion progVersion;
+    progVersion.printProgramInfo("MonitorHeating");
+
     SynchronizeTime sync;
     std::time_t currentUnixTime;
     ApplicationState applState = ApplicationState::NORMAL;
@@ -34,24 +38,24 @@ int main(int argc, char* argv[])
     std::cout << std::endl << "Application started" << std::endl;
 
     switch(argc) {
-    case 2:
-        ipAddr = argv[1];
-        break;
+        case 2:
+            ipAddr = argv[1];
+            break;
 
-    case 3:
-    {
-        ipAddr = argv[1];
-        std::string dbgSwitch = argv[2];
-        if("--debug" == dbgSwitch) {
-            std::cout << "ApplicationState::DEBUG" << std::endl;
-            applState = ApplicationState::DEBUG;
-        }
-    }
-    break;
+        case 3:
+            {
+                ipAddr = argv[1];
+                std::string dbgSwitch = argv[2];
+                if("--debug" == dbgSwitch) {
+                    std::cout << "ApplicationState::DEBUG" << std::endl;
+                    applState = ApplicationState::DEBUG;
+                }
+            }
+            break;
 
-    default:
-        std::cout << std::endl << "Usage: " << argv[0] << " <ip of server>" << std::endl;
-        return 1;
+        default:
+            std::cout << std::endl << "Usage: " << argv[0] << " <ip of server>" << std::endl;
+            return 1;
     }
 
     IP_AddressValidator validateIp(ipAddr);
@@ -121,11 +125,11 @@ void connectToHeatingController(TcpConnection& tcpConnection)
     SynchronizeTime syncTime;
     do {
         isConnected = tcpConnection.connectToHeating();
-        if (false == isConnected) {
-            std::cout << "Could not establish connection, try again in a minute. Current time: "  << std::asctime(std::localtime(&currentUnixTime));
+        if(false == isConnected) {
+            std::cout << "Could not establish connection, try again in a minute. Current time: " << std::asctime(std::localtime(&currentUnixTime));
             currentUnixTime = syncTime.waitForMinute();
         }
 
-    } while (false == isConnected);
+    } while(false == isConnected);
     std::cout << "Got connection at: " << std::asctime(std::localtime(&currentUnixTime)) << std::flush;
 }
