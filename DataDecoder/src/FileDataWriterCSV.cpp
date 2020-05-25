@@ -7,6 +7,7 @@
 
 FileDataWriterCSV::FileDataWriterCSV(std::string fileName)
     : m_fileName(fileName)
+    , m_fileIsEmpty(true)
 {
     std::cout << "FileDataWriterCSV::FileDataWriterCSV" << std::endl;
     m_csvFile.open(m_fileName, std::ios::out);
@@ -14,8 +15,11 @@ FileDataWriterCSV::FileDataWriterCSV(std::string fileName)
 
 FileDataWriterCSV::~FileDataWriterCSV()
 {
-    std::cout << "FileDataWriterCSV::~FileDataWriterCSV" << std::endl;
-    std::cout << "File '" << m_fileName << "' successfully written" << std::endl;
+    if (false == m_fileIsEmpty) {
+        std::cout << "File '" << m_fileName << "' successfully written" << std::endl;
+    } else {
+        std::cout << "ERROR: File '" << m_fileName << "' is empty, due conversion error." << std::endl;
+    }
     m_csvFile.close();
 }
 
@@ -81,6 +85,6 @@ bool FileDataWriterCSV::writeData(std::vector<DataEntryCSV> dataVector, const ui
         }
         m_csvFile << std::endl;
     }
-
+    m_fileIsEmpty = false;
     return true;
 }

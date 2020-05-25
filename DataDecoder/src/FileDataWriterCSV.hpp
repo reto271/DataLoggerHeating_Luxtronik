@@ -18,4 +18,5 @@ public:
 private:
     std::string m_fileName;
     std::ofstream m_csvFile;
+    bool m_fileIsEmpty;
 };
