@@ -1,29 +1,29 @@
 #include <iostream>
 
-#include "Common/src/ValueTable.hpp"
+#include "Common/src/ValueTable_v3.hpp"
 
 
 
-ValueTable::ValueTable(bool enableLog)
+ValueTable_v3::ValueTable_v3(bool enableLog)
     : ValueTableCommon(enableLog)
 {
 }
 
-ValueTable::~ValueTable()
+ValueTable_v3::~ValueTable_3()
 {
 }
 
-uint32_t ValueTable::getFileVersion() const
+uint32_t ValueTable_v3::getFileVersion() const
 {
     return FILE_Version;
 }
 
-uint32_t ValueTable::getSizeOfHeader() const
+uint32_t ValueTable_v3::getSizeOfHeader() const
 {
     return FILE_SizeOfHeader;
 }
 
-void ValueTable::initValueTable()
+void ValueTable_v3::initValueTable()
 {
     // *INDENT-OFF*
     m_entries = {
@@ -92,7 +92,7 @@ void ValueTable::initValueTable()
         {  70, /*ID_WEB_Timer_EinschVerz*/          "Netzeinschaltverzögerung",                                             1, "Sekunden", 17, DataTypeInfo::UNSIGNED}, // 0 .. 36h
         {  71, /*ID_WEB_Time_SSPAUS_akt*/           "Schaltspielsperre Aus",                                                1, "Sekunden", 17, DataTypeInfo::UNSIGNED}, // 0 .. 36h
         {  72, /*ID_WEB_Time_SSPEIN_akt*/           "Schaltspielsperre Ein",                                                1, "Sekunden", 17, DataTypeInfo::UNSIGNED}, // 0 .. 36h
-        {  73, /*ID_WEB_Time_VDStd_akt*/            "Verdichter-Standzeit",                                                 1, "Sekunden", 21, DataTypeInfo::UNSIGNED}, // 0 .. 36h -> Not enough if on vacation. New: 21bit -> 3 weeks
+        {  73, /*ID_WEB_Time_VDStd_akt*/            "Verdichter-Standzeit",                                                 1, "Sekunden", 17, DataTypeInfo::UNSIGNED}, // 0 .. 36h
         {  74, /*ID_WEB_Time_HRM_akt*/              "Heizungsregler Mehr-Zeit",                                             1, "Sekunden", 17, DataTypeInfo::UNSIGNED}, // 0 .. 36h
         {  75, /*ID_WEB_Time_HRW_akt*/              "Heizungsregler Weniger-Zeit",                                          1, "Sekunden", 17, DataTypeInfo::UNSIGNED}, // 0 .. 36h
         {  76, /*ID_WEB_Time_LGS_akt*/              "Thermische Desinfektion läuft seit",                                   1, "Sekunden", 17, DataTypeInfo::UNSIGNED}, // 0 .. 36h -> Heats up to 60 deg
