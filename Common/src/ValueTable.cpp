@@ -85,9 +85,9 @@ void ValueTable::initValueTable()
         {  63, /*ID_WEB_Zaehler_BetrZeitWP*/        "Betriebsstunden Wärmepumpe",                                           1, "Sekunden", 30, DataTypeInfo::UNSIGNED}, // 0 .. 34 years
         {  64, /*ID_WEB_Zaehler_BetrZeitHz*/        "Betriebsstunden Heizung",                                              1, "Sekunden", 30, DataTypeInfo::UNSIGNED}, // 0 .. 34 years
         {  65, /*ID_WEB_Zaehler_BetrZeitBW*/        "Betriebsstunden Warmwasser",                                           1, "Sekunden", 30, DataTypeInfo::UNSIGNED}, // 0 .. 34 years
-    //    {  66, /*ID_WEB_Zaehler_BetrZeitKue*/       "Betriebsstunden Kühlung",                                              1, "Sekunden" },   //                    -> deactivate
+    //  {  66, /*ID_WEB_Zaehler_BetrZeitKue*/       "Betriebsstunden Kühlung",                                              1, "Sekunden" },   //                    -> deactivate
         {  67, /*ID_WEB_Time_WPein_akt*/            "Wärmepumpe läuft seit",                                                1, "Sekunden", 17, DataTypeInfo::UNSIGNED}, // 0 .. 36h
-    //    {  68, /*ID_WEB_Time_ZWE1_akt*/             "Zweiter Wärmeerzeuger 1 läuft seit",                                   1, "Sekunden" },   //                    -> deactivate
+    //  {  68, /*ID_WEB_Time_ZWE1_akt*/             "Zweiter Wärmeerzeuger 1 läuft seit",                                   1, "Sekunden" },   //                    -> deactivate
         {  69, /*ID_WEB_Time_ZWE2_akt*/             "Zweiter Wärmeerzeuger 2 läuft seit",                                   1, "Sekunden", 17, DataTypeInfo::UNSIGNED}, // 0 .. 36h -> Heats up to 60 deg
         {  70, /*ID_WEB_Timer_EinschVerz*/          "Netzeinschaltverzögerung",                                             1, "Sekunden", 17, DataTypeInfo::UNSIGNED}, // 0 .. 36h
         {  71, /*ID_WEB_Time_SSPAUS_akt*/           "Schaltspielsperre Aus",                                                1, "Sekunden", 17, DataTypeInfo::UNSIGNED}, // 0 .. 36h
@@ -96,9 +96,9 @@ void ValueTable::initValueTable()
         {  74, /*ID_WEB_Time_HRM_akt*/              "Heizungsregler Mehr-Zeit",                                             1, "Sekunden", 17, DataTypeInfo::UNSIGNED}, // 0 .. 36h
         {  75, /*ID_WEB_Time_HRW_akt*/              "Heizungsregler Weniger-Zeit",                                          1, "Sekunden", 17, DataTypeInfo::UNSIGNED}, // 0 .. 36h
         {  76, /*ID_WEB_Time_LGS_akt*/              "Thermische Desinfektion läuft seit",                                   1, "Sekunden", 17, DataTypeInfo::UNSIGNED}, // 0 .. 36h -> Heats up to 60 deg
-        {  77, /*ID_WEB_Time_SBW_akt*/              "Sperre Warmwasser",                                                    1, "Sekunden", 17, DataTypeInfo::UNSIGNED}, // 0 .. 36h -> potentially 0
+    //  {  77, /*ID_WEB_Time_SBW_akt*/              "Sperre Warmwasser",                                                    1, "Sekunden", 17, DataTypeInfo::UNSIGNED}, // 0 .. 36h -> is always 0
 
-        {  78, /*ID_WEB_Code_WP_akt*/               "Wärmepumpentyp|0 = ERC|Typenschlüssel",                                1, "enum",         7, DataTypeInfo::UNSIGNED}, // enum 0..75 < 2^7 = 128 -> potentially  const
+    //  {  78, /*ID_WEB_Code_WP_akt*/               "Wärmepumpentyp|0 = ERC|Typenschlüssel",                                1, "enum",         7, DataTypeInfo::UNSIGNED}, // enum 0..75 < 2^7 = 128 -> const = 60
     //- 78|ID_WEB_Code_WP_akt|Wärmepumpentyp|0 = ERC|Typenschlüssel
     //-  | | | | 1 = SW1
     //-  | | | | 2 = SW2
@@ -167,7 +167,7 @@ void ValueTable::initValueTable()
     //-  | | | | 73 = MSW 16S
     //-  | | | | 74 = MSW2-6S
     //-  | | | | 75 = MSW4-16
-        {  79, /*ID_WEB_BIV_Stufe_akt*/          "Bivalenzstufe",                                                      1, "enum",  2, DataTypeInfo::UNSIGNED },  // According the enum
+    //  {  79, /*ID_WEB_BIV_Stufe_akt*/          "Bivalenzstufe",                                                      1, "enum",  2, DataTypeInfo::UNSIGNED },  // According the enum: is always 1
     //- 79|ID_WEB_BIV_Stufe_akt|Bivalenzstufe|1 = ein Verdichter darf laufen|Betriebszustand
     //-  | | | | 2 = zwei Verdichter dürfen laufen
     //-  | | | | 3 = zusätzlicher Wärmeerzeuger darf mitlaufen
@@ -296,7 +296,7 @@ void ValueTable::initValueTable()
         { 154, /*ID_WEB_WMZ_Seit*/                  "Wärmemengenzähler Gesamt",                                            10, "kWh", 28, DataTypeInfo::UNSIGNED}, // 350 times more than today
 
     //- 155|ID_WEB_WMZ_Durchfluss|Wärmemengenzähler Durchfluss|Keine|l / h
-        { 155, /*ID_WEB_WMZ_Durchfluss*/            "Wärmemengenzähler Durchfluss",                                         1, "l/h", 10, DataTypeInfo::UNSIGNED}, // 0 .. 1024l/h  -> potentially unused
+    //  { 155, /*ID_WEB_WMZ_Durchfluss*/            "Wärmemengenzähler Durchfluss",                                         1, "l/h", 10, DataTypeInfo::UNSIGNED}, // 0 .. 1024l/h  -> always 0
 
     //- 156|ID_WEB_AnalogOut1|Analog Ausgang 1|Wert / 100|V
     //- 157|ID_WEB_AnalogOut2|Analog Ausgang 2|Wert / 100|V
