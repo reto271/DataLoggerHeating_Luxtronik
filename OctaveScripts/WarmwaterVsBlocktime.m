@@ -33,7 +33,8 @@ clear all;
 clear figure;
 clc;
 
-fileDate="2020_05_14"
+##------------------------------------------------------------
+analyzeDate;
 
 %Prepare files and output strings
 fileDateStr=strrep(fileDate, "_", "-")
@@ -51,27 +52,34 @@ clear header;
 clear textLine;
 
 ##------------------------------------------------------------
+indexAmbientTemp=findIndexFromName(headerText, "Aussentemperatur")
+indexCurrentWaterTemp=findIndexFromName(headerText, "Warmwasser Ist-Temperatur")
+indexEVU_blocking=findIndexFromName(headerText, "EVU Sperre")
+indexRunsSince=findIndexFromName(headerText, "Wärmepumpe läuft seit")
+indexOperatingState=findIndexFromName(headerText, "Betriebszustand (0:heat 1:wather 3:blocked 5:idle)")
+
+##------------------------------------------------------------
 figure(1);
 hdl4(1) = subplot(2,1,1);
-plot(timeInHours, data(:,6), ...
-     timeInHours, data(:,8));
+plot(timeInHours, data(:,indexAmbientTemp), ...
+     timeInHours, data(:,indexCurrentWaterTemp));
 grid on;
 title(["Temperatures - " fileDateStr]);
 xlabel("time in hours");
 ylabel("Temperature [dec C]");
-legend([headerText(6), ...
-        headerText(8) ...
+legend([headerText(indexAmbientTemp), ...
+        headerText(indexCurrentWaterTemp) ...
         ], "location", "northoutside");
 
 hdl4(2) = subplot(2,1,2);
-plot(timeInHours, -1-data(:,14), ...
-     timeInHours, data(:,47), ...
+plot(timeInHours, -1-data(:,indexEVU_blocking), ...
+     timeInHours, data(:,indexOperatingState), ...
      [0],[6],[0],[-3]);
 grid on;
 title(["Operating State - " fileDateStr]);
 xlabel("time in minutes");
-legend([headerText(14), ...
-        headerText(47) ...
+legend([headerText(indexEVU_blocking), ...
+        headerText(indexOperatingState) ...
         ], "location", "southoutside");
 linkaxes(hdl4, 'x');
 
@@ -80,16 +88,16 @@ linkaxes(hdl4, 'x');
 figure(2);
 hdl4(1) = subplot(2,1,1);
 plot(
-     timeInHours, data(:,35)/60);
+     timeInHours, data(:,indexRunsSince)/60);
 grid on;
 title(["Wather Temperatures - " fileDateStr]);
 xlabel("time in hours");
 ylabel("time in minutes");
-legend([headerText(35) ...
+legend([headerText(indexRunsSince) ...
         ], "location", "northoutside");
 
-totalEVU_Sperre = cumsum(1-data(:,14));
-EVU_Sperre = (1-data(:,14))*max(totalEVU_Sperre);
+totalEVU_Sperre = cumsum(1-data(:,indexEVU_blocking));
+EVU_Sperre = (1-data(:,indexEVU_blocking))*max(totalEVU_Sperre);
 hdl4(2) = subplot(2,1,2);
 plot(timeInHours, EVU_Sperre, ...
      timeInHours, totalEVU_Sperre);
@@ -97,7 +105,7 @@ grid on;
 title(["Total Sperrzeit - " fileDateStr]);
 xlabel("time in hours");
 ylabel("time in minutes");
-legend([headerText(14), ...
+legend([headerText(indexEVU_blocking), ...
         "Total EVU Speerzeit" ...
         ], "location", "southoutside");
 linkaxes(hdl4, 'x');

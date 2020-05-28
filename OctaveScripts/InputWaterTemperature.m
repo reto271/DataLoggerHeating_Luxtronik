@@ -33,7 +33,7 @@ clear all;
 clear figure;
 clc;
 
-fileDate="2020_05_14"
+analyzeDate;
 
 %Prepare files and output strings
 fileDateStr=strrep(fileDate, "_", "-")
@@ -51,32 +51,37 @@ clear header;
 clear textLine;
 
 ##------------------------------------------------------------
+indexAmbientTemp=findIndexFromName(headerText, "Aussentemperatur")
+indexSourceInputTemp=findIndexFromName(headerText, "Wärmequellen-Eintrittstemperatur")
+indexSourceOutputTemp=findIndexFromName(headerText, "Wärmequellen-Austrittstemperatur")
+indexRunsSince=findIndexFromName(headerText, "Wärmepumpe läuft seit")
+
 
 ##------------------------------------------------------------
 figure(10);
 hdl4(1) = subplot(2,1,1);
-plot(timeInHours, data(:,6), ...
-     timeInHours, data(:,10), ...
-     timeInHours, data(:,11), ...
-     timeInHours, data(:,10) - data(:,11));
+plot(timeInHours, data(:,indexAmbientTemp), ...
+     timeInHours, data(:,indexSourceInputTemp), ...
+     timeInHours, data(:,indexSourceOutputTemp), ...
+     timeInHours, data(:,indexSourceInputTemp) - data(:,indexSourceOutputTemp));
 grid on;
 title(["Temperatures - " fileDateStr]);
 xlabel("time in hours");
 ylabel("Temperature [dec C]");
-legend([headerText(6),...
-        headerText(10), ...
-        headerText(11), ...
+legend([headerText(indexAmbientTemp),...
+        headerText(indexSourceInputTemp), ...
+        headerText(indexSourceOutputTemp), ...
         "Temperatur Differenz" ...
         ], "location", "northoutside");
 
 hdl4(2) = subplot(2,1,2);
-plot(timeInHours, data(:,35)/60, ...
-     timeInHours, data(:,51));
+plot(timeInHours, data(:,indexRunsSince)/60 ...
+     );
 grid on;
 title(["Operating Time - " fileDateStr]);
 xlabel("time in hours");
 ylabel("time in minutes");
-legend([headerText(35), headerText(51) ...
+legend([headerText(indexRunsSince) ...
         ], "location", "southoutside");
 
 linkaxes(hdl4, 'x');
