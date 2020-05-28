@@ -13,5 +13,5 @@ public:
 
 private:
     std::string SoftwareVersion = "V01.01";
-    std::string MinorVersion = "B02";
+    std::string MinorVersion = "";         // format "B01" or empty for release
 };
