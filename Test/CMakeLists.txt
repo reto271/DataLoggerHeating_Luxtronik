@@ -25,6 +25,7 @@ add_executable(Test_HeatingDataMonitorAndConverter
                ../Common/src/ValueTable_v1.cpp
                ../Common/src/ValueTable_v2.cpp
                ../Common/src/ValueTable_v3.cpp
+               ../Common/src/ValueTable_v4.cpp
                ../DataDecoder/src/FileDataReader.cpp)
 
 target_link_libraries(Test_HeatingDataMonitorAndConverter gtest_main gtest gmock)

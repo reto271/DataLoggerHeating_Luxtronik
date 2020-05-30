@@ -10,6 +10,7 @@
 #include "Common/src/ValueTable_v1.hpp"
 #include "Common/src/ValueTable_v2.hpp"
 #include "Common/src/ValueTable_v3.hpp"
+#include "Common/src/ValueTable_v4.hpp"
 #include "Common/src/FeedbackCollector.hpp"
 #include "Common/src/BitBuffer.hpp"
 
@@ -255,6 +256,12 @@ void FileDataReader::determineFileVersion()
     }
 
     // Test older versions
+    m_pValueTable = std::make_shared<ValueTable_v4>(m_enableLog);
+    if(m_fileVersion == m_pValueTable->getFileVersion()) {
+        m_pValueTable->initialize();
+        return;
+    }
+
     m_pValueTable = std::make_shared<ValueTable_v3>(m_enableLog);
     if(m_fileVersion == m_pValueTable->getFileVersion()) {
         m_pValueTable->initialize();
