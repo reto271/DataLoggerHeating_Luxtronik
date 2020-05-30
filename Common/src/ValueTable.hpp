@@ -16,6 +16,6 @@ public:
 private:
     void initValueTable() override;
 
-    const uint32_t FILE_Version = 4;
+    const uint32_t FILE_Version = 5;
     const uint32_t FILE_SizeOfHeader = 3;
 };

@@ -94,7 +94,7 @@ void ValueTable::initValueTable()
         {  72, /*ID_WEB_Time_SSPEIN_akt*/           "Schaltspielsperre Ein",                                                1, "Sekunden", 17, DataTypeInfo::UNSIGNED}, // 0 .. 36h
         {  73, /*ID_WEB_Time_VDStd_akt*/            "Verdichter-Standzeit",                                                 1, "Sekunden", 21, DataTypeInfo::UNSIGNED}, // 0 .. 36h -> Not enough if on vacation. New: 21bit -> 3 weeks
         {  74, /*ID_WEB_Time_HRM_akt*/              "Heizungsregler Mehr-Zeit",                                             1, "Sekunden", 17, DataTypeInfo::UNSIGNED}, // 0 .. 36h
-        {  75, /*ID_WEB_Time_HRW_akt*/              "Heizungsregler Weniger-Zeit",                                          1, "Sekunden", 17, DataTypeInfo::UNSIGNED}, // 0 .. 36h
+        {  75, /*ID_WEB_Time_HRW_akt*/              "Heizungsregler Weniger-Zeit",                                          1, "Sekunden", 21, DataTypeInfo::UNSIGNED}, // 0 .. 36h -> Not enough if on vacation. New: 21bit -> 3 weeks
         {  76, /*ID_WEB_Time_LGS_akt*/              "Thermische Desinfektion läuft seit",                                   1, "Sekunden", 17, DataTypeInfo::UNSIGNED}, // 0 .. 36h -> Heats up to 60 deg
     //  {  77, /*ID_WEB_Time_SBW_akt*/              "Sperre Warmwasser",                                                    1, "Sekunden", 17, DataTypeInfo::UNSIGNED}, // 0 .. 36h -> is always 0
 
