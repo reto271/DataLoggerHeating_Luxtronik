@@ -6,6 +6,7 @@
 #include <iostream>
 #include <assert.h>
 
+#include "influxdb.hpp"
 #include "Common/src/BitBuffer.hpp"
 
 // float conversionFunctionDivisor(const uint32_t value, const uint32_t divisor)
@@ -112,6 +113,34 @@ char ValueResponse::serialize()
     wf.write(reinterpret_cast<const char*>(pBitBufferData), nrBytesInBuffer);
     wf.close();
     return 0;
+}
+
+void ValueResponse::writeToDB()
+{
+    std::string dateString;
+    BitBuffer bitBuffer;
+    influxdb_cpp::server_info si("192.168.1.100", 8086, "heatingdb", "", "");
+
+    validateBuffer();
+
+    // Copy the heating data to the bitBuffer
+    for(uint32_t cnt = 0; cnt < getNumberOfEntries(); cnt++) {
+        uint32_t rawValue = m_responsePtr->getDataField(m_valueTable.getCommandId(cnt));
+        std::string description = m_valueTable.getDescription(cnt);
+        double divisor = m_valueTable.getConversionDivisor(cnt);
+        std::string unit = m_valueTable.getUnit(cnt);
+        double val1 = static_cast<double>(rawValue) / divisor;
+
+        if("°C" == unit) {
+            influxdb_cpp::builder()
+            .meas("heating_data")
+            .tag("unit", "degree")
+            .field(description, val1, 5)
+            .timestamp(m_currentUnixTime * 1000000000)
+            .post_http(si);
+            std::cout << "Write: " << description << " : " << val1 << std::endl;
+        }
+    }
 }
 
 void ValueResponse::addUnixTimeToBuffer(std::ofstream& wf, std::time_t unixTime)

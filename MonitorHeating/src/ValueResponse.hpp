@@ -32,6 +32,9 @@ public:
     /// \return 0 if the sample is successfully serialized. Not 0 if there is an error.
     char serialize();
 
+    /// Writes the data to the influx DB. Currenlty it writes only a few temperatures to the DB.
+    void writeToDB();
+
 private:
     /// Add the current Unix time in seconds since January, 1st 1970 to the data file.
     /// Use 8 bytes independent on the HW/Compiler.

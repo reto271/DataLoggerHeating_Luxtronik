@@ -89,6 +89,7 @@ int main(int argc, char* argv[])
         if(nullptr != receiveDataPtr) {
             ValueResponse decodeValueResp(receiveDataPtr, currentUnixTime, true);
             decodeValueResp.serialize();
+            decodeValueResp.writeToDB();
         } else {
             std::cout << "Second consecutive failure" << std::endl;
             return 5;
