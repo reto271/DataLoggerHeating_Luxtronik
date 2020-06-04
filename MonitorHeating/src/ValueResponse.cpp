@@ -130,13 +130,14 @@ void ValueResponse::writeToDB()
         double divisor = m_valueTable.getConversionDivisor(cnt);
         std::string unit = m_valueTable.getUnit(cnt);
         double val1 = static_cast<double>(rawValue) / divisor;
+        uint64_t time_ns = 1000000000 * m_currentUnixTime;
 
         if("°C" == unit) {
             influxdb_cpp::builder()
             .meas("heating_data")
             .tag("unit", "degree")
             .field(description, val1, 5)
-            .timestamp(m_currentUnixTime * 1000000000)
+            .timestamp(time_ns)
             .post_http(si);
             std::cout << "Write: " << description << " : " << val1 << std::endl;
         }
