@@ -79,6 +79,27 @@ DataTypeInfo ValueTableCommon::getDataTypeInfo(uint32_t entryNr) const
     return m_entries[entryNr].dataTypeInfo;
 }
 
+bool ValueTableCommon::getWriteToDataBase(uint32_t entryNr) const
+{
+    assert(true == m_isInitialized);
+    assert(getNrDataEntriesPerSet() > entryNr);
+    return m_entries[entryNr].writeToDataBase;
+}
+
+uint32_t ValueTableCommon::getScalingDataBase(uint32_t entryNr) const
+{
+    assert(true == m_isInitialized);
+    assert(getNrDataEntriesPerSet() > entryNr);
+    return m_entries[entryNr].scalingDataBase;
+}
+
+std::string ValueTableCommon::getUnitNameDataBase(uint32_t entryNr) const
+{
+    assert(true == m_isInitialized);
+    assert(getNrDataEntriesPerSet() > entryNr);
+    return m_entries[entryNr].unitNameDataBase;
+}
+
 uint32_t ValueTableCommon::getNrDataEntriesPerSet() const
 {
     assert(true == m_isInitialized);

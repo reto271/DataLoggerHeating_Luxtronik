@@ -125,24 +125,64 @@ void ValueResponse::writeToDB()
 
     // Copy the heating data to the bitBuffer
     for(uint32_t cnt = 0; cnt < getNumberOfEntries(); cnt++) {
-        uint32_t rawValue = m_responsePtr->getDataField(m_valueTable.getCommandId(cnt));
-        std::string description = m_valueTable.getDescription(cnt);
-        double divisor = m_valueTable.getConversionDivisor(cnt);
-        std::string unit = m_valueTable.getUnit(cnt);
-        double val1 = static_cast<double>(rawValue) / divisor;
-        uint64_t time_ns = static_cast<uint64_t>(1000000000) * m_currentUnixTime;  // force the computation to be executed in 64-bit (otherwise it does not work on raspi)
+        if(true == m_valueTable.getWriteToDataBase(cnt)) {
 
-        if("°C" == unit) {
+            // Get common data
+            uint32_t rawValue = m_responsePtr->getDataField(m_valueTable.getCommandId(cnt));
+            std::string description = m_valueTable.getDescription(cnt);
+            std::string rawUnit = m_valueTable.getUnit(cnt);
+
+            // Time of the data base entry
+            // Force the computation to be executed in 64-bit, otherwise it does not work on raspi
+            uint64_t time_ns = static_cast<uint64_t>(1000000000) * m_currentUnixTime;
             // std::cout << "m_currentUnixTime: " << m_currentUnixTime << std::endl;
             // std::cout << "time_ns:           " << time_ns << std::hex << ", 0x" << time_ns << std::dec << std::endl;
             // std::cout << "sizeof(uint64_t):  " << sizeof(uint64_t) << std::endl;
-            influxdb_cpp::builder()
-            .meas("heating_data")
-            .tag("unit", "degree")
-            .field(description, val1, 5)
-            .timestamp(time_ns)
-            .post_http(si);
-            std::cout << "Write: " << description << " : " << val1 << std::endl;
+
+            // Is there an extra unit for the DB entry?
+            std::string finalUnit;
+            std::string dbUnit = m_valueTable.getUnitNameDataBase(cnt);
+            if("" == dbUnit) {
+                finalUnit = rawUnit;
+            } else {
+                finalUnit = m_valueTable.getUnitNameDataBase(cnt);
+            }
+
+            // Threat enum and bools different, do not use double interface to the DB
+            if(("enum" == rawUnit) || ("bool" == rawUnit)) {
+                // Special fields:
+                uint16_t intFinalValue = rawValue;
+                if("EVU Sperre" == description) {
+                    intFinalValue = -intFinalValue + 1;
+                }
+
+                influxdb_cpp::builder().meas("heating_data").tag("unit", finalUnit).field(description, intFinalValue).timestamp(time_ns).post_http(si);
+                std::cout << "Write int: " << description << " : " << rawValue << ", " << intFinalValue << " " << finalUnit << std::endl;
+            } else {
+                double divisor = m_valueTable.getConversionDivisor(cnt);
+                double scaledValue = static_cast<double>(rawValue) / divisor;
+                double dblFinalValue;
+
+                // Is there an extra scaling for the DB entry
+                uint32_t dbScaling = m_valueTable.getScalingDataBase(cnt);
+                if(1 == dbScaling) {
+                    dblFinalValue = scaledValue;
+                } else {
+                    dblFinalValue = scaledValue / dbScaling;
+                }
+
+                // Special fields:
+                if("Wärmepumpe läuft seit" == description) {
+                    if(1 == rawValue) {
+                        dblFinalValue = 0; // There is an error, at standstill the run time is 1s. Fix it here.
+                    }
+                }
+
+                influxdb_cpp::builder().meas("heating_data").tag("unit", finalUnit).field(description, dblFinalValue, 5).timestamp(time_ns).post_http(si);
+                std::cout << "Write dbl: " << description << " : " << rawValue << ", " << dblFinalValue << " " << finalUnit << std::endl;
+            }
+            // } else {
+            //     std::cout << "No not write to db: " << m_valueTable.getDescription(cnt) << std::endl;
         }
     }
 }

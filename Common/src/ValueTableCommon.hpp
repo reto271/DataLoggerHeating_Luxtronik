@@ -23,6 +23,11 @@ public:
     uint32_t getNrBitsInBuffer(uint32_t entryNr) const override;
     DataTypeInfo getDataTypeInfo(uint32_t entryNr) const override;
 
+    // DB Functions
+    bool getWriteToDataBase(uint32_t entryNr) const override;
+    uint32_t getScalingDataBase(uint32_t entryNr) const override;
+    std::string getUnitNameDataBase(uint32_t entryNr) const override;
+
     virtual uint32_t getFileVersion() const = 0;
     uint32_t getSizeOfHeader() const = 0;
     uint32_t getNrDataEntriesPerSet() const override;
