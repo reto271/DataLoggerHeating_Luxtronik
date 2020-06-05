@@ -152,7 +152,7 @@ void ValueResponse::writeToDB()
             if(("enum" == rawUnit) || ("bool" == rawUnit)) {
                 // Special fields:
                 uint16_t intFinalValue = rawValue;
-                if("EVU Sperre" == description) {
+                if(("EVU Sperre" == description) || ("EVU Sperre2" == description)) {
                     intFinalValue = -intFinalValue + 1;
                 }
 
