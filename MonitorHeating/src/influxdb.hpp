@@ -1,15 +1,16 @@
 /*
-  influxdb-cpp -- C++ client for InfluxDB.
+   influxdb-cpp -- C++ client for InfluxDB.
 
-  Copyright (c) 2010-2018 <http://ez8.co> <orca.zhang@yahoo.com>
-  This library is released under the MIT License.
+   Copyright (c) 2010-2018 <http://ez8.co> <orca.zhang@yahoo.com>
+   This library is released under the MIT License.
 
-  Please see LICENSE file or visit https://github.com/orca-zhang/influxdb-cpp for details.
+   Please see LICENSE file or visit https://github.com/orca-zhang/influxdb-cpp for details.
  */
 #include <sstream>
 #include <cstring>
 #include <cstdio>
 
+// *INDENT-OFF*
 #ifdef _WIN32
     #define NOMINMAX
     #include <windows.h>
@@ -29,6 +30,13 @@
     #include <arpa/inet.h>
     #define closesocket close
 #endif
+
+void print_iovec(struct iovec *iov, const uint32_t nrVectors)
+{
+    std::cout << "print_iovec, nrVectors: " << nrVectors << std::endl;
+    std::cout << "  b0: " << (char*)(iov[0].iov_base) << std::endl;
+    std::cout << "  b1: " << (char*)(iov[1].iov_base) << std::endl;
+}
 
 namespace influxdb_cpp {
     struct server_info {
@@ -201,12 +209,19 @@ namespace influxdb_cpp {
 
             addr.sin_family = AF_INET;
             addr.sin_port = htons(si.port_);
-            if((addr.sin_addr.s_addr = inet_addr(si.host_.c_str())) == INADDR_NONE) return -1;
+            if((addr.sin_addr.s_addr = inet_addr(si.host_.c_str())) == INADDR_NONE) {
+                std::cout << "inner::http_request::socket_error, ln: " << __LINE__ << std::endl;
+                return -1;
+            }
 
-            if((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) return -2;
+            if((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+                std::cout << "inner::http_request::socket_error, ln: " << __LINE__ << std::endl;
+                return -2;
+            }
 
             if(connect(sock, (struct sockaddr*)(&addr), sizeof(addr)) < 0) {
                 closesocket(sock);
+                std::cout << "inner::http_request::socket_error, ln: " << __LINE__ << std::endl;
                 return -3;
             }
 
@@ -225,6 +240,8 @@ namespace influxdb_cpp {
             iv[0].iov_base = &header[0];
             iv[1].iov_base = (void*)&body[0];
             iv[1].iov_len = body.length();
+
+            //print_iovec(iv, 2);
 
             if(writev(sock, iv, 2) < (int)(iv[0].iov_len + iv[1].iov_len)) {
                 ret_code = -6;
@@ -299,3 +316,4 @@ namespace influxdb_cpp {
         }
     }
 }
+// *INDENT-ON*

@@ -130,9 +130,12 @@ void ValueResponse::writeToDB()
         double divisor = m_valueTable.getConversionDivisor(cnt);
         std::string unit = m_valueTable.getUnit(cnt);
         double val1 = static_cast<double>(rawValue) / divisor;
-        uint64_t time_ns = 1000000000 * m_currentUnixTime;
+        uint64_t time_ns = static_cast<uint64_t>(1000000000) * m_currentUnixTime;  // force the computation to be executed in 64-bit (otherwise it does not work on raspi)
 
         if("°C" == unit) {
+            // std::cout << "m_currentUnixTime: " << m_currentUnixTime << std::endl;
+            // std::cout << "time_ns:           " << time_ns << std::hex << ", 0x" << time_ns << std::dec << std::endl;
+            // std::cout << "sizeof(uint64_t):  " << sizeof(uint64_t) << std::endl;
             influxdb_cpp::builder()
             .meas("heating_data")
             .tag("unit", "degree")
