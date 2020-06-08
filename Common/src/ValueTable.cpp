@@ -51,7 +51,7 @@ void ValueTable::initValueTable()
     //  {  28, /*ID_WEB_Temperatur_TEE*/            "Fühler externe Energiequelle"                            ,          10, "°C"}      ,                                                                 -> deactivate
         {  29, /*ID_WEB_ASDin*/                     "Eingang Abtauende / Soledruck / Durchfluss"              ,           1, "bool"     ,       false,      1,     "",       1, DataTypeInfo::BOOL     },
         {  30, /*ID_WEB_BWTin_Eingang*/             "Brauchwarmwasserthermostat"                              ,           1, "bool"     ,       false,      1,     "",       1, DataTypeInfo::BOOL     },
-        {  31, /*ID_WEB_EVUin_Eingang*/             "EVU Sperre2"                                              ,           1, "bool"     ,        true,      1,     "",       1, DataTypeInfo::BOOL     },
+        {  31, /*ID_WEB_EVUin_Eingang*/             "EVU Sperre"                                              ,           1, "bool"     ,        true,      1,     "",       1, DataTypeInfo::BOOL     },
         {  32, /*ID_WEB_HDin_Eingang*/              "Hochdruck Kältekreis"                                    ,           1, "bool"     ,       false,      1,     "",       1, DataTypeInfo::BOOL     },
         {  33, /*ID_WEB_MOTin_Eingang*/             "Motorschutz OK"                                          ,           1, "bool"     ,       false,      1,     "",       1, DataTypeInfo::BOOL     },
         {  34, /*ID_WEB_NDin_Eingang*/              "Niederdruck"                                             ,           1, "bool"     ,       false,      1,     "",       1, DataTypeInfo::BOOL     },
@@ -171,7 +171,7 @@ void ValueTable::initValueTable()
     //- 79|ID_WEB_BIV_Stufe_akt|Bivalenzstufe|1 = ein Verdichter darf laufen|Betriebszustand
     //-  | | | | 2 = zwei Verdichter dürfen laufen
     //-  | | | | 3 = zusätzlicher Wärmeerzeuger darf mitlaufen
-        {  80, /*ID_WEB_WP_BZ_akt*/                 "Betriebszustand (0:heat 1:wather 3:blocked 5:idle)2"      ,           1, "enum"     ,        true,      1,     "",       3, DataTypeInfo::UNSIGNED }, // According the enum
+        {  80, /*ID_WEB_WP_BZ_akt*/                 "Betriebszustand (0:heat 1:wather 3:blocked 5:idle)"      ,           1, "enum"     ,        true,      1,     "",       3, DataTypeInfo::UNSIGNED }, // According the enum
     //-          0 = Heizen
     //-          1 = Warmwasser
     //-          2 = Schwimmbad / Photovoltaik

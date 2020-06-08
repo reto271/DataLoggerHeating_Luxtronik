@@ -181,8 +181,8 @@ void ValueResponse::writeToDB()
                 influxdb_cpp::builder().meas("heating_data").tag("unit", finalUnit).field(description, dblFinalValue, 5).timestamp(time_ns).post_http(si);
                 std::cout << "Write dbl: " << description << " : " << rawValue << ", " << dblFinalValue << " " << finalUnit << std::endl;
             }
-            // } else {
-            //     std::cout << "No not write to db: " << m_valueTable.getDescription(cnt) << std::endl;
+        // } else {
+        //     std::cout << "No not write to db: " << m_valueTable.getDescription(cnt) << std::endl;
         }
     }
 }
