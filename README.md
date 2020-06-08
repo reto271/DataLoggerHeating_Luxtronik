@@ -50,6 +50,6 @@ Runs a few google tests on the sources of MonitorHeating and DataDecoder.
 A util to convert local time to Unix time.
 
 # Acknowledgments
-Thanks to @Bouni and his documentation on https://github.com/Bouni/Home-Assistant-Luxtronik
-Thanks to @orca-zhang. I am using the C++ implementation to write InfluxDB (https://github.com/orca-zhang/influxdb-cpp)
+* Thanks to @Bouni and his documentation on (https://github.com/Bouni/Home-Assistant-Luxtronik)
+* Thanks to @orca-zhang. I am using the C++ implementation to write InfluxDB (https://github.com/orca-zhang/influxdb-cpp)
 May, 2020
