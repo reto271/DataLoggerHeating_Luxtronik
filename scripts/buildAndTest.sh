@@ -34,7 +34,7 @@ fi
 if [ 0 -eq ${feedback} ] ; then
     echo "::: Run the Tests"
     cd ..
-    ./Test/bin/Test_HeatingDataMonitorAndConverter
+    ./Test/bin/Test_HeatingDataMonitorAndConverter --gtest_output=xml:./Test/tmp/gtestresults.xml
     feedback=$?
 fi
 
