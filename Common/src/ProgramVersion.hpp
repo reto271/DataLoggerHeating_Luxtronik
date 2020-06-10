@@ -12,6 +12,6 @@ public:
     void printProgramInfo(std::string programName);
 
 private:
-    std::string SoftwareVersion = "V01.02";
-    std::string MinorVersion = "";         // format "B01" or empty for release
+    std::string SoftwareVersion = "V01.03";
+    std::string MinorVersion = "B01";         // format "B01" or empty for release
 };
