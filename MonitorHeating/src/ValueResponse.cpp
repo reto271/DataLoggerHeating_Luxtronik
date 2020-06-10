@@ -155,9 +155,8 @@ void ValueResponse::writeToDB()
                 if("EVU Sperre" == description) {
                     intFinalValue = -intFinalValue + 1;
                 }
-
+                // Write to the data base
                 influxdb_cpp::builder().meas("heating_data").tag("unit", finalUnit).field(description, intFinalValue).timestamp(time_ns).post_http(si);
-                std::cout << "Write int: " << description << " : " << rawValue << ", " << intFinalValue << " " << finalUnit << std::endl;
             } else {
                 double divisor = m_valueTable.getConversionDivisor(cnt);
                 double scaledValue = static_cast<double>(rawValue) / divisor;
@@ -177,9 +176,8 @@ void ValueResponse::writeToDB()
                         dblFinalValue = 0; // There is an error, at standstill the run time is 1s. Fix it here.
                     }
                 }
-
+                // Write to the data base
                 influxdb_cpp::builder().meas("heating_data").tag("unit", finalUnit).field(description, dblFinalValue, 5).timestamp(time_ns).post_http(si);
-                std::cout << "Write dbl: " << description << " : " << rawValue << ", " << dblFinalValue << " " << finalUnit << std::endl;
             }
             // } else {
             //     std::cout << "No not write to db: " << m_valueTable.getDescription(cnt) << std::endl;
