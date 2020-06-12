@@ -18,6 +18,7 @@ add_executable(Test_HeatingDataMonitorAndConverter
                src/Test_BitBuffer.cpp
                src/Test_FeedbackCollector.cpp
                src/Test_FileDataReader.cpp
+               src/Test_influxdb.cpp
                ../Common/src/BitBuffer.cpp
                ../Common/src/FeedbackCollector.cpp
                ../Common/src/ValueTableCommon.cpp

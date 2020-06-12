@@ -10,17 +10,19 @@
 #include <cstring>
 #include <cstdio>
 
-// *INDENT-OFF*
+
 #ifdef _WIN32
     #define NOMINMAX
     #include <windows.h>
     #include <algorithm>
     #pragma comment(lib, "ws2_32")
-    typedef struct iovec { void* iov_base; size_t iov_len; } iovec;
-    inline __int64 writev(int sock, struct iovec* iov, int cnt) {
-        __int64 r = send(sock, (const char*)iov->iov_base, iov->iov_len, 0);
-        return (r < 0 || cnt == 1) ? r : r + writev(sock, iov + 1, cnt - 1);
-    }
+typedef struct iovec { void* iov_base; size_t iov_len; } iovec;
+inline __int64 writev(int sock, struct iovec* iov, int cnt)
+{
+    __int64 r = send(sock, (const char*)iov->iov_base, iov->iov_len, 0);
+    return (r < 0 || cnt == 1) ? r : r + writev(sock, iov + 1, cnt - 1);
+}
+
 #else
     #include <unistd.h>
     #include <sys/types.h>
@@ -31,24 +33,40 @@
     #define closesocket close
 #endif
 
-void print_iovec(struct iovec *iov, const uint32_t nrVectors)
+
+namespace influxdb_cpp {
+struct server_info {
+    std::string host_;
+    int port_;
+    std::string db_;
+    std::string usr_;
+    std::string pwd_;
+    std::string precision_;
+    server_info(const std::string& host, int port, const std::string& db = "", const std::string& usr = "", const std::string& pwd = "", const std::string& precision = "ms")
+        : host_(host), port_(port), db_(db), usr_(usr), pwd_(pwd), precision_(precision)
+    {
+    }
+
+};
+
+#if defined(__UNIT_TEST_FOR_INFLUX_DB_HPP__)
+bool isUnitTestRunning(const server_info& serverInfo)
+{
+    return (("" == serverInfo.host_) && (0 == serverInfo.port_));
+}
+
+void print_iovec(struct iovec* iov, const uint32_t nrVectors)
 {
     std::cout << "print_iovec, nrVectors: " << nrVectors << std::endl;
     std::cout << "  b0: " << (char*)(iov[0].iov_base) << std::endl;
     std::cout << "  b1: " << (char*)(iov[1].iov_base) << std::endl;
 }
 
-namespace influxdb_cpp {
-    struct server_info {
-        std::string host_;
-        int port_;
-        std::string db_;
-        std::string usr_;
-        std::string pwd_;
-        std::string precision_;
-        server_info(const std::string& host, int port, const std::string& db = "", const std::string& usr = "", const std::string& pwd = "", const std::string& precision="ms")
-            : host_(host), port_(port), db_(db), usr_(usr), pwd_(pwd), precision_(precision) {}
-    };
+#endif // __UNIT_TEST_FOR_INFLUX_DB_HPP__
+
+
+// *INDENT-OFF*
+
     namespace detail {
         struct meas_caller;
         struct tag_caller;
@@ -99,6 +117,7 @@ namespace influxdb_cpp {
             return (detail::field_caller&)*this;
         }
         detail::field_caller& _f_i(char delim, const std::string& k, long long v) {
+            std::cout << "_f_i: (" << __LINE__ << ") " << delim << ", " << k << ", " << v << std::endl;
             lines_ << delim;
             _escape(k, ",= ");
             lines_ << '=';
@@ -106,6 +125,7 @@ namespace influxdb_cpp {
             return (detail::field_caller&)*this;
         }
         detail::field_caller& _f_f(char delim, const std::string& k, double v, int prec) {
+            std::cout << "_f_f: (" << __LINE__ << ") " << delim << ", " << k << ", " << v << ", " << prec << std::endl;
             lines_ << delim;
             _escape(k, ",= ");
             lines_.precision(prec);
@@ -157,14 +177,14 @@ namespace influxdb_cpp {
 
     namespace detail {
         struct tag_caller : public builder {
-            detail::tag_caller& tag(const std::string& k, const std::string& v)       { return _t(k, v); }
-            detail::field_caller& field(const std::string& k, const std::string& v)   { return _f_s(' ', k, v); }
-            detail::field_caller& field(const std::string& k, bool v)                 { return _f_b(' ', k, v); }
-            detail::field_caller& field(const std::string& k, short v)                { return _f_i(' ', k, v); }
-            detail::field_caller& field(const std::string& k, int v)                  { return _f_i(' ', k, v); }
-            detail::field_caller& field(const std::string& k, long v)                 { return _f_i(' ', k, v); }
-            detail::field_caller& field(const std::string& k, long long v)            { return _f_i(' ', k, v); }
-            detail::field_caller& field(const std::string& k, double v, int prec = 2) { return _f_f(' ', k, v, prec); }
+            detail::tag_caller& tag(const std::string& k, const std::string& v)       { std::cout << "tag ("  << __LINE__ << "), k,v:   " << k << ", " << v << std::endl; return _t(k, v); }
+            detail::field_caller& field(const std::string& k, const std::string& v)   { std::cout << "field ("  << __LINE__ << ") k,v:  " << k << ", " << v << std::endl; return _f_s(' ', k, v); }
+            detail::field_caller& field(const std::string& k, bool v)                 { std::cout << "field ("  << __LINE__ << ") k,v:  " << k << ", " << v << std::endl; return _f_b(' ', k, v); }
+            detail::field_caller& field(const std::string& k, short v)                { std::cout << "field ("  << __LINE__ << ") k,v:  " << k << ", " << v << std::endl; return _f_i(' ', k, v); }
+            detail::field_caller& field(const std::string& k, int v)                  { std::cout << "field ("  << __LINE__ << ") k,v:  " << k << ", " << v << std::endl; return _f_i(' ', k, v); }
+            detail::field_caller& field(const std::string& k, long v)                 { std::cout << "field ("  << __LINE__ << ") k,v:  " << k << ", " << v << std::endl; return _f_i(' ', k, v); }
+            detail::field_caller& field(const std::string& k, long long v)            { std::cout << "field ("  << __LINE__ << ") k,v:  " << k << ", " << v << std::endl; return _f_i(' ', k, v); }
+            detail::field_caller& field(const std::string& k, double v, int prec = 2) { std::cout << "field ("  << __LINE__ << ") k,v:  " << k << ", " << v << std::endl; return _f_f(' ', k, v, prec); }
         private:
             detail::tag_caller& meas(const std::string& m);
         };
@@ -174,14 +194,14 @@ namespace influxdb_cpp {
             int send_udp(const std::string& host, int port)                           { return _send_udp(host, port); }
         };
         struct field_caller : public ts_caller {
-            detail::field_caller& field(const std::string& k, const std::string& v)   { return _f_s(',', k, v); }
-            detail::field_caller& field(const std::string& k, bool v)                 { return _f_b(',', k, v); }
-            detail::field_caller& field(const std::string& k, short v)                { return _f_i(',', k, v); }
-            detail::field_caller& field(const std::string& k, int v)                  { return _f_i(',', k, v); }
-            detail::field_caller& field(const std::string& k, long v)                 { return _f_i(',', k, v); }
-            detail::field_caller& field(const std::string& k, long long v)            { return _f_i(',', k, v); }
-            detail::field_caller& field(const std::string& k, double v, int prec = 2) { return _f_f(',', k, v, prec); }
-            detail::ts_caller& timestamp(unsigned long long ts)                       { return _ts(ts); }
+            detail::field_caller& field(const std::string& k, const std::string& v)   { std::cout << "fieldstr (" << __LINE__ << ") key,val:  " << k << ", "  << v << std::endl; return _f_s(',', k, v); }
+            detail::field_caller& field(const std::string& k, bool v)                 { std::cout << "fieldbool (" << __LINE__ << ") key,val:  " << k << ", "  << v << std::endl; return _f_b(',', k, v); }
+            detail::field_caller& field(const std::string& k, short v)                { std::cout << "fieldshort (" << __LINE__ << ") key,val:  " << k << ", "  << v << std::endl; return _f_i(',', k, v); }
+            detail::field_caller& field(const std::string& k, int v)                  { std::cout << "fieldint (" << __LINE__ << ") key,val:  " << k << ", "  << v << std::endl; return _f_i(',', k, v); }
+            detail::field_caller& field(const std::string& k, long v)                 { std::cout << "fieldlong (" << __LINE__ << ") key,val:  " << k << ", "  << v << std::endl; return _f_i(',', k, v); }
+            detail::field_caller& field(const std::string& k, long long v)            { std::cout << "fieldlonglong (" << __LINE__ << ") key,val:  " << k << ", "  << v << std::endl; return _f_i(',', k, v); }
+            detail::field_caller& field(const std::string& k, double v, int prec = 2) { std::cout << "fieldfloat (" << __LINE__ << ") key,val:  " << k << ", "  << v << std::endl; return _f_f(',', k, v, prec); }
+            detail::ts_caller& timestamp(unsigned long long ts)                       { std::cout << "timestamp ("  << __LINE__ << ")" << std::endl; return _ts(ts); }
         };
         inline void inner::url_encode(std::string& out, const std::string& src) {
             size_t pos = 0, start = 0;
@@ -198,8 +218,8 @@ namespace influxdb_cpp {
             }
             out.append(src.c_str() + start, src.length() - start);
         }
-        inline int inner::http_request(const char* method, const char* uri,
-            const std::string& querystring, const std::string& body, const server_info& si, std::string* resp) {
+        inline int inner::http_request(const char* method, const char* uri, const std::string& querystring, const std::string& body, const server_info& si, std::string* resp)
+        {
             std::string header;
             struct iovec iv[2];
             struct sockaddr_in addr;
@@ -207,22 +227,28 @@ namespace influxdb_cpp {
             char ch;
             unsigned char chunked = 0;
 
-            addr.sin_family = AF_INET;
-            addr.sin_port = htons(si.port_);
-            if((addr.sin_addr.s_addr = inet_addr(si.host_.c_str())) == INADDR_NONE) {
-                std::cout << "inner::http_request::socket_error, ln: " << __LINE__ << std::endl;
-                return -1;
-            }
+            #if defined(__UNIT_TEST_FOR_INFLUX_DB_HPP__)
+            if (false == isUnitTestRunning(si)) {
+            #else
+            {
+            #endif
+                addr.sin_family = AF_INET;
+                addr.sin_port = htons(si.port_);
+                if((addr.sin_addr.s_addr = inet_addr(si.host_.c_str())) == INADDR_NONE) {
+                    std::cout << "inner::http_request::socket_error, ln: " << __LINE__ << std::endl;
+                    return -1;
+                }
 
-            if((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-                std::cout << "inner::http_request::socket_error, ln: " << __LINE__ << std::endl;
-                return -2;
-            }
+                if((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+                    std::cout << "inner::http_request::socket_error, ln: " << __LINE__ << std::endl;
+                    return -2;
+                }
 
-            if(connect(sock, (struct sockaddr*)(&addr), sizeof(addr)) < 0) {
-                closesocket(sock);
-                std::cout << "inner::http_request::socket_error, ln: " << __LINE__ << std::endl;
-                return -3;
+                if(connect(sock, (struct sockaddr*)(&addr), sizeof(addr)) < 0) {
+                    closesocket(sock);
+                    std::cout << "inner::http_request::socket_error, ln: " << __LINE__ << std::endl;
+                    return -3;
+                }
             }
 
             header.resize(len = 0x100);
@@ -241,13 +267,21 @@ namespace influxdb_cpp {
             iv[1].iov_base = (void*)&body[0];
             iv[1].iov_len = body.length();
 
-            //print_iovec(iv, 2);
+            #if defined(__UNIT_TEST_FOR_INFLUX_DB_HPP__)
+            print_iovec(iv, 2);
+            #endif  // __UNIT_TEST_FOR_INFLUX_DB_HPP__
 
-            if(writev(sock, iv, 2) < (int)(iv[0].iov_len + iv[1].iov_len)) {
-                ret_code = -6;
-                goto END;
+
+            #if defined(__UNIT_TEST_FOR_INFLUX_DB_HPP__)
+            if (false == isUnitTestRunning(si)) {
+            #else
+            {
+            #endif
+                if(writev(sock, iv, 2) < (int)(iv[0].iov_len + iv[1].iov_len)) {
+                    ret_code = -6;
+                    goto END;
+                }
             }
-
             iv[0].iov_len = len;
 
 #define _NO_MORE() (len >= (int)iv[0].iov_len && \
@@ -267,7 +301,11 @@ namespace influxdb_cpp {
             _UNTIL(' ')_GET_NUMBER(ret_code)
             for(;;) {
                 _UNTIL('\n')
-                switch(_GET_NEXT_CHAR()) {
+
+                char processChar = _GET_NEXT_CHAR();
+                std::cout << "processChar: " << processChar << std::endl;
+
+                switch(processChar) {
                     case 'C':_('o')_('n')_('t')_('e')_('n')_('t')_('-')
                         _('L')_('e')_('n')_('g')_('t')_('h')_(':')_(' ')
                         _GET_NUMBER(content_length)
