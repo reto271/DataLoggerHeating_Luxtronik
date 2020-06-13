@@ -77,23 +77,53 @@ protected:
 //    EXPECT_FALSE(true);
 // }
 
+void printIOVec(iovec& iov)
+{
+    std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+    std::cout << "ioVec len : " << iov.iov_len << std::endl;
+
+    for(size_t pos = 0; pos < iov.iov_len; pos++) {
+        std::cout << std::hex << "0x" << std::setfill('0') << std::setw(2) << (0xff & static_cast<uint16_t>(static_cast<char*>(iov.iov_base)[pos])) << ", " << std::dec;
+        if(0 == ((1 + pos) % 30)) {
+            std::cout << std::endl;
+        }
+
+    }
+    std::cout << std::endl;
+    for(size_t pos = 0; pos < iov.iov_len; pos++) {
+        std::cout << static_cast<char*>(iov.iov_base)[pos] << std::dec;
+//        if(0 == ((1+pos) % 30)) {
+//            std::cout << std::endl;
+//        }
+
+    }
+    std::cout << std::endl << "<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
+}
+
 TEST_F(Test_influxdb, writeToTestDB)
 {
     influxdb_cpp::server_info si("192.168.1.100", 22222, "heatingdb_test", "test", "test");
     // post_http demo with resp[optional]
     std::string resp;
 //  influxdb_cpp::builder().meas("heating_data").tag("unit", finalUnit).field(description, intFinalValue).timestamp(time_ns).post_http(si);
+    iovec ioVector[2];
     int ret = influxdb_cpp::builder()
               .meas("heating_data_test")
               .tag("unit", "kWh")
               .field("TotalEnergy", 100.5, 5)
               .timestamp(getTestTime_ns())
-              .post_http(si, &resp);
+              .post_http(si, &resp, ioVector);
 
     if(true == dumpOutput) {
         std::cout << "ret:  '" << ret << "'" << std::endl;
         std::cout << "resp: '" << resp << "'" << std::endl;
     }
+
+    printIOVec(ioVector[0]);
+    printIOVec(ioVector[1]);
+    // void* iov_base;
+    // size_t iov_len;
+
 
     // Check that response is success
     EXPECT_EQ(ret, 0);
@@ -105,6 +135,7 @@ TEST_F(Test_influxdb, DISABLED_ConnectionFails)
     influxdb_cpp::server_info si("127.0.0.1", 1, "testx", "test", "test");
     // post_http demo with resp[optional]
     std::string resp;
+    iovec ioVector[2];
     int ret = influxdb_cpp::builder()
               .meas("test")
               .tag("key", "value")
@@ -114,7 +145,7 @@ TEST_F(Test_influxdb, DISABLED_ConnectionFails)
               .field("b__", !!10)
               .field("a__", "aaa")
               .timestamp(1512722735522840439)
-              .post_http(si, &resp);
+              .post_http(si, &resp, ioVector);
 
     std::cout << "ret:  '" << ret << "'" << std::endl;
     std::cout << "resp: '" << resp << "'" << std::endl;
@@ -128,6 +159,7 @@ TEST_F(Test_influxdb, DISABLED_DummyConnection)
     influxdb_cpp::server_info si("", 0, "test_data_base", "test_user", "test_password");
     // post_http demo with resp[optional]
     std::string resp;
+    iovec ioVector[2];
     int ret = influxdb_cpp::builder()
               .meas("test")
               .tag("key", "value")
@@ -137,7 +169,7 @@ TEST_F(Test_influxdb, DISABLED_DummyConnection)
               .field("b__", !!10)
               .field("a__", "aaa")
               .timestamp(1512722735522840439)
-              .post_http(si, &resp);
+              .post_http(si, &resp, ioVector);
 
     std::cout << "ret:  '" << ret << "'" << std::endl;
     std::cout << "resp: '" << resp << "'" << std::endl;
