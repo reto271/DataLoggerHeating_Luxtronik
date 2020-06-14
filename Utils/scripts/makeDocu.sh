@@ -12,7 +12,6 @@ mkdir -p tmp
 cp ../Common/doxyfile .
 sed -i 's#__THE_PROJECT_NAME__#Utils for the Data Monitoring (Luxtronik Project)#g' doxyfile
 doxygen doxyfile
-rm -f doxyfile
 
 #cd docu/latex
 #make 2>&1 >> ../../tmp/latex.log

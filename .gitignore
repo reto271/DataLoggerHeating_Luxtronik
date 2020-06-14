@@ -58,6 +58,9 @@ HeatingData_v3_toAnalyseUnused
 
 # documentation files
 docu/
+MonitorHeating/doxyfile
+DataDecoder/doxyfile
+Utils/doxyfile
 
 # Testframework
 googletest/

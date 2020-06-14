@@ -13,7 +13,6 @@ cp ../Common/doxyfile .
 sed -i 's#__THE_PROJECT_NAME__#Monitor Heating - Read Data from Luxtronik Controller#g' doxyfile
 doxygen doxyfile
 
-
 #cd docu/latex
 #make 2>&1 >> ../../tmp/latex.log
 
