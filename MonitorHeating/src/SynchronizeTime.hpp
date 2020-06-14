@@ -17,13 +17,13 @@ public:
     /// \param[in] updateTime if true the time is updated to the current time. If false the
     ///  time already stored in this object is used.
     /// \return true if the full hour is reached, false otherwise.
-    bool isFullHour(bool upateTime);
+    bool isFullHour(bool updateTime);
 
     /// Returns the hour
     /// \param[in] updateTime if true the time is updated to the current time. If false the
     ///  time already stored in this object is used.
     /// \return hour in the range 0..23
-    uint32_t getHour(bool upateTime);
+    uint32_t getHour(bool updateTime);
 
 private:
     /// Current time of the system in seconds since 1st January 1970.
