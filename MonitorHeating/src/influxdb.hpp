@@ -52,17 +52,28 @@ struct server_info {
 
 };
 
+/// Stucture to store the request. Is only used for debugging, namely unit test purposes.
+struct RequestInfo {
+    std::string header;
+    std::string body;
+};
+
 #if defined(__UNIT_TEST_FOR_INFLUX_DB_HPP__)
+/// If the server ip is "" and the port 0, an unit test is running.
 bool isUnitTestRunning(const server_info& serverInfo)
 {
     return (("" == serverInfo.host_) && (0 == serverInfo.port_));
 }
 
-void print_iovec(struct iovec* iov, const uint32_t nrVectors)
+/// Prints the request (header and body)
+void print_iovec(const RequestInfo& reqInfo)
 {
-    std::cout << "print_iovec, nrVectors: " << nrVectors << std::endl;
-    std::cout << "  b0: " << (char*)(iov[0].iov_base) << std::endl;
-    std::cout << "  b1: " << (char*)(iov[1].iov_base) << std::endl;
+#if defined(__UNIT_TEST_FOR_INFLUX_DB_DUMP_DBG_INFO_HPP__)
+    std::cout << "--- Addr: " << &reqInfo << std::endl;
+    std::cout << "heading: len: " << reqInfo.heading.length() << std::endl << reqInfo.heading << std::endl;
+    std::cout << "body   : len: " << reqInfo.body.length() << std::endl << reqInfo.body << std::endl;
+    std::cout << "--- " << heading << std::endl;
+#endif
 }
 
 #endif // __UNIT_TEST_FOR_INFLUX_DB_HPP__
@@ -73,7 +84,7 @@ struct tag_caller;
 struct field_caller;
 struct ts_caller;
 struct inner {
-    static int http_request(const char*, const char*, const std::string&, const std::string&, const server_info&, std::string*, iovec ioVector[]);
+    static int http_request(const char*, const char*, const std::string&, const std::string&, const server_info&, std::string*, RequestInfo& reqInfo);
     static inline unsigned char to_hex(unsigned char x)
     {
         return x > 9 ? x + 55 : x + 48;
@@ -88,8 +99,8 @@ inline int query(std::string& resp, const std::string& query, const server_info&
     std::cout << "Function: " << __FUNCTION__ << " ln: " << __LINE__ << std::endl;
     std::string qs("&q=");
     detail::inner::url_encode(qs, query);
-    iovec iv[2];
-    return detail::inner::http_request("GET", "query", qs, "", si, &resp, iv);
+    RequestInfo reqInfo;
+    return detail::inner::http_request("GET", "query", qs, "", si, &resp, reqInfo);
 }
 
 inline int create_db(std::string& resp, const std::string& db_name, const server_info& si)
@@ -97,8 +108,8 @@ inline int create_db(std::string& resp, const std::string& db_name, const server
     std::cout << "Function: " << __FUNCTION__ << " ln: " << __LINE__ << std::endl;
     std::string qs("&q=create+database+");
     detail::inner::url_encode(qs, db_name);
-    iovec iv[2];
-    return detail::inner::http_request("POST", "query", qs, "", si, &resp, iv);
+    RequestInfo reqInfo;
+    return detail::inner::http_request("POST", "query", qs, "", si, &resp, reqInfo);
 }
 
 struct builder {
@@ -137,7 +148,6 @@ protected:
 
     detail::field_caller& _f_i(char delim, const std::string& k, long long v)
     {
-        std::cout << "_f_i: (" << __LINE__ << ") " << delim << ", " << k << ", " << v << std::endl;
         lines_ << delim;
         _escape(k, ",= ");
         lines_ << '=';
@@ -147,7 +157,6 @@ protected:
 
     detail::field_caller& _f_f(char delim, const std::string& k, double v, int prec)
     {
-        std::cout << "_f_f: (" << __LINE__ << ") " << delim << ", " << k << ", " << v << ", " << prec << std::endl;
         lines_ << delim;
         _escape(k, ",= ");
         lines_.precision(prec);
@@ -169,10 +178,9 @@ protected:
         return (detail::ts_caller&)*this;
     }
 
-    int _post_http(const server_info& si, std::string* resp, iovec iv[])
+    int _post_http(const server_info& si, std::string* resp, RequestInfo& reqInfo)
     {
-        std::cout << "Function: " << __FUNCTION__ << " ln: " << __LINE__ << std::endl;
-        return detail::inner::http_request("POST", "write", "", lines_.str(), si, resp, iv);
+        return detail::inner::http_request("POST", "write", "", lines_.str(), si, resp, reqInfo);
     }
 
     int _send_udp(const std::string& host, int port)
@@ -217,35 +225,36 @@ protected:
 
     namespace detail {
         struct tag_caller : public builder {
-            detail::tag_caller& tag(const std::string& k, const std::string& v)       { std::cout << "tag ln("  << __LINE__ << "), k,v:   " << k << ", " << v << std::endl; return _t(k, v); }
-            detail::field_caller& field(const std::string& k, const std::string& v)   { std::cout << "field ln("  << __LINE__ << ") k,v:  " << k << ", " << v << std::endl; return _f_s(' ', k, v); }
-            detail::field_caller& field(const std::string& k, bool v)                 { std::cout << "field ln("  << __LINE__ << ") k,v:  " << k << ", " << v << std::endl; return _f_b(' ', k, v); }
-            detail::field_caller& field(const std::string& k, short v)                { std::cout << "field ln("  << __LINE__ << ") k,v:  " << k << ", " << v << std::endl; return _f_i(' ', k, v); }
-            detail::field_caller& field(const std::string& k, int v)                  { std::cout << "field ln("  << __LINE__ << ") k,v:  " << k << ", " << v << std::endl; return _f_i(' ', k, v); }
-            detail::field_caller& field(const std::string& k, long v)                 { std::cout << "field ln("  << __LINE__ << ") k,v:  " << k << ", " << v << std::endl; return _f_i(' ', k, v); }
-            detail::field_caller& field(const std::string& k, long long v)            { std::cout << "field ln("  << __LINE__ << ") k,v:  " << k << ", " << v << std::endl; return _f_i(' ', k, v); }
-            detail::field_caller& field(const std::string& k, double v, int prec = 2) { std::cout << "field ln("  << __LINE__ << ") k,v:  " << k << ", " << v << std::endl; return _f_f(' ', k, v, prec); }
+            detail::tag_caller& tag(const std::string& k, const std::string& v)       { return _t(k, v); }
+            detail::field_caller& field(const std::string& k, const std::string& v)   { return _f_s(' ', k, v); }
+            detail::field_caller& field(const std::string& k, bool v)                 { return _f_b(' ', k, v); }
+            detail::field_caller& field(const std::string& k, short v)                { return _f_i(' ', k, v); }
+            detail::field_caller& field(const std::string& k, int v)                  { return _f_i(' ', k, v); }
+            detail::field_caller& field(const std::string& k, long v)                 { return _f_i(' ', k, v); }
+            detail::field_caller& field(const std::string& k, long long v)            { return _f_i(' ', k, v); }
+            detail::field_caller& field(const std::string& k, double v, int prec = 2) { return _f_f(' ', k, v, prec); }
         private:
             detail::tag_caller& meas(const std::string& m);
         };
         struct ts_caller : public builder {
             detail::tag_caller& meas(const std::string& m)                            { lines_ << '\n'; return _m(m); }
 #if defined(__UNIT_TEST_FOR_INFLUX_DB_HPP__)
-            int post_http(const server_info& si, std::string* resp,  iovec iv[])      { return _post_http(si, resp, iv); }
+            int post_http(const server_info& si, std::string* resp,  RequestInfo& reqInfo)
+                                                                                      { return _post_http(si, resp, reqInfo); }
 #else
-            int post_http(const server_info& si, std::string* resp = NULL)            { iovec iv[2]; return _post_http(si, resp, iv); }
+            int post_http(const server_info& si, std::string* resp = NULL)            { RequestInfo reqInfo; return _post_http(si, resp, reqInfo); }
 #endif  // __UNIT_TEST_FOR_INFLUX_DB_HPP__
             int send_udp(const std::string& host, int port)                           { return _send_udp(host, port); }
         };
         struct field_caller : public ts_caller {
-            detail::field_caller& field(const std::string& k, const std::string& v)   { std::cout << "fieldstr ln(" << __LINE__ << ") key,val:  " << k << ", "  << v << std::endl; return _f_s(',', k, v); }
-            detail::field_caller& field(const std::string& k, bool v)                 { std::cout << "fieldbool ln(" << __LINE__ << ") key,val:  " << k << ", "  << v << std::endl; return _f_b(',', k, v); }
-            detail::field_caller& field(const std::string& k, short v)                { std::cout << "fieldshort ln(" << __LINE__ << ") key,val:  " << k << ", "  << v << std::endl; return _f_i(',', k, v); }
-            detail::field_caller& field(const std::string& k, int v)                  { std::cout << "fieldint ln(" << __LINE__ << ") key,val:  " << k << ", "  << v << std::endl; return _f_i(',', k, v); }
-            detail::field_caller& field(const std::string& k, long v)                 { std::cout << "fieldlong ln(" << __LINE__ << ") key,val:  " << k << ", "  << v << std::endl; return _f_i(',', k, v); }
-            detail::field_caller& field(const std::string& k, long long v)            { std::cout << "fieldlonglong ln(" << __LINE__ << ") key,val:  " << k << ", "  << v << std::endl; return _f_i(',', k, v); }
-            detail::field_caller& field(const std::string& k, double v, int prec = 2) { std::cout << "fieldfloat ln(" << __LINE__ << ") key,val:  " << k << ", "  << v << std::endl; return _f_f(',', k, v, prec); }
-            detail::ts_caller& timestamp(unsigned long long ts)                       { std::cout << "timestamp ln("  << __LINE__ << ")" << std::endl; return _ts(ts); }
+            detail::field_caller& field(const std::string& k, const std::string& v)   { return _f_s(',', k, v); }
+            detail::field_caller& field(const std::string& k, bool v)                 { return _f_b(',', k, v); }
+            detail::field_caller& field(const std::string& k, short v)                { return _f_i(',', k, v); }
+            detail::field_caller& field(const std::string& k, int v)                  { return _f_i(',', k, v); }
+            detail::field_caller& field(const std::string& k, long v)                 { return _f_i(',', k, v); }
+            detail::field_caller& field(const std::string& k, long long v)            { return _f_i(',', k, v); }
+            detail::field_caller& field(const std::string& k, double v, int prec = 2) { return _f_f(',', k, v, prec); }
+            detail::ts_caller& timestamp(unsigned long long ts)                       { return _ts(ts); }
         };
         inline void inner::url_encode(std::string& out, const std::string& src) {
             size_t pos = 0, start = 0;
@@ -262,9 +271,10 @@ protected:
             }
             out.append(src.c_str() + start, src.length() - start);
         }
-        inline int inner::http_request(const char* method, const char* uri, const std::string& querystring, const std::string& body, const server_info& si, std::string* resp, iovec ioVector[])
+        inline int inner::http_request(const char* method, const char* uri, const std::string& querystring, const std::string& body, const server_info& si, std::string* resp, RequestInfo& reqInfo)
         {
             std::string header;
+            struct iovec iv[2];
             struct sockaddr_in addr;
             int sock, ret_code = 0, content_length = 0, len = 0;
             char ch;
@@ -297,38 +307,40 @@ protected:
             header.resize(len = 0x100);
 
             for(;;) {
-                ioVector[0].iov_len = snprintf(&header[0], len,
+                iv[0].iov_len = snprintf(&header[0], len,
                     "%s /%s?db=%s&u=%s&p=%s&epoch=%s%s HTTP/1.1\r\nHost: %s\r\nContent-Length: %d\r\n\r\n",
                     method, uri, si.db_.c_str(), si.usr_.c_str(), si.pwd_.c_str(), si.precision_.c_str(),
                     querystring.c_str(), si.host_.c_str(), (int)body.length());
-                if((int)ioVector[0].iov_len >= len)
+                if((int)iv[0].iov_len >= len)
                     header.resize(len *= 2);
                 else
                     break;
             }
-            ioVector[0].iov_base = &header[0];
-            ioVector[1].iov_base = (void*)&body[0];
-            ioVector[1].iov_len = body.length();
+            iv[0].iov_base = &header[0];
+            iv[1].iov_base = (void*)&body[0];
+            iv[1].iov_len = body.length();
 
             #if defined(__UNIT_TEST_FOR_INFLUX_DB_HPP__)
-            print_iovec(ioVector, 2);
+            reqInfo.header = header;
+            reqInfo.body = body;
+            print_iovec(reqInfo);
             #endif  // __UNIT_TEST_FOR_INFLUX_DB_HPP__
 
 
             #if defined(__UNIT_TEST_FOR_INFLUX_DB_HPP__)
-            if (false == isUnitTestRunning(si)) {
-            #else
-            {
-            #endif
-                if(writev(sock, ioVector, 2) < (int)(ioVector[0].iov_len + ioVector[1].iov_len)) {
-                    ret_code = -6;
-                    goto END;
-                }
+            if (true == isUnitTestRunning(si)) {
+                return 0;
             }
-            ioVector[0].iov_len = len;
+            #endif
 
-#define _NO_MORE() (len >= (int)ioVector[0].iov_len && \
-    (ioVector[0].iov_len = recv(sock, &header[0], header.length(), len = 0)) == size_t(-1))
+            if(writev(sock, iv, 2) < (int)(iv[0].iov_len + iv[1].iov_len)) {
+                ret_code = -6;
+                goto END;
+            }
+            iv[0].iov_len = len;
+
+#define _NO_MORE() (len >= (int)iv[0].iov_len && \
+    (iv[0].iov_len = recv(sock, &header[0], header.length(), len = 0)) == size_t(-1))
 #define _GET_NEXT_CHAR() (ch = _NO_MORE() ? 0 : header[len++])
 #define _LOOP_NEXT(statement) for(;;) { if(!(_GET_NEXT_CHAR())) { ret_code = -7; goto END; } statement }
 #define _UNTIL(c) _LOOP_NEXT( if(ch == c) break; )
@@ -344,11 +356,7 @@ protected:
             _UNTIL(' ')_GET_NUMBER(ret_code)
             for(;;) {
                 _UNTIL('\n')
-
-                char processChar = _GET_NEXT_CHAR();
-                //std::cout << "processChar: " << processChar << std::endl;
-
-                switch(processChar) {
+                switch(_GET_NEXT_CHAR()) {
                     case 'C':_('o')_('n')_('t')_('e')_('n')_('t')_('-')
                         _('L')_('e')_('n')_('g')_('t')_('h')_(':')_(' ')
                         _GET_NUMBER(content_length)
@@ -369,9 +377,9 @@ protected:
                                 }
                             case 0:
                                 while(content_length > 0 && !_NO_MORE()) {
-                                    content_length -= (ioVector[1].iov_len = std::min(content_length, (int)ioVector[0].iov_len - len));
-                                    if(resp) resp->append(&header[len], ioVector[1].iov_len);
-                                    len += ioVector[1].iov_len;
+                                    content_length -= (iv[1].iov_len = std::min(content_length, (int)iv[0].iov_len - len));
+                                    if(resp) resp->append(&header[len], iv[1].iov_len);
+                                    len += iv[1].iov_len;
                                 }
                             } while(chunked);
                         }

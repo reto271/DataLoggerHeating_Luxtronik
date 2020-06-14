@@ -2,6 +2,7 @@
 #include <stdint.h>
 
 #define __UNIT_TEST_FOR_INFLUX_DB_HPP__
+// #define __UNIT_TEST_FOR_INFLUX_DB_DUMP_DBG_INFO_HPP__
 #include "MonitorHeating/src/influxdb.hpp"
 
 namespace
@@ -12,6 +13,7 @@ namespace
 // using ::testing::_;
 // using ::testing::HasSubstr;
 
+bool dumpOutput = false;
 
 class Test_influxdb : public testing::Test
 {
@@ -44,7 +46,6 @@ protected:
         return static_cast<uint64_t>(1000000000) * currentUnixTime;
     }
 
-    bool dumpOutput = false;
 };
 
 
@@ -77,50 +78,55 @@ protected:
 //    EXPECT_FALSE(true);
 // }
 
-void printIOVec(iovec& iov)
+
+void printStringAndHex(const std::string& testString)
 {
-    std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
-    std::cout << "ioVec len : " << iov.iov_len << std::endl;
+    if(true == dumpOutput) {
+        std::cout << "strlen: " << testString.length() << std::endl;
+        size_t pos;
+        for(pos = 0; pos < testString.length(); pos++) {
+            std::cout << std::hex << "0x" << std::setfill('0') << std::setw(2) << (static_cast<uint16_t>(testString[pos]) & 0x00ff) << ", " << std::dec;
+            if(0 == ((1 + pos) % 30)) {
+                std::cout << std::endl;
+            }
 
-    for(size_t pos = 0; pos < iov.iov_len; pos++) {
-        std::cout << std::hex << "0x" << std::setfill('0') << std::setw(2) << (0xff & static_cast<uint16_t>(static_cast<char*>(iov.iov_base)[pos])) << ", " << std::dec;
-        if(0 == ((1 + pos) % 30)) {
-            std::cout << std::endl;
         }
-
+        std::cout << std::endl;
+        std::cout << testString << std::endl;
     }
-    std::cout << std::endl;
-    for(size_t pos = 0; pos < iov.iov_len; pos++) {
-        std::cout << static_cast<char*>(iov.iov_base)[pos] << std::dec;
-//        if(0 == ((1+pos) % 30)) {
-//            std::cout << std::endl;
-//        }
-
-    }
-    std::cout << std::endl << "<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
 }
 
-TEST_F(Test_influxdb, writeToTestDB)
+void printIOVec(const influxdb_cpp::RequestInfo& reqInfo)
 {
-    influxdb_cpp::server_info si("192.168.1.100", 22222, "heatingdb_test", "test", "test");
+    if(true == dumpOutput) {
+        std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+        printStringAndHex(reqInfo.header);
+        printStringAndHex(reqInfo.body);
+        std::cout << std::endl << "<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
+    }
+}
+
+TEST_F(Test_influxdb, DISABLED_writeToTestDB)
+{
+    influxdb_cpp::server_info si("192.168.1.100", 22222, "heatingdb_test", "user_test", "password_test");
     // post_http demo with resp[optional]
     std::string resp;
 //  influxdb_cpp::builder().meas("heating_data").tag("unit", finalUnit).field(description, intFinalValue).timestamp(time_ns).post_http(si);
-    iovec ioVector[2];
+    influxdb_cpp::RequestInfo reqInfo;
     int ret = influxdb_cpp::builder()
               .meas("heating_data_test")
               .tag("unit", "kWh")
               .field("TotalEnergy", 100.5, 5)
               .timestamp(getTestTime_ns())
-              .post_http(si, &resp, ioVector);
+              .post_http(si, &resp, reqInfo);
 
     if(true == dumpOutput) {
         std::cout << "ret:  '" << ret << "'" << std::endl;
         std::cout << "resp: '" << resp << "'" << std::endl;
     }
 
-    printIOVec(ioVector[0]);
-    printIOVec(ioVector[1]);
+    // printIOVec(ioVector[0]);
+    // printIOVec(ioVector[1]);
     // void* iov_base;
     // size_t iov_len;
 
@@ -130,28 +136,36 @@ TEST_F(Test_influxdb, writeToTestDB)
     EXPECT_TRUE("" == resp);
 }
 
-TEST_F(Test_influxdb, DISABLED_ConnectionFails)
+TEST_F(Test_influxdb, ConnectionFails)
 {
-    influxdb_cpp::server_info si("127.0.0.1", 1, "testx", "test", "test");
+    // IP address "" and  port 0 is to signal that a unit test is runned. There is no real server to be used.
+    influxdb_cpp::server_info si("", 0, "test_database", "test_user", "test_password");
     // post_http demo with resp[optional]
     std::string resp;
-    iovec ioVector[2];
+    influxdb_cpp::RequestInfo reqInfo;
     int ret = influxdb_cpp::builder()
-              .meas("test")
-              .tag("key", "value")
-              .tag("xxx", "yyy")
-              .field("x__", 10)
-              .field("y__", 10.3, 2)
-              .field("b__", !!10)
-              .field("a__", "aaa")
+              .meas("test_sample")
+              .tag("key", "temperature")
+              .tag("string", "xxx")
+              .field("int", 10)
+              .field("longint", 666666)
+              .field("float", 10.3, 2)
               .timestamp(1512722735522840439)
-              .post_http(si, &resp, ioVector);
+              .post_http(si, &resp, reqInfo);
 
-    std::cout << "ret:  '" << ret << "'" << std::endl;
-    std::cout << "resp: '" << resp << "'" << std::endl;
-
-    EXPECT_EQ(ret, -3);
+    printIOVec(reqInfo);
+    EXPECT_EQ(ret, 0);
     EXPECT_TRUE("" == resp);
+
+    // POST /write?db=test_database&u=test_user&p=test_password&epoch=ms HTTP/1.1
+    // Host:
+    // Content-Length: 91
+    std::string expectedHeader = "POST /write?db=test_database&u=test_user&p=test_password&epoch=ms HTTP/1.1\r\nHost: \r\nContent-Length: 91\r\n\r\n";
+    EXPECT_STREQ(reqInfo.header.c_str(), expectedHeader.c_str());
+
+    // test_sample,key=temperature,string=xxx int=10i,longint=666666i,float=10 1512722735522840439
+    std::string expectedBody = "test_sample,key=temperature,string=xxx int=10i,longint=666666i,float=10 1512722735522840439";
+    EXPECT_STREQ(reqInfo.body.c_str(), expectedBody.c_str());
 }
 
 TEST_F(Test_influxdb, DISABLED_DummyConnection)
@@ -159,7 +173,7 @@ TEST_F(Test_influxdb, DISABLED_DummyConnection)
     influxdb_cpp::server_info si("", 0, "test_data_base", "test_user", "test_password");
     // post_http demo with resp[optional]
     std::string resp;
-    iovec ioVector[2];
+    influxdb_cpp::RequestInfo reqInfo;
     int ret = influxdb_cpp::builder()
               .meas("test")
               .tag("key", "value")
@@ -169,10 +183,11 @@ TEST_F(Test_influxdb, DISABLED_DummyConnection)
               .field("b__", !!10)
               .field("a__", "aaa")
               .timestamp(1512722735522840439)
-              .post_http(si, &resp, ioVector);
+              .post_http(si, &resp, reqInfo);
 
     std::cout << "ret:  '" << ret << "'" << std::endl;
     std::cout << "resp: '" << resp << "'" << std::endl;
+
 
     EXPECT_EQ(ret, -3);
     EXPECT_TRUE("" == resp);
