@@ -12,7 +12,7 @@
 TcpConnection::TcpConnection(std::string ipAddress, uint16_t tcpPort)
     : m_ipAddress(ipAddress)
     , m_tcpPort(tcpPort)
-    , m_fileDeviceId(0)
+    , m_socketDeviceId(0)
 {
 }
 
@@ -27,7 +27,7 @@ bool TcpConnection::connectToHeating()
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_port = htons(m_tcpPort);
 
-    if((m_fileDeviceId = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+    if((m_socketDeviceId = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         std::cout << "Error : Could not create socket" << std::endl;
         return false;
     }
@@ -37,7 +37,7 @@ bool TcpConnection::connectToHeating()
         return false;
     }
 
-    if(connect(m_fileDeviceId, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0) {
+    if(connect(m_socketDeviceId, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0) {
         std::cout << "Error : Connect Failed" << std::endl;
         return false;
     }
@@ -46,7 +46,7 @@ bool TcpConnection::connectToHeating()
 
 bool TcpConnection::disconnectFromHeating()
 {
-    close(m_fileDeviceId);
+    close(m_socketDeviceId);
     return true;
 }
 
@@ -75,7 +75,7 @@ RecDataStoragePtr TcpConnection::requestValues()
 
 bool TcpConnection::sendRequest(uint8_t* pRequest, uint32_t length)
 {
-    if(send(m_fileDeviceId, pRequest, length, 0) < 0) {
+    if(send(m_socketDeviceId, pRequest, length, 0) < 0) {
         std::cout << "Error: Send failed" << std::endl;
         return false;
     }
@@ -92,7 +92,7 @@ bool TcpConnection::waitResponse(RecDataStoragePtr pReceiveDataBuffer, const uin
 
     while(totalRecDataLen < expectedNrBytes) {
         memset(recData, 0x00, REC_BUFFER_SIZE);
-        recDataLen = recv(m_fileDeviceId, recData, REC_BUFFER_SIZE, 0);
+        recDataLen = recv(m_socketDeviceId, recData, REC_BUFFER_SIZE, 0);
         if(recDataLen < 0) {
             std::cout << "Error: No data received" << std::endl;
             return false;

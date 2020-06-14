@@ -15,6 +15,7 @@ public:
     /// written to the data file.
     /// \param[in] receiveDataPtr pointer to the received TCP raw data.
     /// \param[in] currentUnixTime time of the data sample in seconds since January, 1st 1970.
+    /// \param[in] enableLog if true more information is dumped on the STDOUT. Used for debugging purposes.
     ValueResponse(RecDataStoragePtr receiveDataPtr, std::time_t currentUnixTime, bool enableLog);
 
     /// Returns the number data entries in the current data set.
@@ -32,7 +33,7 @@ public:
     /// \return 0 if the sample is successfully serialized. Not 0 if there is an error.
     char serialize();
 
-    /// Writes the data to the influx DB. Currenlty it writes only a few temperatures to the DB.
+    /// Writes the data to the influx DB. Currently it writes only a few temperatures to the DB.
     void writeToDB();
 
 private:
@@ -69,6 +70,6 @@ private:
     /// Time of the current sample in Unix time.
     std::time_t m_currentUnixTime;
 
-    /// Value table, containting the whole data table for the Read Request.
+    /// Value table, containing the whole data table for the Read Request.
     ValueTable m_valueTable;
 };

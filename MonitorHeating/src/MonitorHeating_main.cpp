@@ -9,12 +9,13 @@
 #include "Common/src/ProgramVersion.hpp"
 
 /// Reset the connection at 3 in the morning
-/// \param pConnection, reference to the TCP connection
-/// \param pTime, reference to the current time
+/// \param tcpConnection reference to the TCP connection
+/// \param pTime reference to the current time
 void resetConnectionAt0300(TcpConnection& tcpConnection, SynchronizeTime* pTime);
 
 /// Connect or reconnect to the heating controller. Keeps trying every minute
 ///  until success.
+/// \param tcpConnection reference to the TCP connection
 void connectToHeatingController(TcpConnection& tcpConnection);
 
 /// Application state, to enable some debug functions

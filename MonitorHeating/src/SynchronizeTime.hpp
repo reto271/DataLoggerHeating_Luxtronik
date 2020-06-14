@@ -18,9 +18,12 @@ public:
     bool isFullHour(bool upateTime);
 
     /// Returns the hour
+    /// \param[in] updateTime if true, the time is updated to the current time. If false the
+    ///  time already stored in this object is used.
     /// \return hour in the range 0..23
     uint32_t getHour(bool upateTime);
 
 private:
+    /// Current time of the system in seconds since 1st January 1970.
     std::time_t m_currentUnixTime;
 };
