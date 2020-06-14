@@ -14,8 +14,8 @@ sed -i 's#__THE_PROJECT_NAME__#Utils for the Data Monitoring (Luxtronik Project)
 doxygen doxyfile
 rm -f doxyfile
 
-cd docu/latex
-make 2>&1 >> ../../tmp/latex.log
+#cd docu/latex
+#make 2>&1 >> ../../tmp/latex.log
 
 # Back to the original location
 popd > /dev/null
