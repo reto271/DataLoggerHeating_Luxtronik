@@ -14,11 +14,10 @@ void RecDataStorage::clearBuffer()
     m_writePos = 0;
 }
 
-bool RecDataStorage::addData(uint8_t* pBuffer, size_t nrChar)
+void RecDataStorage::addData(uint8_t* pBuffer, size_t nrChar)
 {
     memcpy(&(m_response.data.buffer[m_writePos]), pBuffer, nrChar);
     m_writePos += nrChar;
-    return false;
 }
 
 uint32_t RecDataStorage::getDataField(const uint32_t index)

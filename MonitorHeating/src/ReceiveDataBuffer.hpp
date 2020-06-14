@@ -27,7 +27,7 @@ public:
     ///  buffer, the pBuffer may be deleted afterwards.
     /// \param pBuffer points to the data to be added to the buffer.
     /// \param nrChar is the number of characters in the provided buffer (pBuffer)
-    bool addData(uint8_t* pBuffer, size_t nrChar);
+    void addData(uint8_t* pBuffer, size_t nrChar);
 
     /// Reads a 4 byte data values from the buffer.
     /// \param index of the data filed to be read
@@ -47,6 +47,8 @@ public:
 
 private:
     /// Swaps he bytes to represent values in the architectures data format.
+    /// \param[in] value in protocol format representation
+    /// \return value in CPU architecture format, interpretable as uint32_t. Conversions to float and other data types must be done afterwards.
     uint32_t swap(uint32_t value);
 
     /// Size of the internal buffer.
@@ -68,8 +70,8 @@ private:
     /// Union of the data stream and the structure to interpret the data. The data will be places using the buffer into
     ///  the buffer. The decode is used to read the data from the buffer.
     typedef union {
-        uint8_t buffer[BufferSize];
-        DecodedBuffer decode;
+        uint8_t buffer[BufferSize];    ///< Raw buffer, data to be places according the byte order in the received frame.
+        DecodedBuffer decode;          ///< Data in the decodeable format.
     } DataBuffer;
 
     /// Stores the complete response. Namely the command and the data.

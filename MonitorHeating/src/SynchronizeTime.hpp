@@ -14,11 +14,13 @@ public:
     std::time_t waitForMinute();
 
     /// Returns true if the full hour is reached, namely second = 0 & minute = 0.
+    /// \param[in] updateTime if true the time is updated to the current time. If false the
+    ///  time already stored in this object is used.
     /// \return true if the full hour is reached, false otherwise.
     bool isFullHour(bool upateTime);
 
     /// Returns the hour
-    /// \param[in] updateTime if true, the time is updated to the current time. If false the
+    /// \param[in] updateTime if true the time is updated to the current time. If false the
     ///  time already stored in this object is used.
     /// \return hour in the range 0..23
     uint32_t getHour(bool upateTime);
