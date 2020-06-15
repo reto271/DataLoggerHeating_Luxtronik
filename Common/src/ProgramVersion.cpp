@@ -4,10 +4,6 @@ ProgramVersion::ProgramVersion()
 {
 }
 
-ProgramVersion::~ProgramVersion()
-{
-}
-
 void ProgramVersion::printProgramInfo(std::string programName)
 {
     std::cout << "-----------------------------------------------------" << std::endl;
