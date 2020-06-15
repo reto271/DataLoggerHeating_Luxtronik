@@ -5,7 +5,6 @@
 
 BitBuffer::BitBuffer()
     : m_nrBitsInBuffer(0)
-    , m_writePos(0)
     , m_readBitPos(0)
 {
 }
@@ -13,7 +12,6 @@ BitBuffer::BitBuffer()
 BitBuffer::BitBuffer(std::vector<uint8_t> data)
     : m_buffer(data)
     , m_nrBitsInBuffer(8 * data.size())
-    , m_writePos(8 * data.size())
     , m_readBitPos(0)
 {
 }
@@ -107,7 +105,6 @@ void BitBuffer::printContent()
     state.copyfmt(std::cout);     // save current formatting
     std::cout << "--- printContent ---------" << std::endl;
     std::cout << "  m_nrBitsInBuffer  : " << m_nrBitsInBuffer << std::endl;
-    std::cout << "  m_writePos        : " << m_writePos << std::endl;
     std::cout << "  m_readBitPos      : " << m_readBitPos << std::endl;
 
     uint32_t nrBytes = (m_nrBitsInBuffer >> 3) + 1;
@@ -153,8 +150,8 @@ void BitBuffer::appendValuesToBuffer(uint32_t value, uint8_t nrBits)
 
 void BitBuffer::appendBit(uint32_t value)
 {
-    uint32_t bytePos = m_writePos >> 3;
-    uint8_t bitNr = m_writePos & 0x07;
+    uint32_t bytePos = m_nrBitsInBuffer >> 3;
+    uint8_t bitNr = m_nrBitsInBuffer & 0x07;
     uint8_t bitPos = 0x1 << bitNr;
 
     if(0 != value) {
@@ -170,7 +167,6 @@ void BitBuffer::appendBit(uint32_t value)
             " - don't set it" << std::endl;
 #endif // DEBUG_OUTPUT_BIT_BUFFER
     }
-    m_writePos++;
     m_nrBitsInBuffer++;
 }
 

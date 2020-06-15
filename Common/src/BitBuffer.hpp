@@ -88,6 +88,5 @@ private:
 
     std::vector<uint8_t> m_buffer;    ///< Vector containing the bit data
     uint32_t m_nrBitsInBuffer;        ///< Number of bits stored in the buffer
-    uint32_t m_writePos;              // to be eliminated
     uint32_t m_readBitPos;            ///< Read position while reading. Points to the next bit to be read.
 };
