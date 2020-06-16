@@ -5,7 +5,9 @@
 class ValueTable_v2 : public ValueTableCommon
 {
 public:
-
+    /// Constructs the value table version v2.
+    /// \param[in] enableLog if set to true, more information is written to
+    ///   the STDOUT.
     ValueTable_v2(bool enableLog);
 
     virtual ~ValueTable_v2();
@@ -16,6 +18,6 @@ public:
 private:
     void initValueTable() override;
 
-    const uint32_t FILE_Version = 2;
-    const uint32_t FILE_SizeOfHeader = 3;
+    const uint32_t FILE_Version = 2;          ///< Version number of the value table
+    const uint32_t FILE_SizeOfHeader = 3;     ///< The header size of value table v2
 };
