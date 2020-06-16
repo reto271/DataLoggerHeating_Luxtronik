@@ -9,7 +9,9 @@
 class ValueTableCommon : public IValueTable
 {
 public:
-
+    /// Common constructor for all value tables (all versions).
+    /// \param[in] enableLog if set to true, more information is written to
+    ///   the STDOUT.
     ValueTableCommon(bool enableLog);
 
     virtual ~ValueTableCommon();
@@ -36,15 +38,21 @@ public:
 
 
 protected:
+    /// Initializes the value table. Namely sets the m_entries to the
+    ///  current table.
     virtual void initValueTable() = 0;
 
+    /// Holds the ValueTable. All information about the active entries is written to
+    /// this vector
     std::vector<ValueEntry> m_entries;
 
+    /// Number of bits used in BitBuffer or binary file per data set. (Used to properly read
+    ///  data in files)
     uint32_t m_nrBitsInBufferPerSet;
 
     /// Number of bytes used to store a data set including the time stamp.
     uint32_t m_bytesPerSetInclTimeStamp;
 
-    bool m_isInitialized;
-    bool m_enableLog;
+    bool m_isInitialized;   ///< True if the object is already initialized
+    bool m_enableLog;       ///< True if additional log info shall be written to the STDOUT
 };
