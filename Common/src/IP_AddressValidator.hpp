@@ -9,6 +9,7 @@ class IP_AddressValidator
 {
 public:
     /// Constructor of the IP address validator. The user must provide the string to be validated.
+    /// \param[in] ipAddr string to be checked if it is a valid IP address.
     IP_AddressValidator(std::string ipAddr);
 
     /// Destructs the IP address validator
