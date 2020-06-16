@@ -6,6 +6,9 @@
 
 #include "Common/src/IValueTable.hpp"
 
+/// Implements common functions used by all value table versions. These common function's are
+///  version handling, size handling for files and whole sets. It also implements the accessor
+///  functions for unit, scaling, data type info, ... for the single values.
 class ValueTableCommon : public IValueTable
 {
 public:
