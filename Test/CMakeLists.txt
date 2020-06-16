@@ -19,8 +19,10 @@ add_executable(Test_HeatingDataMonitorAndConverter
                src/Test_FeedbackCollector.cpp
                src/Test_FileDataReader.cpp
                src/Test_influxdb.cpp
+               src/Test_IpAddressValidator.cpp
                ../Common/src/BitBuffer.cpp
                ../Common/src/FeedbackCollector.cpp
+               ../Common/src/IP_AddressValidator.cpp
                ../Common/src/ValueTableCommon.cpp
                ../Common/src/ValueTable.cpp
                ../Common/src/ValueTable_v1.cpp
