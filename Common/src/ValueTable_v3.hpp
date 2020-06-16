@@ -2,6 +2,9 @@
 
 #include "Common/src/ValueTableCommon.hpp"
 
+/// Value table version 3. This version is no longer used to actively write files. It
+///  is used to convert old binary files (v1) to CSV files, Namely used by the
+///  DataDecoder  program.
 class ValueTable_v3 : public ValueTableCommon
 {
 public:
