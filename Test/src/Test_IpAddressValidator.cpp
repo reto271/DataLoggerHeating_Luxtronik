@@ -61,16 +61,16 @@ TEST_F(Test_IpAddressValidator, testSomoeLocalIP)
 TEST_F(Test_IpAddressValidator, rangeOfIP)
 {
     for(int w = 0; w < 10; w++) {
-      for(int x = 250; x < 255; x++) {
-          for(int y = 100; y < 110; y++) {
-              for(int z = 0; z < 256; z++) {
-                  std::string ip = std::to_string(w) + "." + std::to_string(x) + "." + std::to_string(y) + "." + std::to_string(z);
-                  // std::cout << "Test IP: " << ip << std::endl;
-                  IP_AddressValidator testIp(ip);
-                  EXPECT_TRUE(testIp.validate());
-              }
-          }
-      }
+        for(int x = 250; x < 255; x++) {
+            for(int y = 100; y < 110; y++) {
+                for(int z = 0; z < 256; z++) {
+                    std::string ip = std::to_string(w) + "." + std::to_string(x) + "." + std::to_string(y) + "." + std::to_string(z);
+                    // std::cout << "Test IP: " << ip << std::endl;
+                    IP_AddressValidator testIp(ip);
+                    EXPECT_TRUE(testIp.validate());
+                }
+            }
+        }
     }
 }
 
