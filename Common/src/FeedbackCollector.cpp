@@ -6,10 +6,6 @@ FeedbackCollector::FeedbackCollector(bool initialState)
 {
 }
 
-FeedbackCollector::~FeedbackCollector()
-{
-}
-
 void FeedbackCollector::addAndFeedback(const bool condition)
 {
     m_currentState = m_currentState && condition;
