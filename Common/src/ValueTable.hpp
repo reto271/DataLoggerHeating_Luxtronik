@@ -7,7 +7,10 @@
 class ValueTable : public ValueTableCommon
 {
 public:
-
+    /// Constructs the value table of the current version. Files will be written according
+    ///  this table. The InfluxDB is also written accroding this table version.
+    /// \param[in] enableLog if set to true, more information is written to
+    ///   the STDOUT.
     ValueTable(bool enableLog);
     virtual ~ValueTable();
 
