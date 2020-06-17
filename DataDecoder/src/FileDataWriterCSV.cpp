@@ -62,7 +62,14 @@ bool FileDataWriterCSV::writeData(std::vector<DataEntryCSV> dataVector, const ui
     for(uint32_t record = 0; record < nrRows; record++) {
         std::time_t time = static_cast<std::time_t>(std::get<uint32_t>(dataVector[arrayPos].uiVal));
         arrayPos++;
-        time += static_cast<std::time_t>(std::get<uint32_t>(dataVector[arrayPos].uiVal)) << 32;
+        if (8 == sizeof(std::time_t)) {
+            //The original line would be:
+            //    time += static_cast<std::time_t>(std::get<uint32_t>(dataVector[arrayPos].uiVal)) << 32;
+            // the data type std::time_t is 32bit on Raspberry Pi, but 64 bit on the laptop. Therefore this is
+            // an ugly workaround to prevent from compiler warning.
+            // Background: If time_t is 32 bit 1.1.1970 + (2^32)s = 7. Feb 2106 at 07:28:15. Then I will not care anymore if my code fails!
+            time += static_cast<uint64_t>(std::get<uint32_t>(dataVector[arrayPos].uiVal)) << 32;
+        }
         arrayPos++;
         m_csvFile << time;
         for(uint32_t cnt = 0; cnt < nrColumnExclTimeStamp; cnt++) {
@@ -72,7 +79,7 @@ bool FileDataWriterCSV::writeData(std::vector<DataEntryCSV> dataVector, const ui
             if(nullptr != uVal) {
                 value = static_cast<double>(*uVal) / static_cast<double>(dataVector.at(arrayPos).divisor);
             } else {
-                // else test that it is truely a signed value
+                // else test that it is truly a signed value
                 auto* iVal = std::get_if<int32_t>(&(dataVector.at(arrayPos).uiVal));
                 if(nullptr != iVal) {
                     value = static_cast<double>(*(reinterpret_cast<int32_t*>(iVal))) / static_cast<double>(dataVector.at(arrayPos).divisor);
