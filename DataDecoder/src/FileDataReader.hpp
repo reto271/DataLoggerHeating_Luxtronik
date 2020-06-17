@@ -31,6 +31,8 @@ public:
 
     /// Reads the data from the binary files, converts it to 'IFileDataWriterCSV::DataEntryCSV' and
     ///  hand-over the data to the csvWriter.
+    /// \return true if the data could be written to the CSV file. The feedback from the CSV
+    //   writer is used.
     bool decodeData();
 
 protected:
