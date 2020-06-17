@@ -21,5 +21,5 @@ public:
 
 private:
     std::string SoftwareVersion = "V01.03";   ///< Major and minor SW version
-    std::string MinorVersion = "B02";         ///< Format "B01" or empty string for release
+    std::string MinorVersion = "";         ///< Format "B01" or empty string for release
 };
