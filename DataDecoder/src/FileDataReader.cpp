@@ -14,9 +14,9 @@
 #include "Common/src/FeedbackCollector.hpp"
 #include "Common/src/BitBuffer.hpp"
 
-FileDataReader::FileDataReader(std::string fileName, IFileDataWriterCSV_SPtr csvWriter, bool enableLog)
-    : m_fileName(fileName)
-    , m_fileLength(0)
+FileDataReader::FileDataReader(std::string inputFileName, IFileDataWriterCSV_SPtr csvWriter, bool enableLog)
+    : m_inputFileName(inputFileName)
+    , m_totalFileLength(0)
     , m_fileVersion(0)
     , m_sizeFileHeader(0)
     , m_nrDataEntriesPerRecord(0)
@@ -25,7 +25,7 @@ FileDataReader::FileDataReader(std::string fileName, IFileDataWriterCSV_SPtr csv
     , m_csvWriter(csvWriter)
     , m_enableLog(enableLog)
 {
-    m_inputFileStream.open (m_fileName, std::ios::binary | std::ios::in);
+    m_inputFileStream.open (m_inputFileName, std::ios::binary | std::ios::in);
 }
 
 FileDataReader::~FileDataReader()
@@ -36,13 +36,13 @@ FileDataReader::~FileDataReader()
 bool FileDataReader::readHeaderData()
 {
     if(false == m_inputFileStream.is_open ()) {
-        std::cout << "Could not find file: '" << m_fileName << "'" << std::endl;
+        std::cout << "Could not find file: '" << m_inputFileName << "'" << std::endl;
         return false;
     }
 
     // Get length of file:
     m_inputFileStream.seekg (0, std::ios::end);
-    m_fileLength = m_inputFileStream.tellg();
+    m_totalFileLength = m_inputFileStream.tellg();
     m_inputFileStream.seekg (0, std::ios::beg);
 
     // Read the file header
@@ -54,7 +54,7 @@ bool FileDataReader::readHeaderData()
         std::cout << "File version:       " << m_fileVersion << std::endl;
         std::cout << "Header size:        " << m_sizeFileHeader << std::endl;
         std::cout << "Entries per Record: " << m_nrDataEntriesPerRecord << std::endl;
-        std::cout << "File length:        " << m_fileLength << std::endl;
+        std::cout << "Total File length:  " << m_totalFileLength << std::endl;
     }
     // Find the file version
     determineFileVersion();
@@ -100,7 +100,7 @@ bool FileDataReader::decodeData()
 
 void FileDataReader::readRawDataFromFile_v1_v2()
 {
-    uint32_t dataSizeInDoubleWords = (m_fileLength - (m_sizeFileHeader * 4)) / 4;
+    uint32_t dataSizeInDoubleWords = (m_totalFileLength - (m_sizeFileHeader * 4)) / 4;
     m_nrRecords = dataSizeInDoubleWords / (m_pValueTable->getNrDataEntriesPerSet() + 2);                 // 2: 8bytes for the time stamp (std::time_t)
     if(true == m_enableLog) {
         std::cout << "No records : " << m_nrRecords << std::endl;
@@ -132,7 +132,7 @@ void FileDataReader::readRawDataFromFile_v1_v2()
 void FileDataReader::readRawDataFromFile()
 {
     uint32_t headerSize = 4 * m_pValueTable->getSizeOfHeader();
-    uint32_t dataFileLength = m_fileLength - headerSize;
+    uint32_t dataFileLength = m_totalFileLength - headerSize;
     uint32_t dataSetSize = m_pValueTable->getNrBytesInBufferPerSet();
     m_nrRecords = dataFileLength / dataSetSize;
 
@@ -140,7 +140,7 @@ void FileDataReader::readRawDataFromFile()
         std::cout << "m_nrRecords: " << m_nrRecords << std::endl;
         std::cout << "m_nrDataEntriesPerRecord: " << m_nrDataEntriesPerRecord << std::endl;
         std::cout << "m_pValueTable->getNrDataEntriesPerSet(): " << m_pValueTable->getNrDataEntriesPerSet() << std::endl;
-        std::cout << "m_fileLength: " << m_fileLength << std::endl;
+        std::cout << "m_totalFileLength: " << m_totalFileLength << std::endl;
     }
     // Prepare buffer used for writeToCSV function
     uint32_t bufferSize = m_nrRecords * (m_pValueTable->getNrDataEntriesPerSet() + 2);  // 2 * sizeof(uin32_t) for the time stamp
@@ -150,9 +150,9 @@ void FileDataReader::readRawDataFromFile()
     m_csvBuffer.resize(bufferSize);
 
     // Read the whole file
-    uint8_t* pU8RawData = new uint8_t[m_fileLength];
+    uint8_t* pU8RawData = new uint8_t[m_totalFileLength];
     uint8_t* pU8RawDataOri = pU8RawData;
-    m_inputFileStream.read(reinterpret_cast<char*>(pU8RawData), m_fileLength);
+    m_inputFileStream.read(reinterpret_cast<char*>(pU8RawData), m_totalFileLength);
 
     // std::cout << "---------------------------" << std::endl;
     // {
@@ -291,7 +291,7 @@ void FileDataReader::validateFile()
         return;
     }
 
-    // Conistency check for the detected file version
+    // Consistency check for the detected file version
     validateHeaderSize();
     validateNrEntriesPerRecord();
     validateFileLength();
@@ -359,21 +359,21 @@ void FileDataReader::validateFileLength()
     switch(m_pValueTable->getFileVersion()) {
         case 1:
         case 2:
-            // File verson 1 & 2 did not yet use BitBuffer
+            // File version 1 & 2 did not yet use BitBuffer
             headerSize = 4 * m_pValueTable->getSizeOfHeader();
-            dataFileLength = m_fileLength - headerSize;
+            dataFileLength = m_totalFileLength - headerSize;
             dataSetSize = 4 * m_pValueTable->getNrDataEntriesPerSet() + 8;
             break;
         default:
             headerSize = 4 * m_pValueTable->getSizeOfHeader();
-            dataFileLength = m_fileLength - headerSize;
+            dataFileLength = m_totalFileLength - headerSize;
             dataSetSize = m_pValueTable->getNrBytesInBufferPerSet();
             break;
     }
     if(0 != dataFileLength % dataSetSize) {
-        std::cout << "Data length in file is not modulo of 'number data entreis per set'" << std::endl
+        std::cout << "Data length in file is not modulo of 'number data entries per set'" << std::endl
                   << "  headerSize: " << headerSize << std::endl
-                  << "  m_fileLength: " << m_fileLength << std::endl
+                  << "  m_totalFileLength: " << m_totalFileLength << std::endl
                   << "  dataFileLength: " << dataFileLength << std::endl
                   << "  dataSetSize: " << dataSetSize << std::endl;
         m_pValueTable.reset();
