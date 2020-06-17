@@ -6,7 +6,7 @@
 #   /home/openhabian/git/DataLoggerHeating_Luxtronik/scripts/monitorHeating.sh
 # Keep 'exit 0' at the end of the /etc/rc.local
 # ----------------------------------------------------------------------------------------------
-LOG_FILE=./HeatingData/boot1.log
+LOG_FILE=./HeatingData/bootHeatingMonitor.log
 
 # Change into the project root directory
 SCRIPTDIR=$(readlink -f $(dirname "$0"))
