@@ -15,5 +15,7 @@ BetaVersion=$(cat ../src/ProgramVersion.hpp | \
 echo "SW Version: ${MajorMinorVersion} ${BetaVersion}"
 #echo "---"
 
+export DATA_LOGGER_LUXTRONIK_SW_VERSION="${MajorMinorVersion} ${BetaVersion}"
+
 # Back to the original location
 popd > /dev/null
