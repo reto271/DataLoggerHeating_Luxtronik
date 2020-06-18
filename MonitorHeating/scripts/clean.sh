@@ -5,6 +5,8 @@ SCRIPTDIR=$(readlink -f $(dirname "$0"))
 pushd "${SCRIPTDIR}" > /dev/null
 cd ..
 
+../Common/scripts/showSW_Version.sh
+
 # Offer option -v : verbose
 CLEAN_ALL=0
 if [ 1 -eq $# ] ; then
@@ -13,13 +15,13 @@ if [ 1 -eq $# ] ; then
     fi
 fi
 
-rm -vrf docu
-find -name "*~" -exec rm -v {} \;
+rm -rf docu
+find -name "*~" -exec rm -f {} \;
 rm -rf bin
 
 if [ 1 -eq ${CLEAN_ALL} ] ; then
-    rm -vrf tmp googletest debug
-    rm -vrf GPATH GTAGS GRTAGS
+    rm -rf tmp googletest debug
+    rm -rf GPATH GTAGS GRTAGS
 fi
 echo "$0 done"
 

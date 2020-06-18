@@ -5,6 +5,8 @@ SCRIPTDIR=$(readlink -f $(dirname "$0"))
 pushd "${SCRIPTDIR}" > /dev/null
 cd ..
 
+Common/scripts/showSW_Version.sh
+
 echo "Copy data ..."
 scp -P 8022 root@192.168.1.100:/volume1/buildingData/heating/* HeatingData/
 

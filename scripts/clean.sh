@@ -37,7 +37,7 @@ fi
 
 cd ..
 if [ 1 -eq ${CLEAN_ALL} ] ; then
-    rm -vrf GPATH GTAGS GRTAGS
+    rm -rf GPATH GTAGS GRTAGS
 fi
 
 # Back to the original location

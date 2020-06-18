@@ -13,7 +13,9 @@ SCRIPTDIR=$(readlink -f $(dirname "$0"))
 pushd "${SCRIPTDIR}" > /dev/null
 cd ..
 
-echo "Starting up..." > ${LOG_FILE}
+./Common/scripts/showSW_Version.sh > ${LOG_FILE}
+
+echo "Starting up..." >> ${LOG_FILE}
 echo "Process working directory" >> ${LOG_FILE}
 pwd >> ${LOG_FILE}
 echo "---------------------------" >> ${LOG_FILE}

@@ -62,8 +62,8 @@ bool FileDataWriterCSV::writeData(std::vector<DataEntryCSV> dataVector, const ui
     for(uint32_t record = 0; record < nrRows; record++) {
         std::time_t time = static_cast<std::time_t>(std::get<uint32_t>(dataVector[arrayPos].uiVal));
         arrayPos++;
-        if (8 == sizeof(std::time_t)) {
-            //The original line would be:
+        if(8 == sizeof(std::time_t)) {
+            // The original line would be:
             //    time += static_cast<std::time_t>(std::get<uint32_t>(dataVector[arrayPos].uiVal)) << 32;
             // the data type std::time_t is 32bit on Raspberry Pi, but 64 bit on the laptop. Therefore this is
             // an ugly workaround to prevent from compiler warning.

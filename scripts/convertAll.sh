@@ -4,8 +4,10 @@
 SCRIPTDIR=$(readlink -f $(dirname "$0"))
 pushd "${SCRIPTDIR}" > /dev/null
 
+../Common/scripts/showSW_Version.sh
+
 echo "::: Build DataDecoder"
-../MonitorHeating/scripts/build.sh "$0"
+../DataDecoder/scripts/build.sh "$0"
 feedback=$?
 
 echo "::: Start Conversion"

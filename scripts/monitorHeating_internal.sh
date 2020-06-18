@@ -9,6 +9,7 @@ SCRIPTDIR=$(readlink -f $(dirname "$0"))
 pushd "${SCRIPTDIR}" > /dev/null
 cd ..
 
+./Common/scripts/showSW_Version.sh
 ./MonitorHeating/bin/MonitorHeating 192.168.1.144 2>&1 | tee -a ./HeatingData/trace.log
 feedback=${PIPESTATUS[1]}
 

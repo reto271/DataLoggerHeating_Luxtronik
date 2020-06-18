@@ -4,7 +4,6 @@
 SCRIPTDIR=$(readlink -f $(dirname "$0"))
 pushd "${SCRIPTDIR}" > /dev/null
 
-
 echo "Uncrustify MonitorHeating"
 ../MonitorHeating/scripts/uncr.sh
 feedback=$?

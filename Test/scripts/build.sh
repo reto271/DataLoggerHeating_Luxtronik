@@ -4,6 +4,8 @@
 SCRIPTDIR=$(readlink -f $(dirname "$0"))
 pushd "${SCRIPTDIR}" > /dev/null
 
+../../Common/scripts/showSW_Version.sh
+
 # Offer option -v : verbose
 VERBOSE=0
 if [ 1 -eq $# ] ; then

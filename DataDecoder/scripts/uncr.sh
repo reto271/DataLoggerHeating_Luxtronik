@@ -5,6 +5,8 @@ SCRIPTDIR=$(readlink -f $(dirname "$0"))
 pushd "${SCRIPTDIR}" > /dev/null
 cd ..
 
+../Common/scripts/showSW_Version.sh
+
 uncrustify -c ../Common/uncr.cfg src/*.cpp src/*.hpp --replace
 
 mkdir -p tmp
