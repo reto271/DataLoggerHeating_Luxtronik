@@ -38,6 +38,8 @@ Extension: The MontitorHeating program writes the data to an Influx data base. T
 
 _The data base and Grafana is not part of this project. I do use two distinct Docker containers on my NAS to run InfluxDB and a second for Grafana. If you would like to explore this feature of the MonitorHeating application, setup your own InfluxDB and Grafana. Adapt the IP-Address and the Data Base Name in [MonitorHeating/src/ValueResponse.cpp#L122](https://github.com/reto271/DataLoggerHeating_Luxtronik/blob/b04c6f78e2b2e6b0699e759ffa994c9854ea9e59/MonitorHeating/src/ValueResponse.cpp#L122)._
 
+![Grafana Sample](Documentation/grafanaHeatingController.png)
+
 # Minor Components
 
 ## OctaveScripts
@@ -48,6 +50,9 @@ Runs a few google tests on the sources of MonitorHeating and DataDecoder.
 
 ## Utils
 A util to convert local time to Unix time.
+
+# Release Notes
+The most recent release notes. (https://github.com/reto271/DataLoggerHeating_Luxtronik/ReleaseNotes.html)
 
 # Acknowledgments
 * Thanks to Bouni and his documentation on (https://github.com/Bouni/Home-Assistant-Luxtronik)
