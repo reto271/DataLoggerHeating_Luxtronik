@@ -52,7 +52,7 @@ Runs a few google tests on the sources of MonitorHeating and DataDecoder.
 A util to convert local time to Unix time.
 
 # Release Notes
-The most recent release notes. (https://github.com/reto271/DataLoggerHeating_Luxtronik/ReleaseNotes.html)
+The most recent release notes. [Release Notes](ReleaseNotes.html)
 
 # Acknowledgments
 * Thanks to Bouni and his documentation on (https://github.com/Bouni/Home-Assistant-Luxtronik)
