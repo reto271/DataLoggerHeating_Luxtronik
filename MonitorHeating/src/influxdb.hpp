@@ -70,9 +70,8 @@ void print_iovec(const RequestInfo& reqInfo)
 {
 #if defined(__UNIT_TEST_FOR_INFLUX_DB_DUMP_DBG_INFO_HPP__)
     std::cout << "--- Addr: " << &reqInfo << std::endl;
-    std::cout << "heading: len: " << reqInfo.heading.length() << std::endl << reqInfo.heading << std::endl;
+    std::cout << "header: len: " << reqInfo.header.length() << std::endl << reqInfo.header << std::endl;
     std::cout << "body   : len: " << reqInfo.body.length() << std::endl << reqInfo.body << std::endl;
-    std::cout << "--- " << heading << std::endl;
 #endif
 }
 
