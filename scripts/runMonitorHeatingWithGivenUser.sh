@@ -3,7 +3,7 @@
 # ----------------------------------------------------------------------------------------------
 # Run this script from /etc/rc.local
 # Append at the end the following line at the end of /etc/rc.local
-#   /home/openhabian/git/DataLoggerHeating_Luxtronik/scripts/monitorHeating.sh
+#   /home/openhabian/git/DataLoggerHeating_Luxtronik/scripts/runMonitorHeatingWithGivenUser.sh
 # Keep 'exit 0' at the end of the /etc/rc.local
 # ----------------------------------------------------------------------------------------------
 LOG_FILE=./HeatingData/bootHeatingMonitor.log
